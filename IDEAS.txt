@@ -1,0 +1,90 @@
+IDEAS
+
+home options
+- lab with unlockables e.g. electrolysis, bunsen burner 
+- booklet with unlockables elements/compounds/facts
+- dungeon/outside (sea, land)
+- skill points and shop
+
+
+
+
+basic currency = C
+
+common collectables
+H2O - puddles and lakes
+C - plants
+O2 - plants
+starch / sucrose- fruit
+NaCl - sea
+C - gems
+Fe/ Cu/ S/ Si/ Al/ Mg/ Ca/ Na/ K - rocks
+C / NH3/ H2O/ CO2/ S - volcanos
+
+
+
+features 
+making acids / bases - H2 gas and salts
+polymerisation
+organic reactions - skill points
+making organisms (biochemistry)
+e.g. prokaryote - amino acids(protine folding)/ neucleotide/ phospholipid/ salts
+e.g. eukaryote - more stuff/ DNA
+e.g. organism - transport system 
+
+
+
+
+2D god veiw
+
+class sprite
+-player ((colour, length, width,) posy, posx)
+-collectable (name, element, (length, width,) posy, posx)
+
+
+start screen - options = load game, new game
+lab screen - options = synthesis, travel(land, sea), guide/stats, equipment, shop/upgrade(pause/save)
+	synthesis screen - options = back, stats
+	guide/stats - options = back, inspect
+	equipment - options = back, inspect
+	shop/upgrade - options = back, inspect, buy
+land options = leave, pause
+	functions - movement, collecting(mining, collecting plants/liquid)
+(sea options = leave, pause
+	functions - movement, collecting(mining, collecting plants/liquid))
+
+
+
+
+
+
+IDEASSSSS
+
+sea vines - silicon - solar panel - uv light 
+pickaxe and axe
+electrolysis - cells
+
+
+
+
+bosses
+  
+
+-acid slims
+-crude oil amalgamation 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
