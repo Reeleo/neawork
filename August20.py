@@ -39,7 +39,19 @@ class GameSettings():
         self.diff = "Easy"
         self.screen = "menu"
         self.displayAll = False
-    
+        self.itemChances = {"bct":[["C",3],["CO2",2],["m",1],["aa",1]],
+                        "bug":[["C",3],["CO2",2],["aa",1],["CN",1]],
+                        "flw":[["C",2],["O2",2],["aa",1]],
+                        "lef":[["C",2],["O2",4],["starc",5],["cellul",5],["aa",1]],
+                        "frt":[["C",2],["O2",2],["starc",2],["sucr",5],["aa",1]],
+                        "wpl":[["C",5],["O2",4],["starc",5],["aa",1]],
+                        "srk":[["Si",5],["Fe",1],["Mg",1],["Al",1]],
+                        "brk":[["Si",10],["Fe",3],["Mg",3],["Al",3]],
+                        "vrk":[["C",5],["S",2],["NH3",2]],
+                        "gem":[["C",10],["Si",10],["Mg",5],["Al",5]],
+                        "wtr":[["H2O",5],["CO2",3],["O2",4]],
+                        "swt":[["H2O",5],["CO2",3],["O2",4],["NaCl",5],["NaBr",5]]}
+
     def increaseDiff(self):
         if game.diff == "Easy":
             game.diff = "Medium"
@@ -47,6 +59,7 @@ class GameSettings():
             game.diff = "Hard"
         elif game.diff == "Hard":
             game.diff = "Easy"
+
 
 class AreaMap():
     def __init__(self):
@@ -270,11 +283,11 @@ class ScreenItem():
 
 class Button(ScreenItem):
     # defines the button's colour, size, position and the text displayed
-    def __init__(self,text,posx,posy,height,width,c1,c2):
-        super().__init__(posx,posy,height,width)
-        self.colour1 = c1
-        self.colour2 = c2
-        self.text = text
+    def __init__(self):
+        super().__init__(0,0,80,180)
+        self.colour1 = WHITE
+        self.colour2 = RED
+        self.text = "text"
 
     def update(self):
         # displays it as a rectangle on the screen
@@ -290,6 +303,11 @@ class Button(ScreenItem):
             displayText(self.text, font20, BLACK, self.posx+self.width/2, self.posy+self.height/2)
             hover = True
         return hover
+
+    def setSize(self):
+        self.width = 180
+        self.height = 80
+    
 
 
 
@@ -321,23 +339,15 @@ class TextBox(ScreenItem):
         displayText(self.text, font20, BLACK, self.posx+self.width/2, self.posy+self.height/2)
 
 
-class MiniScreen(ScreenItem):
+class MiniWindow(ScreenItem):
     def __init__(self):
         super().__init__(0,0,0,0)
-        self.text = ""
-        self.textx = 0
-        self.texty = 0
-        self.colour1 = RED
-        self.colour2 = GREY
+        self.colour1 = WHITE
+        self.colour2 = GRASS
 
     def drawScreen(self):
-        x = 1
-        border = pygame.draw.rect(screen, self.colour1, [self.posx-10,self.posy-10, self.width+20, self.height+20])
-        inside = pygame.draw.rect(screen, self.colour2, [self.posx, self.posy, self.width, self.height])
-        template = font20.render((self.text), True, BLACK)
-        textRect = template.get_rect()
-        textRect.center = (self.textx,self.texty)
-        screen.blit(template, textRect)
+        pygame.draw.rect(screen, self.colour1, [self.posx-10,self.posy-10, self.width+20, self.height+20])
+        pygame.draw.rect(screen, self.colour2, [self.posx, self.posy, self.width, self.height])
 
 
 
@@ -379,8 +389,21 @@ class Player(Sprite):
         self.walk = 1
         self.room = 1
         self.speed = 40
-        self.collection = 0
-
+        self.collect = {"bct":0,"bug":0,"flw":0,"lef":0,"frt":0,
+                        "wpl":0,"srk":0,"brk":0,"vrk":0,"gem":0,
+                        "wtr":0,"swt":0}
+        self.chemicals = {"C":0,"O2":0,"CO2":0,"H2O":0,"NH3":0,
+                      "NaCl":0,"NaBr":0,"CN":0,"Si":0,"S":0,
+                      "Mg":0,"Al":0,"Fe":0,"Na":0,"Cl":0,
+                      "Br":0,"I":0,"Agluc":0,"Bgluc":0,"sucr":0,
+                      "starc":0,"cellul":0,"m":0,"alkane":0,
+                      "alkene":0,"alcohol":0,"carAcid":0,
+                      "ester":0,"polyester":0,"ClAlkane":0,
+                      "BrAlkane":0,"amine":0,"amide":0,
+                      "aa":0,"benzene":0,"phenol":0,
+                      "acylCl":0,"acidAnhy":0,"NaOH":0,"KOH":0,
+                      "HCl":0,"HNO3":0,"H2SO4":0,"H3PO4":0}
+        
         self.sheet = pygame.image.load("SpriteSheet.bmp")
         self.rect = self.sheet.get_rect()
         self.cycle = 0
@@ -400,8 +423,8 @@ class Player(Sprite):
         frame = self.getImage(SCALE,x,y,self.width/SCALE,self.height/SCALE,WHITE)
         screen.blit(frame,(self.posx,self.posy))
         self.cycle = x
-        displayText(self.collection, font20, WHITE, 60,60)
-        displayText(self.room, font20, RED, 160,60)
+        displayText("", font20, WHITE, 60,60)
+        displayText("", font20, RED, 160,60)
 
     def updateFeet(self):
         leftFoot.posx, leftFoot.posy = player.posx+8*2.5, player.posy+player.height-10
@@ -489,8 +512,8 @@ class Player(Sprite):
 
 
 class Collectable(Sprite):
-    def __init__(self,width,height):
-        super().__init__(RED,0,0,width,height)
+    def __init__(self):
+        super().__init__(RED,0,0,50,50)
         self.frameW = 50
         self.frameH = 50
         self.visible = True
@@ -506,14 +529,19 @@ class Collectable(Sprite):
                 keys = pygame.key.get_pressed()
                 if keys[pygame.K_SPACE]:
                     self.visible = False
-                    player.collection += 1 
+                    player.collect["flw"] += 1 
 
     def update(self):
         x = 0
         y = 0
-        frame = self.getImage(1,x,y,self.frameW,self.frameH,BLACK)
+        scale = 1
+        if game.screen == "home":
+            scale = 1.5
+        frame = self.getImage(scale,x,y,self.frameW,self.frameH,BLACK)
         screen.blit(frame,(self.posx,self.posy))
         self.collision()
+
+
 
 
 
@@ -734,12 +762,17 @@ class Enemy(Sprite):
 def screenSetUp(x):
     #1
     if x == "menu":
+        b1.posx, b1.posy, b1.text = WIDTH/4-90, 3*HEIGHT/4, "EXIT"
+        b2.posx, b2.posy, b2.text = 3*WIDTH/4-90, 3*HEIGHT/4, "START"
+        b3.posx, b3.posy, b3.text = WIDTH/2-90, HEIGHT/2, "OPTIONS"
+        b1.setSize()
+        b2.setSize()
+        b3.setSize()
         screen.fill(BURG)
         pygame.draw.rect(screen,RED,[20,20,WIDTH-40, HEIGHT-40])
         pygame.draw.rect(screen,BLACK,[40,40,WIDTH-80, HEIGHT-80])
-        exitButton.update()
-        startButton.update()
-        optionsButton.update()
+        for i in range(3):
+            buttonTemps[i].update()
         displayText("game", font100, WHITE, WIDTH/2, 200)
 
     #2
@@ -747,16 +780,13 @@ def screenSetUp(x):
         screen.fill(BURG)
         pygame.draw.rect(screen,RED,[20,20,WIDTH-40, HEIGHT-40])
         pygame.draw.rect(screen,BLACK,[40,40,WIDTH-80, HEIGHT-80])
-        menuButton.update()
-        b1.posx, b1.posy = 420, 300
-        b2.posx, b2.posy = 420, 200
-        b3.posx, b3.posy = 900, 250
-        b1.width, b2.width, b3.width = 80, 80, 80
-        b1.height, b2.height, b3.height = 80, 80, 80
-        b1.text, b2.text, b3.text = "-", "+", "+"
-        b1.update()
-        b2.update()
-        b3.update()
+        b1.posx, b1.posy, b1.width, b1.height, b1.text = 420, 300, 80, 80, "-"
+        b2.posx, b2.posy, b2.width, b2.height, b2.text = 420, 200, 80, 80, "-"
+        b3.posx, b3.posy, b3.width, b3.height, b3.text = 900, 250, 80, 80, "+"
+        b4.posx, b4.posy, b4.text = WIDTH/4-90, 3*HEIGHT/4, "MENU"
+        b4.setSize()
+        for i in range(4):
+            buttonTemps[i].update()
         displayText(f"Enemy spwan rate: {game.eSpawnRate}", font20, WHITE, 300, 300)
         displayText(f"Difficulty: {game.diff}", font20, WHITE, 800, 300)
     
@@ -765,16 +795,13 @@ def screenSetUp(x):
         screen.fill(BURG)
         pygame.draw.rect(screen,RED,[20,20,WIDTH-40, HEIGHT-40])
         pygame.draw.rect(screen,BLACK,[40,40,WIDTH-80, HEIGHT-80])
-        menuButton.update()
-        b1.posx, b1.posy = 400, 100
-        b2.posx, b2.posy = 400, 300
-        b3.posx, b3.posy = 400, 500
-        b1.width, b2.width, b3.width = 1000, 1000, 1000
-        b1.height, b2.height, b3.height = 150, 150, 150
-        b1.text, b2.text, b3.text = "Save1", "Save2", "Save3"
-        b1.update()
-        b2.update()
-        b3.update()
+        b1.posx, b1.posy, b1.width, b1.height, b1.text = 400, 100, 1000, 150, "Save1"
+        b2.posx, b2.posy, b2.width, b2.height, b2.text = 400, 300, 1000, 150, "Save2"
+        b3.posx, b3.posy, b3.width, b3.height, b3.text = 400, 500, 1000, 150, "Save3"
+        b4.posx, b4.posy, b4.text = WIDTH/4-200, 3*HEIGHT/4, "MENU"
+        b4.setSize()
+        for i in range(4):
+            buttonTemps[i].update()
 
     #4
     if x == "home":
@@ -787,70 +814,61 @@ def screenSetUp(x):
         screen.fill(BURG)
         pygame.draw.rect(screen,RED,[20,20,WIDTH-40, HEIGHT-40])
         pygame.draw.rect(screen,BLACK,[40,40,WIDTH-80, HEIGHT-80])
-        menuButton.update()
-        returnButton.update()
-        b3.posx, b3.posy, b3.height, b3.width = 900, 250, 80, 80
-        b4.posx, b4.posy, b4.height, b4.width = 600, 250, 80, 80
-        b2.posx, b2.posy, b2.height, b2.width = 350, 250, 80, 80
-        b3.text = "+"
-        b4.text = "+"
-        b2.text = str(game.displayAll)
-        b3.update()
-        b4.update()
-        b2.update()
+        b1.posx, b1.posy, b1.height, b1.width, b1.text = 900, 250, 80, 80, "+"
+        b2.posx, b2.posy, b2.height, b2.width, b2.text = 600, 250, 80, 80, "+"
+        b3.posx, b3.posy, b3.height, b3.width, b3.text = 350, 250, 80, 80, str(game.displayAll)
+        b4.posx, b4.posy, b4.text = WIDTH/2, 3*HEIGHT/4, "RETURN"
+        b5.posx, b5.posy, b5.text = WIDTH/4-90, 3*HEIGHT/4, "MENU"
+        b4.setSize()
+        b5.setSize()
+        for i in range(5):
+            buttonTemps[i].update()
         displayText(f"Difficulty: {game.diff}", font20, WHITE, 800, 300)
         displayText(f"Speed: {player.speed}", font20, WHITE, 530, 300)
         displayText(f"AllMiniMap: ", font20, WHITE, 280, 300)
     
     #6
     if x == "extract":
-        pass
-        # returnButton.posx, returnButton.posy = 1150, 750
-        # b1.posx, b1.posy = 120, 200
-        # b1.text = "PLANT"
-        # b2.posx, b2.posy = 320, 200
-        # b2.text = "ROCK"
-        # b3.posx, b3.posy = 520, 200
-        # b3.text = "WATER"
-        # b4.posx, b4.posy = 1150, 350
-        # b4.text = "ENTER"
-        # mini.posx, mini.posy = 100, 100
-        # mini.width = WIDTH-200
-        # mini.height = HEIGHT-200
-        # mini.text ="+"
-        # mini.textx = 1000
-        # mini.texty = 245
-        # for i in range(4):
-        #     buttonTemps[i].update()
-        # ib1.display()
-        # ib2.display()
-        # returnButton.update()
-        # mini.drawScreen()
+        b1.posx, b1.posy, b1.text = 1150, 750, "RETURN"
+        b1.posx, b1.posy = 1150, 750
+        mini.posx, mini.posy = 100, 100
+        mini.width, mini.height = WIDTH-200, HEIGHT-200
+        pygame.draw.rect(screen,WHITE,(100,HEIGHT/2-75,WIDTH-200,10))
+        mini.drawScreen()
+        b1.setSize()
+        b1.update()
+
+        displayText("Your Collection:", font20, WHITE, 212, 150)
+        for i in range (1,len(buttonTemps)):
+            buttonTemps[i].posx, buttonTemps[i].posy = 140+(i-1)*100, 200
+            buttonTemps[i].width, buttonTemps[i].height = 80, 80
+            buttonTemps[i].text = ""
+            buttonTemps[i].update()
+        for j in range (len(cSprites)):
+            cSprites[j].visible = True
+            cSprites[j].posx, cSprites[j].posy = 140+j*100, 200
+            cSprites[j].update()
+        x = 210
+        y = 310
+        displayText(f"BACTERIA: {player.collect["bct"]}", font20, WHITE, x, y)
+        displayText(f"BUG: {player.collect["bug"]}", font20, WHITE, x+200, y)
+        displayText(f"FLOWER: {player.collect["flw"]}", font20, WHITE, x+400, y)
+        displayText(f"LEAF: {player.collect["lef"]}", font20, WHITE, x+600, y)
+        displayText(f"FRUIT: {player.collect["frt"]}", font20, WHITE, x+800, y)
+        displayText(f"OCEAN PLANT: {player.collect["wpl"]}", font20, WHITE, x+1000, y)
+        displayText(f"SMALL ROCK: {player.collect["srk"]}", font20, WHITE, x, y+30)
+        displayText(f"BIG ROCK: {player.collect["brk"]}", font20, WHITE, x+200, y+30)
+        displayText(f"VOLCANIC ROCK: {player.collect["vrk"]}", font20, WHITE, x+400, y+30)
+        displayText(f"GEMSTONE: {player.collect["gem"]}", font20, WHITE, x+600, y+30)
+
+        displayText(f"WATER: {player.collect["wtr"]}", font20, WHITE, x, y+60)
+        displayText(f"SEAWATER: {player.collect["swt"]}", font20, WHITE, x+200, y+60)
+
+
     
     #7
     if x == "craft":
         pass
-        # returnButton.posx, returnButton.posy = 1150, 750
-        # b1.posx, b1.posy = 120, 200
-        # b1.text = "PLANT"
-        # b2.posx, b2.posy = 320, 200
-        # b2.text = "ROCK"
-        # b3.posx, b3.posy = 520, 200
-        # b3.text = "WATER"
-        # b4.posx, b4.posy = 1150, 350
-        # b4.text = "ENTER"
-        # mini.posx, mini.posy = 100, 100
-        # mini.width = WIDTH-200
-        # mini.height = HEIGHT-200
-        # mini.text ="+"
-        # mini.textx = 1000
-        # mini.texty = 245
-        # for i in range(4):
-        #     buttonTemps[i].update()
-        # ib1.display()
-        # ib2.display()
-        # returnButton.update()
-        # mini.drawScreen()
     
     #8
     if x == "map":
@@ -858,14 +876,12 @@ def screenSetUp(x):
     
     #9
     if x == "minimap":
-        mini.posx, mini.posy = 100, 100
-        mini.width = WIDTH-200
-        mini.height = HEIGHT-192
+        mini.posx, mini.posy, mini.width, mini.height = 100, 100, WIDTH-200, HEIGHT-192
         mini.colour1, mini.colour2 = WHITE, GRASS
-        mini.text = ""
-        returnButton.posx, returnButton.posy = 1187,783
+        b1.posx, b1.posy, b1.text = 1187, 783, "RETURN"
         mini.drawScreen()
-        returnButton.update()
+        b1.setSize()
+        b1.update()
         areaMap.drawMiniMap(currentMap)
         displayText(f"PlayerPosx = {areaMap.pos[1]}",font20,WHITE,1270,130)
         displayText(f"PlayerPosy = {areaMap.pos[0]}",font20,WHITE,1270,160)
@@ -885,6 +901,12 @@ def eventSetUp(x, spr):
         mini.text = "FORBIDDEN"
         mini.textx, mini.texty = 1075, 245
 
+        # for bosses
+        # qb1 = Button("1",280,80,700,400,WHITE,RED)
+        # qb2 = Button("2",280,80,1000,400,WHITE,RED)
+        # qb3 = Button("3",250,80,700,500,WHITE,RED)
+        # qb4 = Button("4",250,80,1000,500,WHITE,RED)
+
     #11
     if x == "battle":
         screen.fill(BLACK)
@@ -893,6 +915,20 @@ def eventSetUp(x, spr):
         player.posx, player.posy = 500, 200
 
 
+def extraction(item):
+    for i in game.itemChances:
+        if i == item:
+            chances = game.itemChances[i]
+            player.collect[i] -= 1
+            break
+    chem = chances[random.randint(0,len(chances)-1)][0]
+    for j in player.chemicals:
+        if j == chem:
+            player.chemicals[j] += 1
+            break
+    print(item, chem, player.chemicals[chem])
+    return chem
+    
 
 
 
@@ -911,12 +947,12 @@ def menuScreen():
         if event.type == pygame.MOUSEBUTTONDOWN:
             # button.update displays the button 
             # and also returns a value of True if the mouse button is hovering over it  
-            if exitButton.update():
+            if b1.update():
                 cont = 1
-            elif startButton.update():
+            elif b2.update():
                 cont = 2
                 # transfers to the saveFile screen 
-            elif optionsButton.update():
+            elif b3.update():
                 cont = 3
                 # transfers to the options screen
     pygame.display.update()
@@ -933,10 +969,10 @@ def saveFileScreen():
             if event.key == pygame.K_ESCAPE:
                 cont = 1
         if event.type == pygame.MOUSEBUTTONDOWN:
-            if menuButton.update():
-                cont = 2
-            elif b1.update() or b2.update() or b3.update():
+            if b1.update() or b2.update() or b3.update():
                 cont = 3
+            elif b4.update():
+                cont = 2
     pygame.display.update()
     clock.tick(FPS)
     return cont
@@ -954,16 +990,16 @@ def optionsScreen():
             if event.key == pygame.K_ESCAPE:
                 cont = 1
         if event.type == pygame.MOUSEBUTTONDOWN:
-            if menuButton.update():
-                cont = 2
             if b1.update():
                 if game.eSpawnRate > 0:
                     game.eSpawnRate -= 1                
-            if b2.update():
+            elif b2.update():
                 if game.eSpawnRate < 2:
                     game.eSpawnRate += 1
-            if b3.update():
+            elif b3.update():
                 game.increaseDiff()
+            elif b4.update():
+                cont = 2
     return cont
 
 def pauseScreen():
@@ -975,22 +1011,22 @@ def pauseScreen():
         if event.type == pygame.QUIT:
             cont = 1
         if event.type == pygame.MOUSEBUTTONDOWN:
-            if menuButton.update():
-                cont = 3
-            elif returnButton.update():
-                cont = 2
-            elif b3.update():
+            if b1.update():
                 game.increaseDiff()
-            elif b4.update():
+            elif b2.update():
                 if player.speed <= 50:
                     player.speed += 5
                 else:
                     player.speed = 10
-            elif b2.update():
+            elif b3.update():
                 if game.displayAll:
                     game.displayAll = False
                 else:
                     game.displayAll = True
+            elif b4.update():
+                cont = 2
+            elif b5.update():
+                cont = 3
     return cont
 
 
@@ -1017,25 +1053,63 @@ def homeScreen():
         screenSetUp("craft")
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
+                craftTime = False
                 cont = 1
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
+                    craftTime = False
                     cont = 1
                 elif event.key == pygame.K_SPACE:
+                    craftTime = False
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                if b1.update():
                     craftTime = False
         pygame.display.update()
         clock.tick(FPS)
 
     while extractTime:
         screenSetUp("extract")
+        extractItem = 0
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
+                extractTime = False
                 cont = 1
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
+                    extractTime = False
                     cont = 1
                 elif event.key == pygame.K_SPACE:
                     extractTime = False
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                if b1.update():
+                    extractTime = False
+                if b2.update():
+                    extractItem = "bct"
+                elif b3.update():
+                    extractItem = "bug"
+                elif b4.update():
+                    extractItem = "flw"
+                elif b5.update():
+                    extractItem = "lef"
+                elif b6.update():
+                    extractItem = "frt"
+                elif b7.update():
+                    extractItem = "wpl"
+                elif b8.update():
+                    extractItem = "srk"
+                elif b9.update():
+                    extractItem = "brk"
+                elif b10.update():
+                    extractItem = "vrk"
+                elif b11.update():
+                    extractItem = "gem"
+                elif b12.update():
+                    extractItem = "wtr"
+                elif b13.update():
+                    extractItem = "swt"
+        if extractItem != 0:
+            if player.collect[extractItem] > 0:
+                extraction(extractItem)
         pygame.display.update()
         clock.tick(FPS)
 
@@ -1120,7 +1194,7 @@ def mapScreen():
                 elif event.key == pygame.K_m:
                     miniMap = False
             elif event.type == pygame.MOUSEBUTTONDOWN:
-                if returnButton.update():
+                if b1.update():
                     miniMap = False
         pygame.display.update()
         clock.tick(FPS)
@@ -1177,37 +1251,41 @@ def bossScreen():
 
 
 # button presets
-exitButton = Button("EXIT",WIDTH/4-90,3*HEIGHT/4,180,80,WHITE,RED)
-startButton = Button("START",3*WIDTH/4-90,3*HEIGHT/4,180,80,WHITE,RED)
-optionsButton = Button("OPTIONS",WIDTH/2-90,HEIGHT/2,180,80,WHITE,RED)
-returnButton = Button("RETURN",WIDTH/2,3*HEIGHT/4,180,80,WHITE,BURG)
-menuButton = Button("MENU",WIDTH/4-90,3*HEIGHT/4,180,80,WHITE,BURG)
-b1 = Button("",0,0,180,80,WHITE,RED)
-b2 = Button("",0,0,180,80,WHITE,RED)
-b3 = Button("",0,0,180,80,WHITE,RED)
-b4 = Button("",0,0,180,80,WHITE,RED)
-buttonTemps = [b1,b2,b3,b4]
+b1 = Button()
+b2 = Button()
+b3 = Button()
+b4 = Button()
+b5 = Button()
+b6 = Button()
+b7 = Button()
+b8 = Button()
+b9 = Button()
+b10 = Button()
+b11 = Button()
+b12 = Button()
+b13 = Button()
+buttonTemps = [b1,b2,b3,b4,b5,b6,b7,b8,b9,b10,b11,b12,b13]
 ib1 = InputBox(800,200,250,80)
 ib2 = InputBox(1100,200,250,80)
 tb1 = TextBox (0,0,720,25)
-
-# for bosses
-qb1 = Button("1",280,80,700,400,WHITE,RED)
-qb2 = Button("2",280,80,1000,400,WHITE,RED)
-qb3 = Button("3",250,80,700,500,WHITE,RED)
-qb4 = Button("4",250,80,1000,500,WHITE,RED)
-mini = MiniScreen()
+mini = MiniWindow()
 
 
 areaMap = AreaMap()
 currentMap = TileMap()
-c1 = Collectable(50,50)
-c2 = Collectable(50,50)
-c3 = Collectable(50,50)
-c4 = Collectable(50,50)
-c5 = Collectable(50,50)
-c6 = Collectable(50,50)
-cSprites = [c1,c2,c3,c4,c5,c6]
+c1 = Collectable()
+c2 = Collectable()
+c3 = Collectable()
+c4 = Collectable()
+c5 = Collectable()
+c6 = Collectable()
+c7 = Collectable()
+c8 = Collectable()
+c9 = Collectable()
+c10 = Collectable()
+c11 = Collectable()
+c12 = Collectable()
+cSprites = [c1,c2,c3,c4,c5,c6,c7,c8,c9,c10,c11,c12]
 boss1 = Boss(350,650)
 e1 = Enemy()
 e2 = Enemy()
@@ -1297,6 +1375,7 @@ while running:
         elif cont == 3:
             maps = False
             home = True
+            game.screen = "home"
 
     while pause:
         cont = pauseScreen()
