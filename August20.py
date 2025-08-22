@@ -21,10 +21,7 @@ pygame.display.set_caption("Chemistry Game")
 clock = pygame.time.Clock()
 TIME = time.time()
 
-file = open("saveData1.txt", "r")
-line = file.readline()
-saveData1 = line.split("/")
-file.close
+
  
 def displayText(txt, fnt, colour, posx, posy):
     txt = fnt.render(str(txt), True, colour)
@@ -35,16 +32,17 @@ def displayText(txt, fnt, colour, posx, posy):
 
 class GameSettings():
     def __init__(self):
+        self.SaveFile = 0
         self.eSpawnRate = 0
         self.diff = "Easy"
         self.screen = "menu"
         self.displayAll = False
-        self.itemChances = {"bct":[["C",3],["CO2",2],["m",1],["aa",1]],
-                        "bug":[["C",3],["CO2",2],["aa",1],["CN",1]],
-                        "flw":[["C",2],["O2",2],["aa",1]],
-                        "lef":[["C",2],["O2",4],["starc",5],["cellul",5],["aa",1]],
-                        "frt":[["C",2],["O2",2],["starc",2],["sucr",5],["aa",1]],
-                        "wpl":[["C",5],["O2",4],["starc",5],["aa",1]],
+        self.itemChances = {"bct":[["C",3],["CO2",2],["m",1],["AminoAcid",1]],
+                        "bug":[["C",3],["CO2",2],["AminoAcid",1],["CN",1]],
+                        "flw":[["C",2],["O2",2],["AminoAcid",1]],
+                        "lef":[["C",2],["O2",4],["Startch",5],["Cellulose",5],["AminoAcid",1]],
+                        "frt":[["C",2],["O2",2],["Startch",2],["Sucrose",5],["AminoAcid",1]],
+                        "wpl":[["C",5],["O2",4],["Startch",5],["AminoAcid",1]],
                         "srk":[["Si",5],["Fe",1],["Mg",1],["Al",1]],
                         "brk":[["Si",10],["Fe",3],["Mg",3],["Al",3]],
                         "vrk":[["C",5],["S",2],["NH3",2]],
@@ -268,7 +266,7 @@ class WaterRecord():
         tilenum = 0
 
 
-class ScreenItem():
+class ScreenShape():
     def __init__(self,posx,posy,width,height):
         self.colour1 = RED
         self.colour2 = WHITE
@@ -281,7 +279,7 @@ class ScreenItem():
     def test(self):
         pygame.draw.rect(screen,self.colour1,[self.posx,self.posy,self.width,self.height])
 
-class Button(ScreenItem):
+class Button(ScreenShape):
     # defines the button's colour, size, position and the text displayed
     def __init__(self):
         super().__init__(0,0,80,180)
@@ -309,9 +307,7 @@ class Button(ScreenItem):
         self.height = 80
     
 
-
-
-class InputBox(ScreenItem):
+class InputBox(ScreenShape):
     def __init__(self,posx,posy,height,width):
         super().__init__(posx,posy,height,width)
 
@@ -325,7 +321,7 @@ class InputBox(ScreenItem):
             x = True
         return x
 
-class TextBox(ScreenItem):
+class TextBox(ScreenShape):
     def __init__(self,posx,posy,height,width):
         super().__init__(posx,posy,height,width)
         self.visible = False
@@ -339,7 +335,7 @@ class TextBox(ScreenItem):
         displayText(self.text, font20, BLACK, self.posx+self.width/2, self.posy+self.height/2)
 
 
-class MiniWindow(ScreenItem):
+class MiniWindow(ScreenShape):
     def __init__(self):
         super().__init__(0,0,0,0)
         self.colour1 = WHITE
@@ -348,6 +344,24 @@ class MiniWindow(ScreenItem):
     def drawScreen(self):
         pygame.draw.rect(screen, self.colour1, [self.posx-10,self.posy-10, self.width+20, self.height+20])
         pygame.draw.rect(screen, self.colour2, [self.posx, self.posy, self.width, self.height])
+
+
+class QuickText():
+    def __init__(self):
+        self.posx = 0
+        self.posy = 0
+        self.startTime = 0.0
+        self.duration = 2
+        self.text = ""
+        self.visible = False
+        self.colour = WHITE
+    
+    def update(self):
+        if self.visible:
+            displayText(self.text,font20,self.colour,self.posx,self.posy)
+            if time.time() - self.startTime > self.duration:
+                self.visible = False
+
 
 
 
@@ -395,13 +409,13 @@ class Player(Sprite):
         self.chemicals = {"C":0,"O2":0,"CO2":0,"H2O":0,"NH3":0,
                       "NaCl":0,"NaBr":0,"CN":0,"Si":0,"S":0,
                       "Mg":0,"Al":0,"Fe":0,"Na":0,"Cl":0,
-                      "Br":0,"I":0,"Agluc":0,"Bgluc":0,"sucr":0,
-                      "starc":0,"cellul":0,"m":0,"alkane":0,
+                      "Br":0,"I":0,"aGlucose":0,"bGlucose":0,"Sucrose":0,
+                      "Startch":0,"Cellulose":0,"m":0,"alkane":0,
                       "alkene":0,"alcohol":0,"carAcid":0,
-                      "ester":0,"polyester":0,"ClAlkane":0,
-                      "BrAlkane":0,"amine":0,"amide":0,
-                      "aa":0,"benzene":0,"phenol":0,
-                      "acylCl":0,"acidAnhy":0,"NaOH":0,"KOH":0,
+                      "ester":0,"polyester":0,"CloroAlkane":0,
+                      "BromoAlkane":0,"amine":0,"amide":0,
+                      "AminoAcid":0,"benzene":0,"phenol":0,
+                      "acylCloride":0,"acidAnhydride":0,"NaOH":0,"KOH":0,
                       "HCl":0,"HNO3":0,"H2SO4":0,"H3PO4":0}
         
         self.sheet = pygame.image.load("SpriteSheet.bmp")
@@ -764,7 +778,7 @@ def screenSetUp(x):
     if x == "menu":
         b1.posx, b1.posy, b1.text = WIDTH/4-90, 3*HEIGHT/4, "EXIT"
         b2.posx, b2.posy, b2.text = 3*WIDTH/4-90, 3*HEIGHT/4, "START"
-        b3.posx, b3.posy, b3.text = WIDTH/2-90, HEIGHT/2, "OPTIONS"
+        b3.posx, b3.posy, b3.text = WIDTH/2-90, HEIGHT/2, "HOW TO PLAY"
         b1.setSize()
         b2.setSize()
         b3.setSize()
@@ -776,19 +790,16 @@ def screenSetUp(x):
         displayText("game", font100, WHITE, WIDTH/2, 200)
 
     #2
-    if x == "options":
+    if x == "htp":
         screen.fill(BURG)
         pygame.draw.rect(screen,RED,[20,20,WIDTH-40, HEIGHT-40])
         pygame.draw.rect(screen,BLACK,[40,40,WIDTH-80, HEIGHT-80])
-        b1.posx, b1.posy, b1.width, b1.height, b1.text = 420, 300, 80, 80, "-"
-        b2.posx, b2.posy, b2.width, b2.height, b2.text = 420, 200, 80, 80, "-"
-        b3.posx, b3.posy, b3.width, b3.height, b3.text = 900, 250, 80, 80, "+"
-        b4.posx, b4.posy, b4.text = WIDTH/4-90, 3*HEIGHT/4, "MENU"
-        b4.setSize()
-        for i in range(4):
+        b1.posx, b1.posy, b1.text = WIDTH/4-90, 3*HEIGHT/4, "MENU"
+        b1.setSize()
+        for i in range(1):
             buttonTemps[i].update()
-        displayText(f"Enemy spwan rate: {game.eSpawnRate}", font20, WHITE, 300, 300)
-        displayText(f"Difficulty: {game.diff}", font20, WHITE, 800, 300)
+        # displayText(f"Enemy spwan rate: {game.eSpawnRate}", font20, WHITE, 300, 300)
+
     
     #3
     if x == "savefiles":
@@ -819,9 +830,11 @@ def screenSetUp(x):
         b3.posx, b3.posy, b3.height, b3.width, b3.text = 350, 250, 80, 80, str(game.displayAll)
         b4.posx, b4.posy, b4.text = WIDTH/2, 3*HEIGHT/4, "RETURN"
         b5.posx, b5.posy, b5.text = WIDTH/4-90, 3*HEIGHT/4, "MENU"
+        b6.posx, b6.posy, b6.text = WIDTH/3+20, 3*HEIGHT/4, "SAVE"
         b4.setSize()
         b5.setSize()
-        for i in range(5):
+        b6.setSize()
+        for i in range(6):
             buttonTemps[i].update()
         displayText(f"Difficulty: {game.diff}", font20, WHITE, 800, 300)
         displayText(f"Speed: {player.speed}", font20, WHITE, 530, 300)
@@ -868,7 +881,22 @@ def screenSetUp(x):
     
     #7
     if x == "craft":
-        pass
+        b1.posx, b1.posy, b1.text = 1150, 750, "RETURN"
+        b1.posx, b1.posy = 1150, 750
+        mini.posx, mini.posy = 100, 100
+        mini.width, mini.height = WIDTH-200, HEIGHT-200
+        pygame.draw.rect(screen,WHITE,(100,HEIGHT/2-75,WIDTH-200,10))
+        mini.drawScreen()
+        b1.setSize()
+        b1.update()
+
+        displayText("Your Chemicals:", font20, WHITE, 212, 150)
+        for i in range (1,len(buttonTemps)):
+            buttonTemps[i].posx, buttonTemps[i].posy = 140+(i-1)*100, 200
+            buttonTemps[i].width, buttonTemps[i].height = 80, 80
+            buttonTemps[i].text = ""
+            buttonTemps[i].update()
+
     
     #8
     if x == "map":
@@ -916,19 +944,66 @@ def eventSetUp(x, spr):
 
 
 def extraction(item):
-    for i in game.itemChances:
-        if i == item:
-            chances = game.itemChances[i]
-            player.collect[i] -= 1
-            break
+    chances = game.itemChances[item]
     chem = chances[random.randint(0,len(chances)-1)][0]
-    for j in player.chemicals:
-        if j == chem:
-            player.chemicals[j] += 1
-            break
+    player.chemicals[chem] += 1
+    player.collect[item] -= 1
     print(item, chem, player.chemicals[chem])
+
+    qt.posx, qt.posy, qt.visible = WIDTH/2, 700, True
+    qt.text,qt.startTime = f"{item}, {chem}, {player.chemicals[chem]}", time.time()
     return chem
     
+
+def loadGame():
+    if game.SaveFile == 1:
+        file = open("saveData1.txt","r")
+    elif game.SaveFile == 2:
+        file = open("saveData2.txt","r")
+    elif game.SaveFile == 3:
+        file = open("saveData3.txt","r")
+    for i in range (3):
+        line = file.readline()
+        print(line)
+        saveData = line.split(",")
+        count = 0
+        if i == 0:
+            for item in player.collect:
+                player.collect[item] = int(saveData[count])
+                count += 1
+        elif i == 1:
+            for item in player.chemicals:
+                player.chemicals[item] = int(saveData[count])
+                count += 1
+        elif i == 2:
+            game.diff = saveData[0]
+            print(game.diff)
+    
+
+
+
+def saveGame():
+    if game.SaveFile == 1:
+        file = open("saveData1.txt","w")
+    elif game.SaveFile == 2:
+        file = open("saveData2.txt","w")
+    elif game.SaveFile == 3:
+        file = open("saveData3.txt","w")
+    collectLine = ""
+    chemicalLine = ""
+    gameLine = ""
+    for item in player.collect:
+        collectLine += str(player.collect[item])+","
+    for chem in player.chemicals:
+        chemicalLine += str(player.chemicals[chem])+","
+    gameLine += game.diff
+    file.writelines(collectLine)
+    file.writelines("\n") 
+    file.writelines(chemicalLine)
+    file.writelines("\n") 
+    file.writelines(gameLine)
+    file.close
+    print("SAVED")
 
 
 
@@ -969,7 +1044,17 @@ def saveFileScreen():
             if event.key == pygame.K_ESCAPE:
                 cont = 1
         if event.type == pygame.MOUSEBUTTONDOWN:
-            if b1.update() or b2.update() or b3.update():
+            if b1.update():
+                game.SaveFile = 1
+                loadGame()
+                cont = 3
+            elif b2.update():
+                game.SaveFile = 2
+                loadGame()
+                cont = 3
+            elif b3.update():
+                game.SaveFile = 3
+                loadGame()
                 cont = 3
             elif b4.update():
                 cont = 2
@@ -978,9 +1063,9 @@ def saveFileScreen():
     return cont
 
 
-def optionsScreen():
+def htpScreen():
     cont = 0
-    screenSetUp("options")
+    screenSetUp("htp")
     pygame.display.update()
     clock.tick(FPS)
     for event in pygame.event.get():
@@ -991,14 +1076,6 @@ def optionsScreen():
                 cont = 1
         if event.type == pygame.MOUSEBUTTONDOWN:
             if b1.update():
-                if game.eSpawnRate > 0:
-                    game.eSpawnRate -= 1                
-            elif b2.update():
-                if game.eSpawnRate < 2:
-                    game.eSpawnRate += 1
-            elif b3.update():
-                game.increaseDiff()
-            elif b4.update():
                 cont = 2
     return cont
 
@@ -1027,6 +1104,8 @@ def pauseScreen():
                 cont = 2
             elif b5.update():
                 cont = 3
+            elif b6.update():
+                saveGame()
     return cont
 
 
@@ -1108,8 +1187,10 @@ def homeScreen():
                 elif b13.update():
                     extractItem = "swt"
         if extractItem != 0:
-            if player.collect[extractItem] > 0:
-                extraction(extractItem)
+            extraction(extractItem)
+            # if player.collect[extractItem] > 0:
+            #     extraction(extractItem)
+        qt.update()
         pygame.display.update()
         clock.tick(FPS)
 
@@ -1265,11 +1346,9 @@ b11 = Button()
 b12 = Button()
 b13 = Button()
 buttonTemps = [b1,b2,b3,b4,b5,b6,b7,b8,b9,b10,b11,b12,b13]
-ib1 = InputBox(800,200,250,80)
-ib2 = InputBox(1100,200,250,80)
 tb1 = TextBox (0,0,720,25)
 mini = MiniWindow()
-
+qt = QuickText()
 
 areaMap = AreaMap()
 currentMap = TileMap()
@@ -1286,19 +1365,21 @@ c10 = Collectable()
 c11 = Collectable()
 c12 = Collectable()
 cSprites = [c1,c2,c3,c4,c5,c6,c7,c8,c9,c10,c11,c12]
-boss1 = Boss(350,650)
+
 e1 = Enemy()
 e2 = Enemy()
+eSprites = [e1,e2]
+
 chr1 = Character("Normal")
 chr2 = Character("Jonah Magnus")
-eSprites = [e1,e2]
 nSprites = [chr1]
+
 player = Player()
 game = GameSettings()
 
 
-leftFoot = ScreenItem(player.posx,player.posx,10,10)
-rightFoot = ScreenItem(player.posy,player.posy,10,10)
+leftFoot = ScreenShape(player.posx,player.posx,10,10)
+rightFoot = ScreenShape(player.posy,player.posy,10,10)
 
 
 menu = True
@@ -1328,7 +1409,7 @@ while running:
             break
 
     while htp:
-        cont = optionsScreen()
+        cont = htpScreen()
         if cont == 1:
             htp = False
             running = False
