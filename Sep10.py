@@ -9,7 +9,6 @@ pygame.init()
 font20 = pygame.font.Font('freesansbold.ttf', 20)
 font100 = pygame.font.Font('freesansbold.ttf',100)
 WIDTH, HEIGHT = 1472, 960
-SCALE = 2.5
 FPS = 40
 BLACK = (0,0,0)
 WHITE = (255,255,255)
@@ -25,37 +24,12 @@ clock = pygame.time.Clock()
 TIME = time.time()
 
 
- 
+    
 def displayText(txt, fnt, colour, pos):
     txt = fnt.render(str(txt), True, colour)
     txtrect = txt.get_rect()
     txtrect.center = (pos)
     screen.blit(txt, txtrect)
-
-
-
-
-#     #8
-#     if x == "map":
-#         pass
-    
-#     #9
-#     if x == "minimap":
-#         mini.posx, mini.posy, mini.width, mini.height = 100, 100, WIDTH-200, HEIGHT-192
-#         mini.colour1, mini.colour2 = WHITE, GRASS
-#         b1.posx, b1.posy, b1.text = 1187, 783, "RETURN"
-#         mini.drawScreen()
-#         b1.setSize()
-#         b1.update()
-#         areaMap.drawMiniMap(currentMap)
-#         displayText(f"PlayerPosx = {areaMap.pos[1]}",font20,WHITE,1270,130)
-#         displayText(f"PlayerPosy = {areaMap.pos[0]}",font20,WHITE,1270,160)
-#         pass
-
-#     #12
-#     if x == "gate":
-#         pass
-    
 
 
 def displayObject(type,obj):
@@ -96,7 +70,13 @@ def displayObject(type,obj):
         pygame.draw.rect(screen, colours[0], [pos[0]-10, pos[1]-10, size[0]+20, size[1]+20])
         pygame.draw.rect(screen, colours[1], [pos[0], pos[1], size[0], size[1]])
 
-
+    elif type == "tile":
+        image = obj[0]
+        pos = obj[1]
+        screen.blit(image,(pos))
+        
+            
+            
 
 
 
@@ -125,6 +105,8 @@ def screenSetUp(x):
     #4
     if x == "home":
         buttons.clear()
+        game.set_screen("home")
+        player.set_posx(100)
         player.set_posy(HEIGHT-200-player.get_size()[1])
 
     #5
@@ -154,13 +136,13 @@ def screenSetUp(x):
     #7
     if x == "pause":
         buttons.clear()
-        for i in range(5):
+        for i in range(6):
             if i == 0:
                 buttons.append(ShapeClasses.Button([900,250],[80,80],"+"))
             elif i == 1:
                 buttons.append(ShapeClasses.Button([600,250],[80,80],"+"))
             elif i == 2:
-                buttons.append(ShapeClasses.Button([350,250],[80,80],str(game.displayAll)))
+                buttons.append(ShapeClasses.Button([350,250],[80,80],str(game.get_showAll())))
             elif i == 3:
                 buttons.append(ShapeClasses.Button([WIDTH/2, 3*HEIGHT/4],[180,80],"RETURN"))
             elif i == 4:
@@ -168,7 +150,18 @@ def screenSetUp(x):
             elif i == 5:
                 buttons.append(ShapeClasses.Button([WIDTH/3+20, 3*HEIGHT/4],[180,80],"SAVE"))
 
+    #8
+    if x == "maps":
+        buttons.clear()
+        game.set_screen("grassland")
+        areaMap.createAreaMap()
     
+    #9
+    if x == "minimap":
+        buttons.clear()
+        mini.set_pos([100,100])
+        mini.set_size([WIDTH-200, HEIGHT-192])
+        buttons.append(ShapeClasses.Button([1187,783],[180,80],"RETURN"))
 
 def screenDisplay(x):
     #1
@@ -205,6 +198,8 @@ def screenDisplay(x):
         screen.fill(BURG)
         pygame.draw.rect(screen,BLACK,[40, 40, WIDTH-80, HEIGHT-80])
         pygame.draw.rect(screen,BURG,[0, HEIGHT-200, WIDTH, 200])
+        player.movecheck(game.get_screen(),WIDTH,HEIGHT)
+        displayObject("player", player)
     
     #5
     if x == "extract":
@@ -252,6 +247,32 @@ def screenDisplay(x):
         for i in range(len(buttons)):
             displayObject("button",buttons[i])
 
+    #8 
+    if x == "maps":
+        for i in range(len(cSprites)):
+            if cSprites[i].visible:
+                displayObject("collect",cSprites[j])
+        for j in range(len(eSprites)):
+            if eSprites[j].visible:
+                displayObject("enemy",eSprites[j])
+        tiles = areaMap.loadMap(player.get_pos(),WIDTH,HEIGHT)
+        for i in range(len(tiles)):
+            displayObject("tile",tiles[i])
+        player.movecheck(game.get_screen(),WIDTH,HEIGHT)
+        displayObject("player", player)
+     
+    #9
+    if x == "minimap":
+        displayObject("mini",mini)
+        displayObject("button",buttons[0])
+        tiles = areaMap.drawMiniMap(WIDTH,HEIGHT,game.get_showAll)
+        for i in range(len(tiles)):
+            for j in range(len(tiles[i])):
+                displayObject("tile",tiles[i][j])
+        displayText(f"PlayerPosx = {areaMap.get_pos()[1]}",font20,WHITE,[1270,130])
+        displayText(f"PlayerPosy = {areaMap.get_pos()[0]}",font20,WHITE,[1270,160])
+
+
 
 
 def extraction(item):
@@ -259,10 +280,8 @@ def extraction(item):
     chem = chances[random.randint(0,len(chances)-1)][0]
     player.chemicals[chem] += 1
     player.collect[item] -= 1
+    quickTexts.append(ShapeClasses.QuickText([WIDTH/2,700],f"{item}, {chem}, {player.chemicals[chem]}",time.time()))
     print(item, chem, player.chemicals[chem])
-
-    qt.set_pos([WIDTH/2,700])
-    qt.set_up((f"{item}, {chem}, {player.chemicals[chem]}"),time.time())
     return chem
     
 
@@ -289,15 +308,14 @@ def loadGame():
         elif i == 2:
             game.diff = saveData[0]
         elif i == 3:
-            
-            player.speed = int(saveData[0])
+            player.set_speed(int(saveData[0]),"set")
 
 def saveGame():
-    if game.SaveFile == 1:
+    if game.get_saveFile() == 1:
         file = open("saveData1.txt","w")
-    elif game.SaveFile == 2:
+    elif game.get_saveFile() == 2:
         file = open("saveData2.txt","w")
-    elif game.SaveFile == 3:
+    elif game.get_saveFile() == 3:
         file = open("saveData3.txt","w")
     collectLine = ""
     chemicalLine = ""
@@ -308,7 +326,7 @@ def saveGame():
     for chem in player.chemicals:
         chemicalLine += str(player.chemicals[chem])+","
     gameLine1 += game.diff
-    gameLine2 += str(player.speed)
+    gameLine2 += str(player.get_speed())
     file.writelines(collectLine)
     file.writelines("\n") 
     file.writelines(chemicalLine)
@@ -372,6 +390,7 @@ def saveFileScreen():
                         cont = 2
                     else:
                         cont = 3
+                        game.set_saveFile(i+1)
     pygame.display.update()
     clock.tick(FPS)
     return cont
@@ -471,8 +490,6 @@ def homeScreen():
         pygame.display.update()
         clock.tick(FPS)
 
-    player.movecheck(game.get_screen())
-    displayObject("player", player)
     pygame.display.update()
     clock.tick(FPS)
     return cont
@@ -490,6 +507,7 @@ def pauseScreen():
         if event.type == pygame.MOUSEBUTTONDOWN:
             for i in range(len(buttons)):
                 if buttons[i].collision():
+                    print(i)
                     if i == 0:
                         game.increaseDiff()
                     elif i == 1:
@@ -498,10 +516,8 @@ def pauseScreen():
                         else:
                             player.set_speed(10,"set")
                     elif i == 2:
-                        if game.displayAll:
-                            game.displayAll = False
-                        else:
-                            game.displayAll = True
+                        game.set_showAll()
+                        buttons[i].set_text(game.get_showAll())
                     elif i == 3:
                         cont = 2
                     elif i == 4:
@@ -512,129 +528,42 @@ def pauseScreen():
 
 
 
-
-# def battleMode(opponant):
-#     while opponant.battleTime:
-#         cont = 0
-#         eventSetUp("battle",opponant)
-
-#         opponant.update()
-#         opponant.battle()
-
-#         for event in pygame.event.get():
-#             if event.type == pygame.QUIT:
-#                 cont = 1
-#             if event.type == pygame.KEYDOWN:
-#                 if event.key == pygame.K_ESCAPE:
-#                     cont = 1
-#                 elif event.key == pygame.K_p:
-#                     cont = 4
-
-#         player.updateSprite()
-#         pygame.display.update()
-#         clock.tick(FPS)
-#         if cont == 4:
-#             break
-#         elif cont != 0:
-#             opponant.battleTime = False
-#     return cont
-
-# def mapScreen():
-#     cont = 0
-#     miniMap = False
-#     areaMap.loadMap(player.boundaryCheck())
-#     for i in range(len(cSprites)):
-#         if cSprites[i].visible and not tb1.visible:
-#             cSprites[i].update()
-#     for j in range(len(eSprites)):
-#         if eSprites[j].visible:
-#             eSprites[j].update()
-#             if eSprites[j].battleTime:
-#                 cont = battleMode(eSprites[j])
-#     if chr1.visible:
-#         chr1.update()
-#     if tb1.visible:
-#         tb1.display()
-
-
-#     for event in pygame.event.get():
-#         if event.type == pygame.QUIT:
-#             cont = 1
-#         if event.type == pygame.KEYDOWN:
-#             if event.key == pygame.K_ESCAPE:
-#                 cont = 3
-#             elif event.key == pygame.K_p:
-#                 cont = 2
-#             elif event.key == pygame.K_m:
-#                 miniMap = True
-#                 screen.fill(BLACK)
-#                 screenSetUp("minimap")
-
-#     if time.time()-TIME >= tb1.startTime + 0.5:
-#         chr1.cont = True
-#     if time.time()-TIME >= tb1.startTime + 2:
-#         tb1.visible = False
-
-#     while miniMap:
-#         for event in pygame.event.get():
-#             if event.type == pygame.QUIT:
-#                 miniMap = False
-#                 cont = 1
-#             if event.type == pygame.KEYDOWN:
-#                 if event.key == pygame.K_ESCAPE:
-#                     miniMap = False
-#                     cont = 1
-#                 elif event.key == pygame.K_m:
-#                     miniMap = False
-#             elif event.type == pygame.MOUSEBUTTONDOWN:
-#                 if b1.update():
-#                     miniMap = False
-#         pygame.display.update()
-#         clock.tick(FPS)
-#     player.movecheck()
-#     player.updateSprite()
-#     # player.testUpdate()
-#     # leftFoot.test()
-#     # rightFoot.test()
-#     pygame.display.update()
-#     clock.tick(FPS)
-#     return cont
-
-
-# def bossScreen():
+def mapScreen():
     cont = 0
-    eventSetUp("boss","")
-    mini.drawScreen()
-    userText = ""
-    for i in range(4):
-        buttonTemps[i].update()
-
-    pygame.display.update()
-    clock.tick(FPS)
+    miniMap = False
+    screenDisplay("maps")
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             cont = 1
-        if event.type == pygame.MOUSEBUTTONDOWN:
-            if exitButton.update():
-                cont = 2
-            elif b1.update():
-                print("1")
-            elif b2.update():
-                print("2")
-            elif b3.update():
-                print("3")
-            elif b4.update():
-                print("4")
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_ESCAPE:
+                cont = 3
+            elif event.key == pygame.K_p:
+                cont = 2
+            elif event.key == pygame.K_m:
+                miniMap = True
+                screenSetUp("minimap")
+
+    while miniMap:
+        screenDisplay("minimap")
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                miniMap = False
                 cont = 1
-            elif event.key == pygame.K_BACKSPACE:
-                ib1.text = ib1.text[:-1]
-            elif event.key == pygame.K_RETURN:
-                userText = ib1.text
-                ib1.text = ""
-            else:
-                ib1.text += event.unicode
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_ESCAPE:
+                    miniMap = False
+                    cont = 1
+                elif event.key == pygame.K_m:
+                    miniMap = False
+            elif event.type == pygame.MOUSEBUTTONDOWN:
+                if buttons[0].collision():
+                    miniMap = False
+        pygame.display.update()
+        clock.tick(FPS)
+
+    pygame.display.update()
+    clock.tick(FPS)
     return cont
 
 
@@ -644,18 +573,13 @@ def pauseScreen():
 
 player = SpriteClasses.Player()
 game = GameClasses.GameSettings()
-
 areaMap = GameClasses.AreaMap()
-currentMap = GameClasses.TileMap()
-
+mini = ShapeClasses.MiniWindow([100,100],[WIDTH-200, HEIGHT-200])
 buttons = []
+quickTexts = []
 cSprites = []
 eSprites = []
 nSprites = []
-
-tb1 = ShapeClasses.TextBox(0,0,720,25)
-mini = ShapeClasses.MiniWindow()
-qt = ShapeClasses.QuickText()
 
 
 menu = True
@@ -667,7 +591,8 @@ pause = False
 running = True
 while running:
 
-    screenSetUp("menu")
+    if menu:
+        screenSetUp("menu")
     while menu:
         cont = menuScreen()
         if cont == 1:
@@ -686,7 +611,8 @@ while running:
             print("hottoplay")
             break
     
-    screenSetUp("htp")
+    if htp:
+        screenSetUp("htp")
     while htp:
         cont = htpScreen()
         if cont == 1:
@@ -696,7 +622,8 @@ while running:
             htp = False
             menu = True
 
-    screenSetUp("savefiles")
+    if savefiles:
+        screenSetUp("savefiles")
     while savefiles:
         cont = saveFileScreen()
         if cont == 1:
@@ -708,10 +635,9 @@ while running:
         elif cont == 3:
             savefiles = False
             home = True
-            game.screen = "home"
-            player.set_posx(100)
 
-    screenSetUp("home")
+    if home:
+        screenSetUp("home")
     while home:
         cont = homeScreen()
         if cont == 1:
@@ -723,10 +649,26 @@ while running:
         elif cont == 3:
             home = False
             maps = True
-            game.screen = "grassland"
-            areaMap.createMap()
 
-    screenSetUp("maps")
+    if pause:
+        screenSetUp("pause")
+    while pause:
+        cont = pauseScreen()
+        if cont == 1:
+            pause = False
+            running = False
+        elif cont == 2:
+            pause = False
+            if game.get_screen() == "home":
+                home = True
+            elif game.get_screen() == "grassland":
+                maps = True
+        elif cont == 3:
+            pause = False
+            menu = True
+
+    if maps:
+        screenSetUp("maps")
     while maps:
         cont = mapScreen()
         if cont == 1:
@@ -738,24 +680,6 @@ while running:
         elif cont == 3:
             maps = False
             home = True
-            game.screen = "home"
-
-    screenSetUp("pause")
-    while pause:
-        cont = pauseScreen()
-        if cont == 1:
-            pause = False
-            running = False
-        elif cont == 2:
-            pause = False
-            if game.screen == "home":
-                home = True
-            elif game.screen == "grassland":
-                maps = True
-        elif cont == 3:
-            pause = False
-            menu = True
-
 
     pygame.display.update()
     clock.tick(FPS)
