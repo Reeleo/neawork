@@ -404,6 +404,7 @@ class Player(Sprite):
         self.walk = 1
         self.room = 1
         self.speed = 40
+        self.health = 3
         self.collect = {"bct":0,"bug":0,"flw":0,"lef":0,"frt":0,
                         "wpl":0,"srk":0,"brk":0,"vrk":0,"gem":0,
                         "wtr":0,"swt":0}
@@ -438,8 +439,6 @@ class Player(Sprite):
         frame = self.getImage(SCALE,x,y,self.width/SCALE,self.height/SCALE,WHITE)
         screen.blit(frame,(self.posx,self.posy))
         self.cycle = x
-        displayText("", font20, WHITE, 60,60)
-        displayText("", font20, RED, 160,60)
 
     def updateFeet(self):
         leftFoot.posx, leftFoot.posy = player.posx+8*2.5, player.posy+player.height-10
@@ -790,7 +789,7 @@ def screenSetUp(x):
         pygame.draw.rect(screen,BLACK,[40,40,WIDTH-80, HEIGHT-80])
         for i in range(3):
             buttonTemps[i].update()
-        displayText("game", font100, WHITE, WIDTH/2, 200)
+        displayText("ChemCraft", font100, WHITE, WIDTH/2, 200)
 
     #2
     if x == "htp":
