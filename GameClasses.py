@@ -152,7 +152,13 @@ class AreaMap():
                 self._pos[0] += 1
         self._currentMap = self._store[self._pos[0]][self._pos[1]]
         self._discovered[self._pos[0]][self._pos[1]] = 1
-        return self.drawMap(2,w,h), self._infoStore[self._pos[0]][self._pos[1]], resetPlayer
+        if self._pos[0] == 1 and self._pos[1] == 7:
+            info = "GATE"
+        elif self._pos[0] == 8 and self._pos[1] == 7:
+            info = "BOSS"
+        else:
+            info = self._infoStore[self._pos[0]][self._pos[1]]
+        return self.drawMap(2,w,h), info, resetPlayer
 
 
 
@@ -172,12 +178,12 @@ class AreaMap():
     def placeItems(self,row,col):
         collectNum = random.randint(1,5)
         for _ in range(collectNum):
-            type = random.randint(0,10)
+            type = random.randint(0,6)
             self._infoStore[row][col].append([random.randint(1,self._colLimit-2)*64, random.randint(1,self._rowLimit-2)*64, True, "collect",type])
         enemyNum = random.randint(0,1)
         for _ in range(enemyNum):
             self._infoStore[row][col].append([random.randint(1,self._colLimit-2)*64, random.randint(1,self._rowLimit-2)*64, True, "enemy"]) 
-        charNum = random.randint(0,2)
+        charNum = random.randint(0,1)
         for _ in range(charNum):
             self._infoStore[row][col].append([random.randint(1,self._colLimit-2)*64, random.randint(1,self._rowLimit-2)*64, True, "char"])
 
@@ -190,7 +196,12 @@ class AreaMap():
             for col in range(len(self._store[row])):
                 if self._store[row][col] != -1:
                     self._store[row][col] = self.generateMap()
-                self.placeItems(row,col)
+                if row == 8 and col == 7:
+                    self._infoStore[row][col] = "BOSS"
+                elif row == 0 and col == 7:
+                    self._infoStore[row][col] = "GATE"
+                else:
+                    self.placeItems(row,col)
         self.placeWater()
         print("MAP MADE")
 

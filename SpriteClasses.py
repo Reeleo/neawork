@@ -231,17 +231,25 @@ class Enemy(Sprite):
 
 
 class Character(Sprite):
-    def __init__(self,pos):
+    def __init__(self,pos,type):
         super().__init__(pos,[80,80],3.5,BLACK,pygame.image.load("SpriteSheet.png"))
         self._cycle = 0 
+        self._type = type
 
-    
+
+    def get_type(self):
+        return self._type
+
     def updateSprite(self):
         x = self._cycle // 8
-        frame = self.get_image(x,0,self._size[0]/2.5,self._size[1]/2.5)
+        if self._type == "":
+            frame = self.get_image(x,0,self._size[0]/2.5,self._size[1]/2.5)
+        else:
+            self._scale = 20
+            frame = self.get_image(x,0,self._size[0]/2.5,self._size[1]/2.5)
         return frame
 
-    def update(self,w,h):
+    def update(self):
         self._cycle += 1
         if self._cycle == 32:
             self._cycle = 0

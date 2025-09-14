@@ -71,7 +71,12 @@ def displayObject(type,obj):
     
     elif type == "char":
         pos = obj.get_pos()
-        image = obj.update(WIDTH,HEIGHT)
+        image = obj.update()
+        screen.blit(image,(pos))
+
+    elif type == "special":
+        pos = obj.get_pos()
+        image = obj.update()
         screen.blit(image,(pos))
 
     elif type == "mini":
@@ -166,6 +171,9 @@ def screenSetUp(screenType):
     #8
     if screenType == "maps":
         buttons.clear()
+        cSprites.clear()
+        eSprites.clear()
+        nSprites.clear()
         game.set_screen("grassland")
         areaMap.createAreaMap()
         tiles, blitList, setPlayer = areaMap.loadMap(player.get_pos(),player.get_size(),WIDTH,HEIGHT)
@@ -177,7 +185,7 @@ def screenSetUp(screenType):
                 elif blitList[item][3] == "enemy":
                     eSprites.append(SpriteClasses.Enemy([blitList[item][0],blitList[item][1]]))
                 elif blitList[item][3] == "char":
-                    nSprites.append(SpriteClasses.Character([blitList[item][0],blitList[item][1]]))
+                    nSprites.append(SpriteClasses.Character([blitList[item][0],blitList[item][1]],""))
    
     #9
     if screenType == "minimap":
@@ -185,6 +193,7 @@ def screenSetUp(screenType):
         mini.set_pos([100,100])
         mini.set_size([WIDTH-200, HEIGHT-192])
         buttons.append(ShapeClasses.Button([1187,783],[180,80],"RETURN"))
+
 
 
 def screenDisplay(screenType):
@@ -277,15 +286,21 @@ def screenDisplay(screenType):
             cSprites.clear()
             eSprites.clear()
             nSprites.clear()
-            for item in range(len(blitList)):
-                if blitList[item][2]:
-                    if blitList[item][3] == "collect":
-                        cSprites.append(SpriteClasses.Collectable([blitList[item][0],blitList[item][1]],blitList[item][4]))
-                        cSprites[-1].assign_type(game.collectTypes)
-                    elif blitList[item][3] == "enemy":
-                        eSprites.append(SpriteClasses.Enemy([blitList[item][0],blitList[item][1]]))
-                    elif blitList[item][3] == "char":
-                        nSprites.append(SpriteClasses.Character([blitList[item][0],blitList[item][1]]))
+            sSprites.clear()
+            if blitList == "BOSS":
+                sSprites.append(SpriteClasses.Character([WIDTH/2-100,HEIGHT/2-100],"boss"))
+            elif blitList == "GATE":
+                sSprites.append(SpriteClasses.Character([WIDTH/2-100,HEIGHT/2-100],"gate"))
+            else:
+                for item in range(len(blitList)):
+                    if blitList[item][2]:
+                        if blitList[item][3] == "collect":
+                            cSprites.append(SpriteClasses.Collectable([blitList[item][0],blitList[item][1]],blitList[item][4]))
+                            cSprites[-1].assign_type(game.collectTypes)
+                        elif blitList[item][3] == "enemy":
+                            eSprites.append(SpriteClasses.Enemy([blitList[item][0],blitList[item][1]]))
+                        elif blitList[item][3] == "char":
+                            nSprites.append(SpriteClasses.Character([blitList[item][0],blitList[item][1]],""))
 
         for tile in range(len(tiles)):
             displayObject("tile",tiles[tile])
@@ -298,18 +313,20 @@ def screenDisplay(screenType):
         for n in range(len(nSprites)):
             if nSprites[n].get_visible():
                 displayObject("char",nSprites[n])
+        for s in range(len(sSprites)):
+            displayObject("special",sSprites[s])
         displayObject("player", player)
      
     #9
     if screenType == "minimap":
         displayObject("mini",mini)
         displayObject("button",buttons[0])
-        tiles = areaMap.drawMiniMap(WIDTH,HEIGHT,game.get_showAll)
+        tiles = areaMap.drawMiniMap(WIDTH,HEIGHT,game.get_showAll())
         for i in range(len(tiles)):
             for j in range(len(tiles[i])):
                 displayObject("tile",tiles[i][j])
-        displayText(f"PlayerPosx = {areaMap.get_pos()[1]}",font20,WHITE,[1270,130])
-        displayText(f"PlayerPosy = {areaMap.get_pos()[0]}",font20,WHITE,[1270,160])
+        displayText(f"PlayerCol = {areaMap.get_pos()[1]}",font20,WHITE,[1270,130])
+        displayText(f"PlayerRow = {areaMap.get_pos()[0]}",font20,WHITE,[1270,160])
 
 
 
@@ -619,103 +636,81 @@ quickTexts = []
 cSprites = []
 eSprites = []
 nSprites = []
+sSprites = []
 
 
-menu = True
-htp = False
-savefiles = False
-home = False
-maps = False
-pause = False
-running = True
-while running:
+running = "menu"
+while running != "":
 
-    if menu:
+    if running == "menu":
         screenSetUp("menu")
-    while menu:
+    while running == "menu":
         cont = menuScreen()
         if cont == 1:
-            menu = False
-            running = False
+            running = ""
             break
         elif cont == 2:
-            menu = False
-            savefiles = True
+            running = "savefiles"
             break
         elif cont == 3:
-            menu = False
-            htp = True
+            running = "htp"
             break
     
-    if htp:
+    if running == "htp":
         screenSetUp("htp")
-    while htp:
+    while running == "htp":
         cont = htpScreen()
         if cont == 1:
-            htp = False
-            running = False
+            running = ""
         elif cont == 2:
-            htp = False
-            menu = True
+            running = "menu"
 
-    if savefiles:
+    if running == "savefiles":
         screenSetUp("savefiles")
-    while savefiles:
+    while running == "savefiles":
         cont = saveFileScreen()
         if cont == 1:
-            savefiles = False
-            running = False
+            running = ""
         elif cont == 2:
-            savefiles = False
-            menu = True
+            running = "menu"
         elif cont == 3:
-            savefiles = False
-            home = True
+            running = "home"
 
-    if home:
+    if running == "home":
         screenSetUp("home")
-    while home:
+    while running == "home":
         cont = homeScreen()
         if cont == 1:
-            home = False
-            running = False
+            running = ""
         elif cont == 2:
-            home = False
-            pause = True
+            running = "pause"
         elif cont == 3:
-            home = False
-            maps = True
+            running = "maps"
 
-    if pause:
+    if running == "pause":
         screenSetUp("pause")
-    while pause:
+    while running == "pause":
         cont = pauseScreen()
         if cont == 1:
-            pause = False
-            running = False
+            running = ""
         elif cont == 2:
-            pause = False
             if game.get_screen() == "home":
-                home = True
+                running = "home"
             elif game.get_screen() == "grassland":
-                maps = True
+                running = "maps"
         elif cont == 3:
-            pause = False
-            menu = True
+            running = "menu"
 
-    if maps:
+    if running == "maps":
         screenSetUp("maps")
-    while maps:
+    while running == "maps":
         cont = mapScreen()
         if cont == 1:
-            maps = False
-            running = False
+            running = ""
         elif cont == 2:
-            maps = False
-            pause = True
+            running = "pause"
         elif cont == 3:
-            maps = False
-            home = True
+            running = "home"
 
     pygame.display.update()
     clock.tick(FPS)
