@@ -420,7 +420,7 @@ class Player(Sprite):
                       "acylCloride":0,"acidAnhydride":0,"NaOH":0,"KOH":0,
                       "HCl":0,"HNO3":0,"H2SO4":0,"H3PO4":0}
         
-        self.sheet = pygame.image.load("SpriteSheet.bmp")
+        self.sheet = pygame.image.load("SpriteSheet.png")
         self.rect = self.sheet.get_rect()
         self.cycle = 0
 
@@ -565,7 +565,7 @@ class Collectable(Sprite):
 class Character(Sprite):
     def __init__(self,type):
         super().__init__(BLUE,0,0,80,80)
-        self.sheet = pygame.image.load("SpriteSheet.bmp")
+        self.sheet = pygame.image.load("SpriteSheet.png")
         self.visible = False
         self.cycle = -1
         self.cont = False
@@ -965,58 +965,60 @@ def extraction(item):
     
 
 def loadGame():
-    if game.SaveFile == 1:
-        file = open("saveData1.txt","r")
-    elif game.SaveFile == 2:
-        file = open("saveData2.txt","r")
-    elif game.SaveFile == 3:
-        file = open("saveData3.txt","r")
-    for i in range(4):
-        line = file.readline()
-        saveData = line.split(",")
-        count = 0
-        if i == 0:
-            for item in player.collect:
-                player.collect[item] = int(saveData[count])
-                count += 1
-        elif i == 1:
-            for item in player.chemicals:
-                player.chemicals[item] = int(saveData[count])
-                count += 1
-        elif i == 2:
-            game.diff = saveData[0]
-        elif i == 3:
+    pass
+    # if game.SaveFile == 1:
+    #     file = open("saveData1.txt","r")
+    # elif game.SaveFile == 2:
+    #     file = open("saveData2.txt","r")
+    # elif game.SaveFile == 3:
+    #     file = open("saveData3.txt","r")
+    # for i in range(4):
+    #     line = file.readline()
+    #     saveData = line.split(",")
+    #     count = 0
+    #     if i == 0:
+    #         for item in player.collect:
+    #             player.collect[item] = int(saveData[count])
+    #             count += 1
+    #     elif i == 1:
+    #         for item in player.chemicals:
+    #             player.chemicals[item] = int(saveData[count])
+    #             count += 1
+    #     elif i == 2:
+    #         game.diff = saveData[0]
+    #     elif i == 3:
             
-            player.speed = int(saveData[0])
+    #         player.speed = int(saveData[0])
     
 
 
 
 def saveGame():
-    if game.SaveFile == 1:
-        file = open("saveData1.txt","w")
-    elif game.SaveFile == 2:
-        file = open("saveData2.txt","w")
-    elif game.SaveFile == 3:
-        file = open("saveData3.txt","w")
-    collectLine = ""
-    chemicalLine = ""
-    gameLine1 = ""
-    gameLine2 = ""
-    for item in player.collect:
-        collectLine += str(player.collect[item])+","
-    for chem in player.chemicals:
-        chemicalLine += str(player.chemicals[chem])+","
-    gameLine1 += game.diff
-    gameLine2 += str(player.speed)
-    file.writelines(collectLine)
-    file.writelines("\n") 
-    file.writelines(chemicalLine)
-    file.writelines("\n") 
-    file.writelines(gameLine1)
-    file.writelines(gameLine2)
-    file.close
-    print("SAVED")
+    pass
+    # if game.SaveFile == 1:
+    #     file = open("saveData1.txt","w")
+    # elif game.SaveFile == 2:
+    #     file = open("saveData2.txt","w")
+    # elif game.SaveFile == 3:
+    #     file = open("saveData3.txt","w")
+    # collectLine = ""
+    # chemicalLine = ""
+    # gameLine1 = ""
+    # gameLine2 = ""
+    # for item in player.collect:
+    #     collectLine += str(player.collect[item])+","
+    # for chem in player.chemicals:
+    #     chemicalLine += str(player.chemicals[chem])+","
+    # gameLine1 += game.diff
+    # gameLine2 += str(player.speed)
+    # file.writelines(collectLine)
+    # file.writelines("\n") 
+    # file.writelines(chemicalLine)
+    # file.writelines("\n") 
+    # file.writelines(gameLine1)
+    # file.writelines(gameLine2)
+    # file.close
+    # print("SAVED")
 
 
 

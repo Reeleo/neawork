@@ -46,12 +46,13 @@ def displayObject(type,obj):
     
     elif type == "player":
         pos = obj.get_pos()
-        image = obj.update()
+        image = obj.update(game.get_screen(),WIDTH,HEIGHT)
         screen.blit(image,(pos))
     
     elif type == "collect":
         pos = obj.get_pos()
-        image, collision = obj.update(game.get_screen(),player.get_pos())
+        image = obj.update(game.get_screen())
+        collision = obj.collision(player.get_pos())
         screen.blit(image,(pos))
         if collision:
             playerpos = player.get_pos()
@@ -61,6 +62,17 @@ def displayObject(type,obj):
             if keys[pygame.K_SPACE]:
                 obj.set_visible(False)
                 player.collect[obj._type[0]] += 1
+                areaMap.set_collected(obj.get_num())
+    
+    elif type == "enemy":
+        pos = obj.get_pos()
+        image = obj.update(player.get_pos(),WIDTH,HEIGHT)
+        screen.blit(image,(pos))
+    
+    elif type == "char":
+        pos = obj.get_pos()
+        image = obj.update(WIDTH,HEIGHT)
+        screen.blit(image,(pos))
 
     elif type == "mini":
         pos = obj.get_pos()
@@ -81,21 +93,21 @@ def displayObject(type,obj):
 
 
 
-def screenSetUp(x):
+def screenSetUp(screenType):
     #1
-    if x == "menu":
+    if screenType == "menu":
         buttons.clear()
         buttons.append(ShapeClasses.Button([WIDTH/4-90,3*HEIGHT/4],[180,80],"EXIT"))
         buttons.append(ShapeClasses.Button([3*WIDTH/4-90, 3*HEIGHT/4],[180,80],"START"))
         buttons.append(ShapeClasses.Button([WIDTH/2-90, HEIGHT/2],[180,80],"HOW TO PLAY"))
 
     #2
-    if x == "htp":
+    if screenType == "htp":
         buttons.clear()
         buttons.append(ShapeClasses.Button([WIDTH-300, 200],[180,80],"MENU"))
 
     #3
-    if x == "savefiles":
+    if screenType == "savefiles":
         buttons.clear()
         buttons.append(ShapeClasses.Button([400,100],[1000,150],"Save1"))
         buttons.append(ShapeClasses.Button([400,300],[1000,150],"Save2"))
@@ -103,27 +115,28 @@ def screenSetUp(x):
         buttons.append(ShapeClasses.Button([WIDTH/4-200, 3*HEIGHT/4],[180,80],"MENU"))
 
     #4
-    if x == "home":
+    if screenType == "home":
         buttons.clear()
         game.set_screen("home")
         player.set_posx(100)
         player.set_posy(HEIGHT-200-player.get_size()[1])
 
     #5
-    if x == "extract":
+    if screenType == "extract":
         buttons.clear()
+        cSprites.clear()
         buttons.append(ShapeClasses.Button([1150,750],[180,80],"RETURN"))
         for i in range(12):
             buttons.append(ShapeClasses.Button([140+(i)*100, 200],[80,80],i))
         for j in range(12):
-            cSprites.append(SpriteClasses.Collectable(j,[140+j*100, 200]))
+            cSprites.append(SpriteClasses.Collectable([140+j*100, 200],j))
         for k in range(12):
             cSprites[k].assign_type(game.collectTypes)
         mini.set_size([WIDTH-200, HEIGHT-200])
         mini.set_pos([100, 100])
 
     #6
-    if x == "craft":
+    if screenType == "craft":
         buttons.clear()
         buttons.append(ShapeClasses.Button([1150,750],[180,80],"RETURN"))
         for i in range(12):
@@ -134,7 +147,7 @@ def screenSetUp(x):
         mini.set_pos([100, 100])
 
     #7
-    if x == "pause":
+    if screenType == "pause":
         buttons.clear()
         for i in range(6):
             if i == 0:
@@ -151,21 +164,32 @@ def screenSetUp(x):
                 buttons.append(ShapeClasses.Button([WIDTH/3+20, 3*HEIGHT/4],[180,80],"SAVE"))
 
     #8
-    if x == "maps":
+    if screenType == "maps":
         buttons.clear()
         game.set_screen("grassland")
         areaMap.createAreaMap()
-    
+        tiles, blitList, setPlayer = areaMap.loadMap(player.get_pos(),player.get_size(),WIDTH,HEIGHT)
+        for item in range(len(blitList)):
+            if blitList[item][2]:
+                if blitList[item][3] == "collect":
+                    cSprites.append(SpriteClasses.Collectable([blitList[item][0],blitList[item][1]],blitList[item][4]))
+                    cSprites[-1].assign_type(game.collectTypes)
+                elif blitList[item][3] == "enemy":
+                    eSprites.append(SpriteClasses.Enemy([blitList[item][0],blitList[item][1]]))
+                elif blitList[item][3] == "char":
+                    nSprites.append(SpriteClasses.Character([blitList[item][0],blitList[item][1]]))
+   
     #9
-    if x == "minimap":
+    if screenType == "minimap":
         buttons.clear()
         mini.set_pos([100,100])
         mini.set_size([WIDTH-200, HEIGHT-192])
         buttons.append(ShapeClasses.Button([1187,783],[180,80],"RETURN"))
 
-def screenDisplay(x):
+
+def screenDisplay(screenType):
     #1
-    if x == "menu":
+    if screenType == "menu":
         screen.fill(BURG)
         pygame.draw.rect(screen,RED,[20,20,WIDTH-40, HEIGHT-40])
         pygame.draw.rect(screen,BLACK,[40,40,WIDTH-80, HEIGHT-80])
@@ -174,7 +198,7 @@ def screenDisplay(x):
             displayObject("button",buttons[i])
 
     #2
-    if x == "htp":
+    if screenType == "htp":
         screen.fill(BURG)
         pygame.draw.rect(screen,RED,[20,20,WIDTH-40, HEIGHT-40])
         pygame.draw.rect(screen,BLACK,[40,40,WIDTH-80, HEIGHT-80])
@@ -186,7 +210,7 @@ def screenDisplay(x):
             displayObject("button",buttons[i])
 
     #3
-    if x == "savefiles":
+    if screenType == "savefiles":
         screen.fill(BURG)
         pygame.draw.rect(screen,RED,[20,20,WIDTH-40, HEIGHT-40])
         pygame.draw.rect(screen,BLACK,[40,40,WIDTH-80, HEIGHT-80])
@@ -194,15 +218,14 @@ def screenDisplay(x):
             displayObject("button",buttons[i])
 
     #4
-    if x == "home":
+    if screenType == "home":
         screen.fill(BURG)
         pygame.draw.rect(screen,BLACK,[40, 40, WIDTH-80, HEIGHT-80])
         pygame.draw.rect(screen,BURG,[0, HEIGHT-200, WIDTH, 200])
-        player.movecheck(game.get_screen(),WIDTH,HEIGHT)
         displayObject("player", player)
     
     #5
-    if x == "extract":
+    if screenType == "extract":
         pygame.draw.rect(screen,WHITE,(100,HEIGHT/2-75,WIDTH-200,10))
         displayObject("mini",mini)
         displayText("Your Collection:", font20, WHITE, [212, 150])
@@ -227,9 +250,8 @@ def screenDisplay(x):
         displayText(f"WATER: {player.collect["wtr"]}", font20, WHITE, [x, y+60])
         displayText(f"SEAWATER: {player.collect["swt"]}", font20, WHITE, [x+200, y+60])
 
-
     #6
-    if x == "craft":
+    if screenType == "craft":
         pygame.draw.rect(screen,WHITE,(100,HEIGHT/2-75,WIDTH-200,10))
         displayObject("mini",mini)
         displayText("Your Chemicals:", font20, WHITE, [212, 150])
@@ -237,7 +259,7 @@ def screenDisplay(x):
             displayObject("button",buttons[i])
 
     #7
-    if x == "pause":
+    if screenType == "pause":
         screen.fill(BURG)
         pygame.draw.rect(screen,RED,[20,20,WIDTH-40, HEIGHT-40])
         pygame.draw.rect(screen,BLACK,[40,40,WIDTH-80, HEIGHT-80])
@@ -248,21 +270,38 @@ def screenDisplay(x):
             displayObject("button",buttons[i])
 
     #8 
-    if x == "maps":
-        for i in range(len(cSprites)):
-            if cSprites[i].visible:
-                displayObject("collect",cSprites[j])
-        for j in range(len(eSprites)):
-            if eSprites[j].visible:
-                displayObject("enemy",eSprites[j])
-        tiles = areaMap.loadMap(player.get_pos(),WIDTH,HEIGHT)
-        for i in range(len(tiles)):
-            displayObject("tile",tiles[i])
-        player.movecheck(game.get_screen(),WIDTH,HEIGHT)
+    if screenType == "maps":
+        tiles, blitList, setPlayer = areaMap.loadMap(player.get_pos(),player.get_size(),WIDTH,HEIGHT)
+        player.set_pos(setPlayer,WIDTH,HEIGHT)
+        if setPlayer != -1:
+            cSprites.clear()
+            eSprites.clear()
+            nSprites.clear()
+            for item in range(len(blitList)):
+                if blitList[item][2]:
+                    if blitList[item][3] == "collect":
+                        cSprites.append(SpriteClasses.Collectable([blitList[item][0],blitList[item][1]],blitList[item][4]))
+                        cSprites[-1].assign_type(game.collectTypes)
+                    elif blitList[item][3] == "enemy":
+                        eSprites.append(SpriteClasses.Enemy([blitList[item][0],blitList[item][1]]))
+                    elif blitList[item][3] == "char":
+                        nSprites.append(SpriteClasses.Character([blitList[item][0],blitList[item][1]]))
+
+        for tile in range(len(tiles)):
+            displayObject("tile",tiles[tile])
+        for c in range(len(cSprites)):
+            if cSprites[c].get_visible():
+                displayObject("collect",cSprites[c])
+        for e in range(len(eSprites)):
+            if eSprites[e].get_visible():
+                displayObject("enemy",eSprites[e])
+        for n in range(len(nSprites)):
+            if nSprites[n].get_visible():
+                displayObject("char",nSprites[n])
         displayObject("player", player)
      
     #9
-    if x == "minimap":
+    if screenType == "minimap":
         displayObject("mini",mini)
         displayObject("button",buttons[0])
         tiles = areaMap.drawMiniMap(WIDTH,HEIGHT,game.get_showAll)
@@ -283,15 +322,15 @@ def extraction(item):
     quickTexts.append(ShapeClasses.QuickText([WIDTH/2,700],f"{item}, {chem}, {player.chemicals[chem]}",time.time()))
     print(item, chem, player.chemicals[chem])
     return chem
-    
+     
 
 
 def loadGame():
-    if game.SaveFile == 1:
+    if game.get_saveFile() == 1:
         file = open("saveData1.txt","r")
-    elif game.SaveFile == 2:
+    elif game.get_saveFile() == 2:
         file = open("saveData2.txt","r")
-    elif game.SaveFile == 3:
+    elif game.get_saveFile() == 3:
         file = open("saveData3.txt","r")
     for i in range(4):
         line = file.readline()
@@ -309,6 +348,7 @@ def loadGame():
             game.diff = saveData[0]
         elif i == 3:
             player.set_speed(int(saveData[0]),"set")
+    print("LOADED")
 
 def saveGame():
     if game.get_saveFile() == 1:
@@ -480,13 +520,13 @@ def homeScreen():
                         elif i == 12:
                             extractItem = "swt"
         if extractItem != 0:
-            extraction(extractItem)
             if player.collect[extractItem] > 0:
                 extraction(extractItem)
-        if qt.get_visible():
-            print(qt.get_text())
-            displayText(qt.get_text(),font20,qt.get_colours(),qt.get_pos())
-            qt.update()
+        if len(quickTexts) > 0:
+            if quickTexts[0].get_visible():
+                print(quickTexts[0].get_text())
+                displayText(quickTexts[0].get_text(),font20,quickTexts[0].get_colours(),quickTexts[0].get_pos())
+                quickTexts[0].update()
         pygame.display.update()
         clock.tick(FPS)
 
@@ -507,7 +547,6 @@ def pauseScreen():
         if event.type == pygame.MOUSEBUTTONDOWN:
             for i in range(len(buttons)):
                 if buttons[i].collision():
-                    print(i)
                     if i == 0:
                         game.increaseDiff()
                     elif i == 1:
@@ -598,17 +637,14 @@ while running:
         if cont == 1:
             menu = False
             running = False
-            print("END")
             break
         elif cont == 2:
             menu = False
             savefiles = True
-            print("saves")
             break
         elif cont == 3:
             menu = False
             htp = True
-            print("hottoplay")
             break
     
     if htp:

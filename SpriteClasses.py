@@ -23,11 +23,17 @@ class Sprite(pygame.sprite.Sprite):
         return self._scale
     def get_sheet(self):
         return self._sheet
+    def get_visible(self):
+        return self._visible
     
+    def set_pos(self,pos):
+        self._pos = pos
     def set_posx(self,x):
         self._pos[0] = x
     def set_posy(self,y):
         self._pos[1] = y
+    def set_visible(self,vis):
+        self._visible = vis
     
     def get_image(self,locx,locy,width,height):
         surface = pygame.Surface((width,height))
@@ -45,12 +51,10 @@ class Sprite(pygame.sprite.Sprite):
 
 class Player(Sprite):
     def __init__(self):
-        super().__init__([100,100],[80,80],2.5,WHITE,pygame.image.load("SpriteSheet.bmp"))
+        super().__init__([100,100],[80,80],3.5,BLACK,pygame.image.load("SpriteSheet.png"))
         self._drct = "down"
-        self._walk = 1
-        self.cycle = 0
-        self.room = 1
-        self._speed = 40
+        self._cycle = 1
+        self._speed = 10
         self.health = 3
         self.collect = {"bct":0,"bug":0,"flw":0,"lef":0,"frt":0,
                         "wpl":0,"srk":0,"brk":0,"vrk":0,"gem":0,
@@ -69,301 +73,177 @@ class Player(Sprite):
 
     def get_speed(self):
         return self._speed
+    def set_pos(self,drct,w,h):
+        if drct == 0:
+            self._pos[1] = h-self._size[1]-20
+        elif drct == 1:
+            self._pos[0] = 20
+        elif drct == 2:
+            self._pos[1] = 20
+        elif drct == 3:
+            self._pos[0] = w-self._size[0]-20
     def set_speed(self,speed,type):
         if type == "inc":
             self._speed += speed
         else:
             self._speed = speed
 
-    def update(self):
+    
+    def updateSprite(self,idle):
         x = 0
         y = 0
+        if idle:
+            x = self._cycle // 8
+            frame = self.get_image(x,0,self._size[0]/2.5,self._size[1]/2.5)
+            return frame
+
         if self._drct == "right":
-            y = 1
-        elif self._drct == "left":
-            y = 2
-        elif self._drct == "up":
             y = 3
+        elif self._drct == "left":
+            y = 4
+        elif self._drct == "up":
+            y = 2
         elif self._drct == "down":
-            y = 0
-        x = self._walk // 4
+            y = 1
+        x = self._cycle // 8
         frame = self.get_image(x,y,self._size[0]/2.5,self._size[1]/2.5)
         return frame
 
-
-    # def boundaryCheck(self):
-    #     gap = 10
-    #     x = -1
-    #     if self.posx <= gap and areaMap.store[areaMap.pos[0]][areaMap.pos[1]-1] != -1:
-    #         if not e1.visible:
-    #             self.posx = WIDTH-self.width-gap
-    #             x = 3
-    #     elif self.posx >= WIDTH-self.width and areaMap.store[areaMap.pos[0]][areaMap.pos[1]+1] != -1:
-    #         if not e1.visible:
-    #             self.posx = gap
-    #             x = 1
-    #     elif self.posy <= gap and areaMap.store[areaMap.pos[0]-1][areaMap.pos[1]] != -1:
-    #         if not e1.visible:
-    #             self.posy = HEIGHT-self.height-gap
-    #             x = 0
-    #     elif self.posy >= HEIGHT-self.height and areaMap.store[areaMap.pos[0]+1][areaMap.pos[1]] != -1:
-    #         if not e1.visible:
-    #             self.posy = gap
-    #             x = 2
-    #     else:
-    #         x = -1
-    #     self.updateFeet()
-    #     return x
-    
-    
-
-    def move(self,x,y,width,height):
-        walking = False
-        if x == -self._speed and self._pos[0] > 0:
-            self._pos[0] += x
-            self._drct = "left"
-            walking = True
-        if x == self._speed and self._pos[0]+self._size[0] < width:
-            self._pos[0] += x
-            self._drct = "right"
-            walking = True
-        if y == -self._speed and self._pos[1] > 0:
-            self._pos[1] += y
-            self._drct = "up"
-            walking = True
-        if y == self._speed and self._pos[1]+self._size[1]< height:
-            self._pos[1] += y
-            self._drct = "down"
-            walking = True
-
-        if walking:
-            self._walk += 1
-            if self._walk == 16:
-                self._walk = 0
-
-
-
-    def movecheck(self,gameScreen,w,h):
+    def update(self,gameScreen,w,h):
+        idle = True
         keys = pygame.key.get_pressed()
         if keys[pygame.K_a] and not keys[pygame.K_w] and not keys[pygame.K_s]:
-            self.move(-self._speed,0,w,h)
+            if self._pos[0] > 0:
+                self._pos[0] -= self._speed
+                self._drct = "left"
+                idle = False
         if keys[pygame.K_d] and not keys[pygame.K_w] and not keys[pygame.K_s]:
-            self.move(self._speed,0,w,h)
+            if self._pos[0]+self._size[0] < w:
+                self._pos[0] += self._speed
+                self._drct = "right"
+                idle = False
         if gameScreen != "home":
             if keys[pygame.K_w]:
-                self.move(0,-self._speed,w,h)
+                if self._pos[1] > 0:
+                    self._pos[1] -= self._speed
+                    self._drct = "up"
+                    idle = False
             if keys[pygame.K_s]:
-                self.move(0,self._speed,w,h)
+                if self._pos[1]+self._size[1]< h:
+                    self._pos[1] += self._speed
+                    self._drct = "down"
+                    idle = False
+        self._cycle += 1
+        if self._cycle == 32:
+            self._cycle = 0
+        return self.updateSprite(idle)
 
+
+
+        
 
 
 
 class Collectable(Sprite):
-    def __init__(self,typeNum,pos):
+    def __init__(self,pos,typeNum):
         super().__init__(pos,[50,50],2,BLACK,pygame.image.load("collectablesSprites.bmp"))
         self._frameSize = 50
-        self._visible = True
         self.pic = random.randint(0,6)
-        self._type = typeNum
+        self._num = typeNum
+        self._type = ""
 
 
+    def get_num(self):
+        return self._num
     def assign_type(self, gameTypes):
-        self._type = gameTypes[self._type]
+        self._type = gameTypes[self._num]
+    
 
     def collision(self,playerpos):
         if self._pos[0]-80 < playerpos[0] < self._pos[0]+self._size[0]+40:
             if self._pos[1]-80 < playerpos[1] < self._pos[1]+self._size[1]+40:
                 return True
         return False
-
        
-    def update(self,gameScreen,playerpos):
+    def update(self,gameScreen):
         x = self._type[1]
         y = self._type[2]
         self._scale = 2
         if gameScreen == "home":
             self._scale = 1.5
         image = self.get_image(x,y,50,50)
-        collide = self.collision(playerpos)
-        return image, collide
+        return image
 
 
 
+class Enemy(Sprite):
+    def __init__(self,pos):
+        super().__init__(pos,[80,80],3.5,BLACK,pygame.image.load("EnemySpriteSheet.png"))
+        self._drct = "down"
+        self._cycle = 1
+        self._speed = 4
 
-# class Character(Sprite):
-#     def __init__(self,type):
-#         super().__init__(BLUE,0,0,80,80)
-#         self.sheet = pygame.image.load("SpriteSheet.bmp")
-#         self.visible = False
-#         self.cycle = -1
-#         self.cont = False
-#         self.type = type 
-#         if self.type == "Jonah Magnus":
-#             self.text = ["Hello"]
-   
-#         else:
-#             self.text = ["Hello",
-#                          "Here is a fun fact",
-#                          "Aqua Regia is a mixture of highly concentrated acids",
-#                          "Specifically HCl and HNO3",
-#                          "It is called this due to its ability to dissolve",
-#                          "Noble metals such as gold",
-#                          "In the second world war it was used for this purpose",
-#                          "In order to sustain a nobel prize owned by de Heves",
-#                          "And prevent it from being confiscated by Nazis",
-#                          "Later the gold was percipitated out and remolded",
-#                          "Byebye",
-#                          "I have no more facts",
-#                          "Byeee",
-#                          "Do you want to hear that again?"]
-
-#     def talk(self):
-#         gap = 10
-#         if self.cont:
-#             self.cycle += 1
-#             if self.cycle == len(self.text):
-#                 self.cycle = 0
-#             tb1.text = self.text[self.cycle]
-#             tb1.posx = self.posx + self.width/2 - tb1.width/2
-#             tb1.posy = self.posy - 40
-#             if tb1.posx + tb1.width + gap > WIDTH:
-#                 tb1.posx = WIDTH-tb1.width-gap
-#             elif tb1.posx - gap < 0:
-#                 tb1.posx += gap
-#             if tb1.posy + tb1.height + gap > HEIGHT:
-#                 tb1.posy = HEIGHT-tb1.height-gap
-#             elif tb1.posy - gap < 0:
-#                 tb1.posy += gap
-#             self.cont = False
-
-#     def collision(self):
-#         x = False
-#         if self.posx-60 < player.posx < self.posx+self.width:
-#             if self.posy-60 < player.posy < self.posy+self.height+20:
-#                 displayText("SPACE", font20, WHITE, player.posx+player.width/2, player.posy-20)
-#                 keys = pygame.key.get_pressed()
-#                 if keys[pygame.K_SPACE]:
-#                     self.talk()
-#                     x = True
-#         if x:
-#             tb1.startTime = time.time()-TIME
-#             tb1.visible = True        
-
-
-#     def update(self):
-#         x = 0
-#         y = 0
-#         frame = self.getImage(SCALE,x,y,self.width/SCALE,self.height/SCALE,WHITE)
-#         screen.blit(frame,(self.posx,self.posy))
-#         self.collision()
-
-
-
-
-# class Enemy(Sprite):
-#     def __init__(self):
-#         super().__init__(RED,0,0,80,80)
-#         self.visible = False
-#         self.sheet = pygame.image.load("EnemySpriteSheet.bmp")
-#         self.drct = "down"
-#         self.walk = 0
-#         self.cycle = 0
-#         self.count = 0
-#         self.speed = 4
-#         self.battleTime = False
-#         self.valid = False
     
-#     def boundaryCheck(self):
-#         if self.posx > WIDTH-self.width:
-#             self.posx = WIDTH-self.width
-#             self.drct = "left"
-#             self.count = 0
-#             x = True
-#         elif self.posx < 0:
-#             self.posx = 0
-#             self.drct = "right"
-#             self.count = 0
-#             x = True
-#         elif self.posy < 0:
-#             self.posy = 0
-#             self.drct = "down"
-#             self.count = 0
-#             x = True
-#         elif self.posy > HEIGHT-self.height:
-#             self.posy = HEIGHT-self.height
-#             self.drct = "up"
-#             self.count = 0
-#             x = True
-#         else:
-#             x = False
-#         return x
+    def updateSprite(self):
+        x = 0
+        y = 0
+        if self._drct == "right":
+            self._pos[0] += self._speed
+            y = 3
+        elif self._drct == "left":
+            self._pos[0] -= self._speed
+            y = 4
+        elif self._drct == "up":
+            self._pos[1] -= self._speed
+            y = 2
+        elif self._drct == "down":
+            self._pos[1] += self._speed
+            y = 1
+        x = self._cycle // 8
+        frame = self.get_image(x,y,self._size[0]/2.5,self._size[1]/2.5)
+        return frame
 
+    def update(self,playerpos,w,h):
+        for i in range(4):
+            if i == 0:
+                newpos = [self._pos[0],self._pos[1]-self._speed]
+                new = [abs(newpos[0]-playerpos[0])+abs(newpos[1]-playerpos[1]),"up"]
+            elif i == 1:
+                newpos = [self._pos[0]+self._speed,self._pos[1]]
+                new = [abs(newpos[0]-playerpos[0])+abs(newpos[1]-playerpos[1]),"right"]
+            elif i == 2:
+                newpos = [self._pos[0],self._pos[1]+self._speed]
+                new = [abs(newpos[0]-playerpos[0])+abs(newpos[1]-playerpos[1]),"down"]
+            elif i == 3:
+                newpos = [self._pos[0]-self._speed,self._pos[1]]
+                new = [abs(newpos[0]-playerpos[0])+abs(newpos[1]-playerpos[1]),"left"]
+            if i == 0:
+                distance = new
+            elif distance[0] > new[0]:
+                distance = new
+        self._drct = distance[1]
 
-#     def move(self):
-#         if self.walk % 2 == 0:
-#             if self.drct == "right":
-#                 self.posx += self.speed
-#             elif self.drct == "left":
-#                 self.posx -= self.speed
-#             elif self.drct == "up":
-#                 self.posy -= self.speed
-#             elif self.drct == "down":
-#                 self.posy += self.speed
-#             self.count += 1
-#         hit = self.boundaryCheck()
-#         if self.count >= 50 and not hit:
-#             self.count = 0
-#             x = random.randint(0,3)
-#             if x == 0:
-#                 self.drct = "right"
-#             elif x == 1:
-#                 self.drct = "left"
-#             elif x == 2:
-#                 self.drct = "up"
-#             else:
-#                 self.drct = "down"
-#         self.walk += 1
-#         if self.walk == 16:
-#             self.walk = 0
+        self._cycle += 1
+        if self._cycle == 32:
+            self._cycle = 0
+        return self.updateSprite()
 
 
 
-#     def battle(self):
-#         if self.valid:
-#             self.visible = False
-#         keys = pygame.key.get_pressed()
-#         if keys[pygame.K_e]:
-#             self.battleTime = False
-#             self.visible = False
+class Character(Sprite):
+    def __init__(self,pos):
+        super().__init__(pos,[80,80],3.5,BLACK,pygame.image.load("SpriteSheet.png"))
+        self._cycle = 0 
 
+    
+    def updateSprite(self):
+        x = self._cycle // 8
+        frame = self.get_image(x,0,self._size[0]/2.5,self._size[1]/2.5)
+        return frame
 
-#     def collision(self):
-#         if self.posx-60 < player.posx < self.posx+self.width:
-#             if self.posy-60 < player.posy < self.posy+self.height+20:
-#                 displayText("SPACE", font20, WHITE, player.posx+player.width/2, player.posy-20)
-#                 keys = pygame.key.get_pressed()
-#                 if keys[pygame.K_SPACE]:
-#                     self.battleTime = True
-#                     self.battle()
-                
-        
-#     def update(self):
-#         if self.drct == "right":
-#             y = 1
-#         elif self.drct == "left":
-#             y = 2
-#         elif self.drct == "up":
-#             y = 3
-#         elif self.drct == "down":
-#             y = 0
-#         else:
-#             y = 0
+    def update(self,w,h):
+        self._cycle += 1
+        if self._cycle == 32:
+            self._cycle = 0
+        return self.updateSprite()
 
-#         x = self.walk // 4
-#         frame = self.getImage(2.5,x,y,self.width/2.5,self.height/2.5,WHITE)
-#         screen.blit(frame,(self.posx,self.posy))
-#         self.cycle = x
-#         if not self.battleTime:
-#             self.move()
-#             self.collision()
-        

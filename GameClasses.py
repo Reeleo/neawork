@@ -8,7 +8,7 @@ class GameSettings():
         self.eSpawnRate = 2
         self.diff = "Easy"
         self._screen = "menu"
-        self._showAll = True
+        self._showAll = False
         self.collectTypes = [["bct",0,0],["bug",1,0],["flw",0,1],["lef",1,1],["frt",2,1],["wpl",3,1],["srk",0,2],["brk",1,2],["vrk",2,2],["gem",3,2],["wtr",2,0],["swt",3,0]]
         self.itemChances = {"bct":[["C",3],["CO2",2],["m",1],["AminoAcid",1]],
                         "bug":[["C",3],["CO2",2],["AminoAcid",1],["CN",1]],
@@ -89,6 +89,18 @@ class AreaMap():
 
     def get_pos(self):
         return self._pos
+    def get_store(self):
+        return self._store
+    
+    def set_collected(self,itemNum):
+        info = self._infoStore[self._pos[0]][self._pos[1]]
+        for i in range(len(info)):
+            try:
+                if info[i][4] == itemNum:
+                    print("byebye")
+                    self._infoStore[self._pos[0]][self._pos[1]][i][2] = False
+            except:
+                pass
 
 
     def get_tile(self,tileNum, scale):
@@ -124,24 +136,23 @@ class AreaMap():
         return tiles
 
 
-    def loadMap(self,x,width,height):
-        scale = 2
-        if x != -1:
-            if x == 0:
-                self.pos[0] -= 1
-            elif x == 1:
-                self.pos[1] += 1
-            elif x == 2:
-                self.pos[0] += 1
-            elif x == 3:
-                self.pos[1] -= 1
-            self._currentMap = self._store[self._pos[0]][self._pos[1]]
-            # for i in range (len(cSprites)):
-            #     cSprites[i].posx = self.infoStore[self.pos[0]][self.pos[1]][i][0]
-            #     cSprites[i].posy = self.infoStore[self.pos[0]][self.pos[1]][i][1]
-            #     cSprites[i].visible = self.infoStore[self.pos[0]][self.pos[1]][i][2]
-            self._discovered[self._pos[0]][self._pos[1]] = 1
-        return self.drawMap(scale,width,height)
+    def loadMap(self,playerpos,playersize,w,h):
+        resetPlayer = -1
+        if playerpos[0] <= 10 and self._store[self._pos[0]][self._pos[1]-1] != -1:
+                resetPlayer = 3
+                self._pos[1] -= 1
+        elif playerpos[0] >= w-playersize[0] and self._store[self._pos[0]][self._pos[1]+1] != -1:
+                resetPlayer = 1
+                self._pos[1] += 1
+        elif playerpos[1] <= 10 and self._store[self._pos[0]-1][self._pos[1]] != -1:
+                resetPlayer = 0
+                self._pos[0] -= 1
+        elif playerpos[1] >= h-playersize[1] and self._store[self._pos[0]+1][self._pos[1]] != -1:
+                resetPlayer = 2
+                self._pos[0] += 1
+        self._currentMap = self._store[self._pos[0]][self._pos[1]]
+        self._discovered[self._pos[0]][self._pos[1]] = 1
+        return self.drawMap(2,w,h), self._infoStore[self._pos[0]][self._pos[1]], resetPlayer
 
 
 
@@ -159,10 +170,18 @@ class AreaMap():
     
 
     def placeItems(self,row,col):
-        pass
-        # for i in range (len(cSprites)):
-        #     self.infoStore[row][col].append([random.randint(1,currentMap.colLimit-2) * 64,random.randint(1,currentMap.rowLimit-2) * 64,True])
-    
+        collectNum = random.randint(1,5)
+        for _ in range(collectNum):
+            type = random.randint(0,10)
+            self._infoStore[row][col].append([random.randint(1,self._colLimit-2)*64, random.randint(1,self._rowLimit-2)*64, True, "collect",type])
+        enemyNum = random.randint(0,1)
+        for _ in range(enemyNum):
+            self._infoStore[row][col].append([random.randint(1,self._colLimit-2)*64, random.randint(1,self._rowLimit-2)*64, True, "enemy"]) 
+        charNum = random.randint(0,2)
+        for _ in range(charNum):
+            self._infoStore[row][col].append([random.randint(1,self._colLimit-2)*64, random.randint(1,self._rowLimit-2)*64, True, "char"])
+
+
     def placeWater(self):
         pass
 
@@ -178,7 +197,7 @@ class AreaMap():
 
     def drawMiniMap(self,width,height,showAll):
         tiles = []
-        currentRow, currentCol = self._pos[0], self._pos[1] 
+        currentCol, currentRow = self._pos[0], self._pos[1] 
         for row in range(len(self._store)):
             for col in range(len(self._store[row])):
                 if self._store[row][col] != -1:
@@ -186,7 +205,7 @@ class AreaMap():
                         self._pos[0], self._pos[1] = row, col
                         self._currentMap = self._store[row][col]
                         tiles.append(self.drawMap(0.2,width,height))
-        self._pos[0], self._pos[1] = currentRow, currentCol
+        self._pos[0], self._pos[1] = currentCol, currentRow
         self._currentMap = self._store[self._pos[0]][self._pos[1]]
         return tiles
 
