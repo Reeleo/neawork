@@ -24,7 +24,20 @@ clock = pygame.time.Clock()
 TIME = time.time()
 
 
-    
+def checkCollision(enemy):
+        pPos = player.get_pos()
+        ePos = enemy.get_pos()
+        pMask = pygame.mask.from_surface(player.updateSprite())
+        eMask = pygame.mask.from_surface(enemy.updateSprite(True))
+        
+        pos = [abs(ePos[0]-pPos[0]),abs(ePos[1]-pPos[1])]
+        if pMask.overlap(eMask, (pos)):
+            enemy.set_battle(True)
+
+def fetchQuestions():
+    return [["jello","i","ii","iii","iv"],["jello2","i","ii","iii","iv"]]
+
+  
 def displayText(txt, fnt, colour, pos):
     txt = fnt.render(str(txt), True, colour)
     txtrect = txt.get_rect()
@@ -37,24 +50,18 @@ def displayObject(type,obj):
         pos = obj.get_pos()
         size = obj.get_size()
         text = obj.get_text()
-        collide = obj.collision()
         colours = obj.get_colours()
-        if not collide:
+        if not obj.collision():
             pygame.draw.rect(screen,colours[0],[pos[0]-5, pos[1]-5, size[0]+10, size[1]+10])
         pygame.draw.rect(screen,colours[1],[pos[0], pos[1], size[0], size[1]])
         displayText(text, font20, BLACK, [pos[0]+size[0]/2, pos[1]+size[1]/2])
     
     elif type == "player":
-        pos = obj.get_pos()
-        image = obj.update(game.get_screen(),WIDTH,HEIGHT)
-        screen.blit(image,(pos))
+        screen.blit(obj.update(game.get_screen(),WIDTH,HEIGHT),(obj.get_pos()))
     
     elif type == "collect":
-        pos = obj.get_pos()
-        image = obj.update(game.get_screen())
-        collision = obj.collision(player.get_pos())
-        screen.blit(image,(pos))
-        if collision:
+        screen.blit(obj.update(game.get_screen()),(obj.get_pos()))
+        if  obj.collision(player.get_pos()):
             playerpos = player.get_pos()
             playersize = player.get_size()
             displayText("SPACE", font20, WHITE, [playerpos[0]+playersize[0]/2, playerpos[1]-20])
@@ -65,19 +72,14 @@ def displayObject(type,obj):
                 areaMap.set_collected(obj.get_num())
     
     elif type == "enemy":
-        pos = obj.get_pos()
-        image = obj.update(player.get_pos(),WIDTH,HEIGHT)
-        screen.blit(image,(pos))
+        checkCollision(obj)
+        screen.blit(obj.update(player.get_pos(),WIDTH,HEIGHT),(obj.get_pos()))
     
     elif type == "char":
-        pos = obj.get_pos()
-        image = obj.update()
-        screen.blit(image,(pos))
+        screen.blit(obj.update(),(obj.get_pos()))
 
     elif type == "special":
-        pos = obj.get_pos()
-        image = obj.update()
-        screen.blit(image,(pos))
+        screen.blit(obj.update(),(obj.get_pos()))
 
     elif type == "mini":
         pos = obj.get_pos()
@@ -88,10 +90,11 @@ def displayObject(type,obj):
         pygame.draw.rect(screen, colours[1], [pos[0], pos[1], size[0], size[1]])
 
     elif type == "tile":
-        image = obj[0]
-        pos = obj[1]
-        screen.blit(image,(pos))
+        screen.blit(obj[0],(obj[1]))
         
+    elif type == "heart":
+        screen.blit(obj.get_image(0,0,80,80),(obj.get_pos()))
+
             
             
 
@@ -174,6 +177,7 @@ def screenSetUp(screenType):
         cSprites.clear()
         eSprites.clear()
         nSprites.clear()
+        sSprites.clear()
         game.set_screen("grassland")
         areaMap.createAreaMap()
         tiles, blitList, setPlayer = areaMap.loadMap(player.get_pos(),player.get_size(),WIDTH,HEIGHT)
@@ -186,13 +190,29 @@ def screenSetUp(screenType):
                     eSprites.append(SpriteClasses.Enemy([blitList[item][0],blitList[item][1]]))
                 elif blitList[item][3] == "char":
                     nSprites.append(SpriteClasses.Character([blitList[item][0],blitList[item][1]],""))
-   
+        for i in range(3):
+            hearts.append(SpriteClasses.Sprite([10+i*60, 20],[20,20],0.6,RED,pygame.image.load("collectablesSprites.bmp")))
+        
     #9
     if screenType == "minimap":
         buttons.clear()
         mini.set_pos([100,100])
         mini.set_size([WIDTH-200, HEIGHT-192])
         buttons.append(ShapeClasses.Button([1187,783],[180,80],"RETURN"))
+
+    #10
+    if screenType == "battle":
+        buttons.clear()
+        sSprites.clear()
+        for i in range(4):
+            if i < 2:
+                buttons.append(ShapeClasses.Button([615+i*380, 400],[360,80],i+1))
+            else:
+                buttons.append(ShapeClasses.Button([615+(i-2)*380, 500],[360,80],i+1))
+        sSprites.append(SpriteClasses.Character([30,180],"enemy"))
+        mini.set_size([WIDTH-200, HEIGHT-200])
+        mini.set_pos([100, 100])
+        
 
 
 
@@ -288,9 +308,9 @@ def screenDisplay(screenType):
             nSprites.clear()
             sSprites.clear()
             if blitList == "BOSS":
-                sSprites.append(SpriteClasses.Character([WIDTH/2-100,HEIGHT/2-100],"boss"))
+                sSprites.append(SpriteClasses.Character([WIDTH/2-300,HEIGHT/2-200],"boss"))
             elif blitList == "GATE":
-                sSprites.append(SpriteClasses.Character([WIDTH/2-100,HEIGHT/2-100],"gate"))
+                sSprites.append(SpriteClasses.Character([WIDTH/2-300,HEIGHT/2-200],"gate"))
             else:
                 for item in range(len(blitList)):
                     if blitList[item][2]:
@@ -315,6 +335,8 @@ def screenDisplay(screenType):
                 displayObject("char",nSprites[n])
         for s in range(len(sSprites)):
             displayObject("special",sSprites[s])
+        for h in range(len(hearts)):
+            displayObject("heart",hearts[h])
         displayObject("player", player)
      
     #9
@@ -328,6 +350,17 @@ def screenDisplay(screenType):
         displayText(f"PlayerCol = {areaMap.get_pos()[1]}",font20,WHITE,[1270,130])
         displayText(f"PlayerRow = {areaMap.get_pos()[0]}",font20,WHITE,[1270,160])
 
+    #10
+    if screenType == "battle":
+        displayObject("mini",mini)
+        displayObject("special",sSprites[0])
+        displayText("BATTLE:",font100,WHITE,[320, 180])
+        
+        for i in range(len(buttons)):
+            displayObject("button",buttons[i])
+
+
+
 
 
 
@@ -340,6 +373,7 @@ def extraction(item):
     print(item, chem, player.chemicals[chem])
     return chem
      
+
 
 
 def loadGame():
@@ -598,8 +632,9 @@ def mapScreen():
                 cont = 2
             elif event.key == pygame.K_m:
                 miniMap = True
-                screenSetUp("minimap")
 
+    if miniMap:
+        screenSetUp("minimap")
     while miniMap:
         screenDisplay("minimap")
         for event in pygame.event.get():
@@ -617,6 +652,46 @@ def mapScreen():
                     miniMap = False
         pygame.display.update()
         clock.tick(FPS)
+
+    battle = False
+    for i in range(len(eSprites)):
+        battle = eSprites[i].get_battle()
+        if battle:
+            screenSetUp("battle")
+            eSprites[i].set_qSet(fetchQuestions())
+            eSprites[i].set_qNum(0)
+
+            while battle:
+                screenDisplay("battle")
+                questions = eSprites[i].get_qSet()[eSprites[i].get_qNum()]
+                    
+
+                displayText(questions[0],font20,WHITE,[900,200])
+                buttons[0].set_text(questions[1])
+                buttons[1].set_text(questions[2])
+                buttons[2].set_text(questions[3])
+                buttons[3].set_text(questions[4])
+
+                for event in pygame.event.get():
+                    if event.type == pygame.QUIT:
+                        battle = False
+                        cont = 1
+                    if event.type == pygame.KEYDOWN:
+                        if event.key == pygame.K_ESCAPE:
+                            battle = False
+                            cont = 1
+                        elif event.key == pygame.K_b:
+                            battle = False
+                            for i in range(len(eSprites)):
+                                eSprites[i].set_battle(False)
+                            player.set_posx(30)
+                    elif event.type == pygame.MOUSEBUTTONDOWN:
+                        for j in range(len(buttons)):
+                            if buttons[j].collision():
+                                print("button",j)
+                pygame.display.update()
+                clock.tick(FPS)
+            break
 
     pygame.display.update()
     clock.tick(FPS)
@@ -637,6 +712,7 @@ cSprites = []
 eSprites = []
 nSprites = []
 sSprites = []
+hearts = []
 
 
 running = "menu"

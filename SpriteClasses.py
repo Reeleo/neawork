@@ -55,6 +55,7 @@ class Player(Sprite):
         self._drct = "down"
         self._cycle = 1
         self._speed = 10
+        self._idle = True
         self.health = 3
         self.collect = {"bct":0,"bug":0,"flw":0,"lef":0,"frt":0,
                         "wpl":0,"srk":0,"brk":0,"vrk":0,"gem":0,
@@ -73,6 +74,9 @@ class Player(Sprite):
 
     def get_speed(self):
         return self._speed
+    def get_health(self):
+        return self.get_health
+    
     def set_pos(self,drct,w,h):
         if drct == 0:
             self._pos[1] = h-self._size[1]-20
@@ -89,10 +93,10 @@ class Player(Sprite):
             self._speed = speed
 
     
-    def updateSprite(self,idle):
+    def updateSprite(self):
         x = 0
         y = 0
-        if idle:
+        if self._idle:
             x = self._cycle // 8
             frame = self.get_image(x,0,self._size[0]/2.5,self._size[1]/2.5)
             return frame
@@ -110,33 +114,33 @@ class Player(Sprite):
         return frame
 
     def update(self,gameScreen,w,h):
-        idle = True
+        self._idle = True
         keys = pygame.key.get_pressed()
         if keys[pygame.K_a] and not keys[pygame.K_w] and not keys[pygame.K_s]:
             if self._pos[0] > 0:
                 self._pos[0] -= self._speed
                 self._drct = "left"
-                idle = False
+                self._idle = False
         if keys[pygame.K_d] and not keys[pygame.K_w] and not keys[pygame.K_s]:
             if self._pos[0]+self._size[0] < w:
                 self._pos[0] += self._speed
                 self._drct = "right"
-                idle = False
+                self._idle = False
         if gameScreen != "home":
             if keys[pygame.K_w]:
                 if self._pos[1] > 0:
                     self._pos[1] -= self._speed
                     self._drct = "up"
-                    idle = False
+                    self._idle = False
             if keys[pygame.K_s]:
                 if self._pos[1]+self._size[1]< h:
                     self._pos[1] += self._speed
                     self._drct = "down"
-                    idle = False
+                    self._idle = False
         self._cycle += 1
         if self._cycle == 32:
             self._cycle = 0
-        return self.updateSprite(idle)
+        return self.updateSprite()
 
 
 
@@ -182,22 +186,43 @@ class Enemy(Sprite):
         self._drct = "down"
         self._cycle = 1
         self._speed = 4
+        self._battleTime = False
+        self._qSet = []
+        self._qNum = 0
+
+    def get_battle(self):
+        return self._battleTime
+    def get_qSet(self):
+        return self._qSet
+    def get_qNum(self):
+        return self._qNum
+    
+    def set_battle(self,battle):
+        self._battleTime = battle
+    def set_qSet(self,questions):
+        self._qSet = questions
+    def set_qNum(self,num):
+        self._qNum = num
 
     
-    def updateSprite(self):
+    def updateSprite(self,check):
         x = 0
         y = 0
         if self._drct == "right":
-            self._pos[0] += self._speed
+            if not check:
+                self._pos[0] += self._speed
             y = 3
         elif self._drct == "left":
-            self._pos[0] -= self._speed
+            if not check:
+                self._pos[0] -= self._speed
             y = 4
         elif self._drct == "up":
-            self._pos[1] -= self._speed
+            if not check:
+                self._pos[1] -= self._speed
             y = 2
         elif self._drct == "down":
-            self._pos[1] += self._speed
+            if not check:
+                self._pos[1] += self._speed
             y = 1
         x = self._cycle // 8
         frame = self.get_image(x,y,self._size[0]/2.5,self._size[1]/2.5)
@@ -219,6 +244,11 @@ class Enemy(Sprite):
                 new = [abs(newpos[0]-playerpos[0])+abs(newpos[1]-playerpos[1]),"left"]
             if i == 0:
                 distance = new
+            elif distance[0] == new[0]:
+                if self._drct == "up":
+                    change = random.randint(0,5)
+                    if change == 1:
+                        distance = new
             elif distance[0] > new[0]:
                 distance = new
         self._drct = distance[1]
@@ -226,13 +256,17 @@ class Enemy(Sprite):
         self._cycle += 1
         if self._cycle == 32:
             self._cycle = 0
-        return self.updateSprite()
+        return self.updateSprite(False)
 
 
 
 class Character(Sprite):
     def __init__(self,pos,type):
-        super().__init__(pos,[80,80],3.5,BLACK,pygame.image.load("SpriteSheet.png"))
+        if type == "enemy":
+            sheet = pygame.image.load("EnemySpriteSheet.png")
+        else:
+            sheet = pygame.image.load("SpriteSheet.png")
+        super().__init__(pos,[80,80],3.5,BLACK,sheet)
         self._cycle = 0 
         self._type = type
 
