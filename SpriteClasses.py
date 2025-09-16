@@ -56,7 +56,7 @@ class Player(Sprite):
         self._cycle = 1
         self._speed = 10
         self._idle = True
-        self.health = 3
+        self._health = 3
         self.collect = {"bct":0,"bug":0,"flw":0,"lef":0,"frt":0,
                         "wpl":0,"srk":0,"brk":0,"vrk":0,"gem":0,
                         "wtr":0,"swt":0}
@@ -75,7 +75,7 @@ class Player(Sprite):
     def get_speed(self):
         return self._speed
     def get_health(self):
-        return self.get_health
+        return self._health
     
     def set_pos(self,drct,w,h):
         if drct == 0:
@@ -91,6 +91,9 @@ class Player(Sprite):
             self._speed += speed
         else:
             self._speed = speed
+    
+    def decrease_health(self):
+        self._health -= 1
 
     
     def updateSprite(self):

@@ -23,6 +23,9 @@ pygame.display.set_caption("Chemistry Game")
 clock = pygame.time.Clock()
 TIME = time.time()
 
+music = [pygame.mixer.Sound("Menu.mp3"),pygame.mixer.Sound("DoctorWeird.mp3"),pygame.mixer.Sound("ForestBattle.mp3")]
+sounds = [pygame.mixer.Sound("click.mp3")]
+
 
 def checkCollision(enemy):
         pPos = player.get_pos()
@@ -35,9 +38,9 @@ def checkCollision(enemy):
             enemy.set_battle(True)
 
 def fetchQuestions():
-    return [["jello","i","ii","iii","iv"],["jello2","i","ii","iii","iv"]]
+    return [["","i","ii","iii","iv",1],["jello2","i","ii","iii","iv",1],["jello3","i","ii","iii","iv",1]]
 
-  
+    
 def displayText(txt, fnt, colour, pos):
     txt = fnt.render(str(txt), True, colour)
     txtrect = txt.get_rect()
@@ -100,11 +103,13 @@ def displayObject(type,obj):
 
 
 
-
 def screenSetUp(screenType):
     #1
     if screenType == "menu":
         buttons.clear()
+        if game.get_music() == -1 and game.get_playMusic():
+            pygame.mixer.Sound.play(music[0])
+            game.set_music(0)
         buttons.append(ShapeClasses.Button([WIDTH/4-90,3*HEIGHT/4],[180,80],"EXIT"))
         buttons.append(ShapeClasses.Button([3*WIDTH/4-90, 3*HEIGHT/4],[180,80],"START"))
         buttons.append(ShapeClasses.Button([WIDTH/2-90, HEIGHT/2],[180,80],"HOW TO PLAY"))
@@ -125,6 +130,9 @@ def screenSetUp(screenType):
     #4
     if screenType == "home":
         buttons.clear()
+        pygame.mixer.Sound.stop(music[0])
+        pygame.mixer.Sound.stop(music[1])
+        game.set_music(-1)
         game.set_screen("home")
         player.set_posx(100)
         player.set_posy(HEIGHT-200-player.get_size()[1])
@@ -157,7 +165,7 @@ def screenSetUp(screenType):
     #7
     if screenType == "pause":
         buttons.clear()
-        for i in range(6):
+        for i in range(7):
             if i == 0:
                 buttons.append(ShapeClasses.Button([900,250],[80,80],"+"))
             elif i == 1:
@@ -170,6 +178,8 @@ def screenSetUp(screenType):
                 buttons.append(ShapeClasses.Button([WIDTH/4-90, 3*HEIGHT/4],[180,80],"MENU"))
             elif i == 5:
                 buttons.append(ShapeClasses.Button([WIDTH/3+20, 3*HEIGHT/4],[180,80],"SAVE"))
+            elif i == 6:
+                buttons.append(ShapeClasses.Button([350,350],[80,80],str(game.get_playMusic())))
 
     #8
     if screenType == "maps":
@@ -178,6 +188,11 @@ def screenSetUp(screenType):
         eSprites.clear()
         nSprites.clear()
         sSprites.clear()
+        hearts.clear()
+        if game.get_music() == -1 and game.get_playMusic():
+            pygame.mixer.Sound.stop(music[2])
+            pygame.mixer.Sound.play(music[1])
+            game.set_music(1)
         game.set_screen("grassland")
         areaMap.createAreaMap()
         tiles, blitList, setPlayer = areaMap.loadMap(player.get_pos(),player.get_size(),WIDTH,HEIGHT)
@@ -204,6 +219,11 @@ def screenSetUp(screenType):
     if screenType == "battle":
         buttons.clear()
         sSprites.clear()
+        hearts.clear()
+        if game.get_music() == 1 and game.get_playMusic():
+            pygame.mixer.Sound.stop(music[1])
+            pygame.mixer.Sound.play(music[2])
+            game.set_music(2)
         for i in range(4):
             if i < 2:
                 buttons.append(ShapeClasses.Button([615+i*380, 400],[360,80],i+1))
@@ -212,6 +232,9 @@ def screenSetUp(screenType):
         sSprites.append(SpriteClasses.Character([30,180],"enemy"))
         mini.set_size([WIDTH-200, HEIGHT-200])
         mini.set_pos([100, 100])
+        for i in range(3):
+            hearts.append(SpriteClasses.Sprite([10+i*60, 20],[20,20],0.6,RED,pygame.image.load("collectablesSprites.bmp")))
+        
         
 
 
@@ -295,6 +318,7 @@ def screenDisplay(screenType):
         displayText(f"Difficulty: {game.diff}", font20, WHITE, [800, 300])
         displayText(f"Speed: {player.get_speed()}", font20, WHITE, [530, 300])
         displayText(f"AllMiniMap: ", font20, WHITE, [280, 300])
+        displayText(f"PlayMusic: ", font20, WHITE, [280, 400])
         for i in range(len(buttons)):
             displayObject("button",buttons[i])
 
@@ -352,12 +376,15 @@ def screenDisplay(screenType):
 
     #10
     if screenType == "battle":
+        screen.fill(BLACK)
         displayObject("mini",mini)
         displayObject("special",sSprites[0])
         displayText("BATTLE:",font100,WHITE,[320, 180])
         
         for i in range(len(buttons)):
             displayObject("button",buttons[i])
+        for j in range(len(hearts)):
+            displayObject("heart",hearts[j])
 
 
 
@@ -443,6 +470,7 @@ def menuScreen():
             for i in range(len(buttons)):
                 if buttons[i].collision():
                     cont = i + 1
+                    pygame.mixer.Sound.play(sounds[0])
     pygame.display.update()
     clock.tick(FPS)
     return cont
@@ -459,6 +487,7 @@ def htpScreen():
                 cont = 1
         if event.type == pygame.MOUSEBUTTONDOWN:
             if buttons[0].collision():
+                pygame.mixer.Sound.play(sounds[0])
                 cont = 2
     pygame.display.update()
     clock.tick(FPS)
@@ -477,6 +506,7 @@ def saveFileScreen():
         if event.type == pygame.MOUSEBUTTONDOWN:
             for i in range(len(buttons)):
                 if buttons[i].collision():
+                    pygame.mixer.Sound.play(sounds[0])
                     if i == 3:
                         cont = 2
                     else:
@@ -522,6 +552,7 @@ def homeScreen():
                     craftTime = False
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if buttons[0].collision():
+                    pygame.mixer.Sound.play(sounds[0])
                     craftTime = False
         pygame.display.update()
         clock.tick(FPS)
@@ -544,6 +575,7 @@ def homeScreen():
             if event.type == pygame.MOUSEBUTTONDOWN:
                 for i in range(len(buttons)):
                     if buttons[i].collision():
+                        pygame.mixer.Sound.play(sounds[0])
                         if i == 0:
                             extractTime = False
                         elif i == 1:
@@ -598,6 +630,7 @@ def pauseScreen():
         if event.type == pygame.MOUSEBUTTONDOWN:
             for i in range(len(buttons)):
                 if buttons[i].collision():
+                    pygame.mixer.Sound.play(sounds[0])
                     if i == 0:
                         game.increaseDiff()
                     elif i == 1:
@@ -614,6 +647,18 @@ def pauseScreen():
                         cont = 3
                     elif i == 5:
                         saveGame()
+                    elif i == 6:
+                        game.set_playMusic()
+                        buttons[i].set_text(game.get_playMusic())
+                        if not game.get_playMusic():
+                            for j in range(len(music)):
+                                pygame.mixer.Sound.stop(music[j])
+                            game.set_music(-1)
+                        else:
+                            if game.get_screen() == "grassland":
+                                pygame.mixer.Sound.play(music[1])
+                                game.set_music(1)
+
     return cont
 
 
@@ -649,6 +694,7 @@ def mapScreen():
                     miniMap = False
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 if buttons[0].collision():
+                    pygame.mixer.Sound.play(sounds[0])
                     miniMap = False
         pygame.display.update()
         clock.tick(FPS)
@@ -664,7 +710,7 @@ def mapScreen():
             while battle:
                 screenDisplay("battle")
                 questions = eSprites[i].get_qSet()[eSprites[i].get_qNum()]
-                    
+                answer = eSprites[i].get_qSet()[eSprites[i].get_qNum()][5]
 
                 displayText(questions[0],font20,WHITE,[900,200])
                 buttons[0].set_text(questions[1])
@@ -685,10 +731,29 @@ def mapScreen():
                             for i in range(len(eSprites)):
                                 eSprites[i].set_battle(False)
                             player.set_posx(30)
+                            sSprites.clear()
+                            pygame.mixer.Sound.stop(music[2])
+                            if game.get_playMusic():
+                                pygame.mixer.Sound.play(music[1])
+                                game.set_music(1)
                     elif event.type == pygame.MOUSEBUTTONDOWN:
                         for j in range(len(buttons)):
                             if buttons[j].collision():
-                                print("button",j)
+                                pygame.mixer.Sound.play(sounds[0])
+                                if j+1 == answer:
+                                    print("CORRECT")
+                                else:
+                                    print("INCORRECT")
+                                    player.decrease_health()
+                                    hearts.pop()
+
+                if player.get_health() <= 0:
+                    print("DEATH")
+                    screen.fill(RED)
+                    pygame.display.update()
+                    time.sleep(1.5)
+                    battle = False
+                    cont = 1
                 pygame.display.update()
                 clock.tick(FPS)
             break
@@ -777,7 +842,7 @@ while running != "":
         elif cont == 3:
             running = "menu"
 
-    if running == "maps":
+    if running == "maps" and game.get_screen() == "home":
         screenSetUp("maps")
     while running == "maps":
         cont = mapScreen()

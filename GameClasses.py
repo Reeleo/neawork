@@ -9,6 +9,8 @@ class GameSettings():
         self.diff = "Easy"
         self._screen = "menu"
         self._showAll = False
+        self._music = -1
+        self._playMusic = True
         self.collectTypes = [["bct",0,0],["bug",1,0],["flw",0,1],["lef",1,1],["frt",2,1],["wpl",3,1],["srk",0,2],["brk",1,2],["vrk",2,2],["gem",3,2],["wtr",2,0],["swt",3,0]]
         self.itemChances = {"bct":[["C",3],["CO2",2],["m",1],["AminoAcid",1]],
                         "bug":[["C",3],["CO2",2],["AminoAcid",1],["CN",1]],
@@ -29,6 +31,10 @@ class GameSettings():
         return self._saveFile
     def get_showAll(self):
         return self._showAll
+    def get_music(self):
+        return self._music
+    def get_playMusic(self):
+        return self._playMusic
 
 
     def set_screen(self,screen):
@@ -40,6 +46,13 @@ class GameSettings():
             self._showAll = False
         else:
             self._showAll = True
+    def set_music(self,track):
+        self._music = track
+    def set_playMusic(self):
+        if self._playMusic:
+            self._playMusic = False
+        else:
+            self._playMusic = True
     
     def increaseDiff(self):
         if self.diff == "Easy":
@@ -101,7 +114,7 @@ class AreaMap():
                     self._infoStore[self._pos[0]][self._pos[1]][i][2] = False
             except:
                 pass
-
+    
 
     def get_tile(self,tileNum, scale):
         start = [0,0]
@@ -176,6 +189,7 @@ class AreaMap():
     
 
     def placeItems(self,row,col):
+        self._infoStore[row][col].clear()
         collectNum = random.randint(1,5)
         for _ in range(collectNum):
             type = random.randint(0,6)
