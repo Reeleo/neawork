@@ -8,9 +8,9 @@ class GameSettings():
         self.eSpawnRate = 2
         self._diff = "Easy"
         self._screen = "menu"
-        self._showAll = False
+        self._showAll = True
         self._music = -1
-        self._playMusic = True
+        self._playMusic = False
         self.collectTypes = [["bct",0,0],["bug",1,0],["flw",0,1],["lef",1,1],["frt",2,1],["wpl",3,1],["srk",0,2],["brk",1,2],["vrk",2,2],["gem",3,2],["wtr",2,0],["swt",3,0]]
         self.itemChances = {"bct":[["C",3],["CO2",2],["m",1],["AminoAcid",1]],
                         "bug":[["C",3],["CO2",2],["AminoAcid",1],["CN",1]],
@@ -68,8 +68,8 @@ class AreaMap():
     def __init__(self):
         self._pos = [1,1]
         self._currentMap = []
-        self._rowLimit = 15
-        self._colLimit = 23
+        self._rowLim = 15
+        self._colLim = 23
         self._store = []
         self._discovered = []
         self._infoStore = []
@@ -131,6 +131,9 @@ class AreaMap():
         elif tileNum == 3:
             # water 1
             start = [1,0]
+        elif tileNum == 5:
+            # path 1
+            start = [0,2]
         image = pygame.Surface((size,size))
         image.blit(self._sheet,(0,0),((start[0]*size),(start[1]*size),size,size))
         image = pygame.transform.scale(image,(size*scale,size*scale))
@@ -179,9 +182,9 @@ class AreaMap():
     def generateMap(self):
         count = 0
         skeleton = []
-        for _ in range(self._rowLimit):
+        for _ in range(self._rowLim):
             row = []
-            for _ in range(self._colLimit):
+            for _ in range(self._colLim):
                 row.append(random.randint(0,2))
             skeleton.append(row)
             count += 1
@@ -193,17 +196,101 @@ class AreaMap():
         collectNum = random.randint(1,5)
         for _ in range(collectNum):
             type = random.randint(0,6)
-            self._infoStore[row][col].append([random.randint(1,self._colLimit-2)*64, random.randint(1,self._rowLimit-2)*64, True, "collect",type])
+            self._infoStore[row][col].append([random.randint(1,self._colLim-2)*64, random.randint(1,self._rowLim-2)*64, True, "collect",type])
         enemyNum = random.randint(1,2)
         for _ in range(enemyNum):
-            self._infoStore[row][col].append([random.randint(1,self._colLimit-2)*64, random.randint(1,self._rowLimit-2)*64, True, "enemy"]) 
+            self._infoStore[row][col].append([random.randint(1,self._colLim-2)*64, random.randint(1,self._rowLim-2)*64, True, "enemy"]) 
         charNum = random.randint(0,1)
         for _ in range(charNum):
-            self._infoStore[row][col].append([random.randint(1,self._colLimit-2)*64, random.randint(1,self._rowLimit-2)*64, True, "char"])
+            self._infoStore[row][col].append([random.randint(1,self._colLim-2)*64, random.randint(1,self._rowLim-2)*64, True, "char"])
 
+    def placePath(self):
+        currentTmPos = [1,1]
+        pathDrct = random.randint(0,1)
+        acrossMap, downMap = False, False
+        if pathDrct == 0:
+            acrossMap = True
+            currentTilePos = [random.randint(0,self._rowLim-1),0]
+        else:
+            downMap = True
+            currentTilePos = [0,random.randint(0,self._rowLim-1)]
+
+        valid = False
+        while not valid:
+            pathSet  = False
+            while not pathSet:
+                if currentTilePos[0] >= self._rowLim-1 or currentTilePos[1] >= self._colLim-1:
+                    pathSet = True
+                self._store[currentTmPos[0]][currentTmPos[1]][currentTilePos[0]][currentTilePos[1]] = 5
+                if acrossMap:
+                    currentTilePos[1] += 1
+                elif downMap:
+                    currentTilePos[0] += 1
+
+            if acrossMap:
+                currentTmPos[1] += 1
+                currentTilePos[1] = 0
+            elif downMap:
+                currentTmPos[0] += 1
+                currentTilePos[0] = 0
+
+            acrossMap, downMap = False, False
+            if currentTmPos[0] == 8 and currentTmPos[1] == 7:
+                valid = True
+            elif currentTmPos[0] == 8:
+                acrossMap = True
+            elif currentTmPos[1] == 7:
+                downMap = True
+            else:
+                pathDrct = random.randint(0,1)
+                if pathDrct == 0:
+                    acrossMap = True
+                else:
+                    downMap = True
+            
+
+
+        
 
     def placeWater(self):
-        pass
+        waterAreas = random.randint(50,80)
+        for _ in range(waterAreas):
+            startRow, startCol, starty, startx = random.randint(1,8), random.randint(1,7), random.randint(1,self._rowLim-1), random.randint(1,self._colLim-1)
+            while self._store[startRow][startCol][starty][startx] == 3:
+                startRow, startCol = random.randint(1,8), random.randint(1,7)
+                starty, startx = random.randint(1,self._rowLim-1), random.randint(1,self._colLim-1)
+            self._store[startRow][startCol][starty][startx] = 3
+            print("START",startRow,startCol,starty,startx)
+
+            size = random.randint(15,25)
+            for _ in range(size):
+                new = False
+                row, col = startRow, startCol 
+                y, x = starty, startx
+                while self._store[row][col][y][x] == 3 and not new:
+                    drct = random.randint(0,3)
+                    new = False
+                    if drct == 0:
+                        if y-1 >= 1:
+                            y, x = starty-1, startx
+                            new = True
+                    elif drct == 1:
+                        if x+1 <= self._colLim-1:
+                            y, x = starty, startx+1
+                            new = True
+                    elif drct == 2:
+                        if y+1 <= self._rowLim-1:
+                            y, x = starty+1, startx
+                            new = True
+                    elif drct == 3:
+                        if x-1 >= 1:
+                            y, x = starty, startx-1
+                            new = True
+                self._store[row][col][y][x] = 3
+                starty, startx = y, x
+                print("set",y,x)
+
+
 
     def createAreaMap(self):
         for row in range(len(self._store)):
@@ -217,6 +304,7 @@ class AreaMap():
                 else:
                     self.placeItems(row,col)
         self.placeWater()
+        self.placePath()
         print("MAP MADE")
 
 

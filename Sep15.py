@@ -110,9 +110,7 @@ def displayObject(type,obj):
         
     elif type == "heart":
         screen.blit(obj.get_image(0,0,50,50),(obj.get_pos()))
-
-            
-            
+         
 
 
 
@@ -261,10 +259,7 @@ def screenSetUp(screenType):
         mini.set_size([WIDTH-200, HEIGHT-200])
         mini.set_pos([100, 100])
         for i in range(player.get_health()):
-            hearts.append(SpriteClasses.Sprite([10+i*60, 20],[50,50],1,BLACK,pygame.image.load("collectablesSprites.bmp")))
-        
-        
-
+            hearts.append(SpriteClasses.Sprite([10+i*60, 20],[50,50],1,BLACK,pygame.image.load("collectablesSprites.bmp")))  
 
 def screenDisplay(screenType):
     #1
@@ -796,7 +791,6 @@ def mapScreen():
                     if event.type == pygame.KEYDOWN:
                         if event.key == pygame.K_ESCAPE:
                             battle = False
-                            cont = 1
                         elif event.key == pygame.K_q:
                             print("q")
                     elif event.type == pygame.MOUSEBUTTONDOWN:
