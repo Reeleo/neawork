@@ -48,7 +48,6 @@ class Sprite(pygame.sprite.Sprite):
 
 
 
-
 class Player(Sprite):
     def __init__(self):
         super().__init__([100,100],[80,80],3.5,BLACK,pygame.image.load("SpriteSheet.png"))
@@ -150,7 +149,6 @@ class Player(Sprite):
         
 
 
-
 class Collectable(Sprite):
     def __init__(self,pos,typeNum):
         super().__init__(pos,[50,50],2,BLACK,pygame.image.load("collectablesSprites.bmp"))
@@ -205,8 +203,11 @@ class Enemy(Sprite):
     def set_qSet(self,questions):
         self._qSet = questions
     def set_qNum(self,num):
-        self._qNum = num
-
+        if num == "inc":
+            self._qNum += 1
+        else:
+            self._qNum = num
+    
     
     def updateSprite(self,check):
         x = 0

@@ -4,9 +4,9 @@ import random
 
 class GameSettings():
     def __init__(self):
-        self.saveFile = 0
+        self._saveFile = 0
         self.eSpawnRate = 2
-        self.diff = "Easy"
+        self._diff = "Easy"
         self._screen = "menu"
         self._showAll = False
         self._music = -1

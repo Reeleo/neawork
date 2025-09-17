@@ -38,15 +38,21 @@ def checkCollision(enemy):
             enemy.set_battle(True)
 
 def fetchQuestions():
-    return [["","i","ii","iii","iv",1],["jello2","i","ii","iii","iv",1],["jello3","i","ii","iii","iv",1]]
+    return [["What is the formular for the sulfate ion?","SO4 (2-)","SO3 (2-)","SO4 (-1)","SO3 (-1)",1],["How do you make tollen's reagent?","AgNO3+NaNO3+NH3","AgNO2+NaH+NH3","AgNO3+NaOH+NH3","AgNO3+NaOH+Ag",3],["How many orbitals in the p sub shell","2","3","4","5",2]]
 
     
-def displayText(txt, fnt, colour, pos):
+def displayText(txt,fnt,colour,pos):
     txt = fnt.render(str(txt), True, colour)
     txtrect = txt.get_rect()
     txtrect.center = (pos)
     screen.blit(txt, txtrect)
 
+def displayImage(image,pos,scale):
+    size = [WIDTH-250,HEIGHT-200]
+    surface = pygame.Surface((size))
+    surface.blit(image,(0,0),((0),(0),size[0],size[1]))
+    surface = pygame.transform.scale(surface,(size[0]*scale,size[1]*scale))
+    screen.blit(surface,(pos))
 
 def displayObject(type,obj):
     if type == "button":
@@ -74,6 +80,13 @@ def displayObject(type,obj):
                 player.collect[obj._type[0]] += 1
                 areaMap.set_collected(obj.get_num())
     
+    elif type == "door":
+        screen.blit(obj.update(game.get_screen()),(obj.get_pos()))
+        if obj.collision(player.get_pos()):
+            playerpos = player.get_pos()
+            playersize = player.get_size()
+            displayText("SPACE", font20, WHITE, [playerpos[0]+playersize[0]/2, playerpos[1]-20])
+
     elif type == "enemy":
         checkCollision(obj)
         screen.blit(obj.update(player.get_pos(),WIDTH,HEIGHT),(obj.get_pos()))
@@ -96,7 +109,7 @@ def displayObject(type,obj):
         screen.blit(obj[0],(obj[1]))
         
     elif type == "heart":
-        screen.blit(obj.get_image(0,0,80,80),(obj.get_pos()))
+        screen.blit(obj.get_image(0,0,50,50),(obj.get_pos()))
 
             
             
@@ -131,11 +144,16 @@ def screenSetUp(screenType):
     #4
     if screenType == "home":
         buttons.clear()
+        cSprites.clear()
         pygame.mixer.music.stop()
         game.set_music(-1)
         game.set_screen("home")
-        player.set_posx(100)
+        player.set_posx(WIDTH/2-player.get_size()[0]/2)
         player.set_posy(HEIGHT-200-player.get_size()[1])
+        doors.append(SpriteClasses.Collectable([1350,650],0))
+        doors.append(SpriteClasses.Collectable([40,650],0))
+        doors[0].assign_type(game.collectTypes)
+        doors[1].assign_type(game.collectTypes)
 
     #5
     if screenType == "extract":
@@ -161,8 +179,15 @@ def screenSetUp(screenType):
             cSprites.append(SpriteClasses.Collectable(j,[140+j*100, 200]))
         mini.set_size([WIDTH-200, HEIGHT-200])
         mini.set_pos([100, 100])
+    
+    #7 
+    if screenType == "pTable":
+        buttons.clear()
+        buttons.append(ShapeClasses.Button([1240,610],[90,180],"RETURN"))
+        mini.set_size([WIDTH-200, HEIGHT-255])
+        mini.set_pos([100, 130])
 
-    #7
+    #8
     if screenType == "pause":
         buttons.clear()
         for i in range(7):
@@ -181,7 +206,7 @@ def screenSetUp(screenType):
             elif i == 6:
                 buttons.append(ShapeClasses.Button([350,350],[80,80],str(game.get_playMusic())))
 
-    #8
+    #9
     if screenType == "maps":
         buttons.clear()
         cSprites.clear()
@@ -206,17 +231,17 @@ def screenSetUp(screenType):
                     eSprites.append(SpriteClasses.Enemy([blitList[item][0],blitList[item][1]]))
                 elif blitList[item][3] == "char":
                     nSprites.append(SpriteClasses.Character([blitList[item][0],blitList[item][1]],""))
-        for i in range(3):
-            hearts.append(SpriteClasses.Sprite([10+i*60, 20],[20,20],0.6,RED,pygame.image.load("collectablesSprites.bmp")))
+        for i in range(player.get_health()):
+            hearts.append(SpriteClasses.Sprite([10+i*60, 20],[50,50],1,BLACK,pygame.image.load("collectablesSprites.bmp")))
         
-    #9
+    #10
     if screenType == "minimap":
         buttons.clear()
         mini.set_pos([100,100])
         mini.set_size([WIDTH-200, HEIGHT-192])
         buttons.append(ShapeClasses.Button([1187,783],[180,80],"RETURN"))
 
-    #10
+    #11
     if screenType == "battle":
         buttons.clear()
         sSprites.clear()
@@ -235,11 +260,10 @@ def screenSetUp(screenType):
         sSprites.append(SpriteClasses.Character([30,180],"enemy"))
         mini.set_size([WIDTH-200, HEIGHT-200])
         mini.set_pos([100, 100])
-        for i in range(3):
-            hearts.append(SpriteClasses.Sprite([10+i*60, 20],[20,20],0.6,RED,pygame.image.load("collectablesSprites.bmp")))
+        for i in range(player.get_health()):
+            hearts.append(SpriteClasses.Sprite([10+i*60, 20],[50,50],1,BLACK,pygame.image.load("collectablesSprites.bmp")))
         
         
-
 
 
 def screenDisplay(screenType):
@@ -277,7 +301,10 @@ def screenDisplay(screenType):
         screen.fill(BURG)
         pygame.draw.rect(screen,BLACK,[40, 40, WIDTH-80, HEIGHT-80])
         pygame.draw.rect(screen,BURG,[0, HEIGHT-200, WIDTH, 200])
+        displayText("c = craft, e = extract, q = periodicTable, p = pause, space = interact, esc = back",font20,WHITE,[425,55])
         displayObject("player", player)
+        displayObject("door", doors[0])
+        displayObject("door", doors[1])
     
     #5
     if screenType == "extract":
@@ -314,6 +341,13 @@ def screenDisplay(screenType):
             displayObject("button",buttons[i])
 
     #7
+    if screenType == "pTable":
+        pygame.draw.rect(screen,WHITE,(100,HEIGHT/2-75,WIDTH-200,10))
+        displayObject("mini",mini)
+        displayObject("button",buttons[0])
+        displayImage(pygame.image.load("pTable.png"),[110,140],0.9)
+
+    #8
     if screenType == "pause":
         screen.fill(BURG)
         pygame.draw.rect(screen,RED,[20,20,WIDTH-40, HEIGHT-40])
@@ -325,7 +359,7 @@ def screenDisplay(screenType):
         for i in range(len(buttons)):
             displayObject("button",buttons[i])
 
-    #8 
+    #9
     if screenType == "maps":
         tiles, blitList, setPlayer = areaMap.loadMap(player.get_pos(),player.get_size(),WIDTH,HEIGHT)
         player.set_pos(setPlayer,WIDTH,HEIGHT)
@@ -366,7 +400,7 @@ def screenDisplay(screenType):
             displayObject("heart",hearts[h])
         displayObject("player", player)
      
-    #9
+    #10
     if screenType == "minimap":
         displayObject("mini",mini)
         displayObject("button",buttons[0])
@@ -377,7 +411,7 @@ def screenDisplay(screenType):
         displayText(f"PlayerCol = {areaMap.get_pos()[1]}",font20,WHITE,[1270,130])
         displayText(f"PlayerRow = {areaMap.get_pos()[0]}",font20,WHITE,[1270,160])
 
-    #10
+    #11
     if screenType == "battle":
         screen.fill(BLACK)
         displayObject("mini",mini)
@@ -393,16 +427,6 @@ def screenDisplay(screenType):
 
 
 
-
-def extraction(item):
-    chances = game.itemChances[item]
-    chem = chances[random.randint(0,len(chances)-1)][0]
-    player.chemicals[chem] += 1
-    player.collect[item] -= 1
-    quickTexts.append(ShapeClasses.QuickText([WIDTH/2,700],f"{item}, {chem}, {player.chemicals[chem]}",time.time()))
-    print(item, chem, player.chemicals[chem])
-    return chem
-     
 
 
 
@@ -459,7 +483,6 @@ def saveGame():
 
 
 
-
 def menuScreen():
     cont = 0
     screenDisplay("menu")
@@ -478,7 +501,6 @@ def menuScreen():
     clock.tick(FPS)
     return cont
 
-
 def htpScreen():
     cont = 0
     screenDisplay("htp")
@@ -495,7 +517,6 @@ def htpScreen():
     pygame.display.update()
     clock.tick(FPS)
     return cont
-
 
 def saveFileScreen():
     cont = 0
@@ -518,109 +539,6 @@ def saveFileScreen():
     pygame.display.update()
     clock.tick(FPS)
     return cont
-
-
-def homeScreen():
-    cont = 0
-    craftTime, extractTime = False, False
-    screenDisplay("home")
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            cont = 1
-        if event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_ESCAPE:
-                cont = 1
-            elif event.key == pygame.K_p:
-                cont = 2
-            elif event.key == pygame.K_SPACE:
-                cont = 3
-            elif event.key == pygame.K_c:
-                craftTime = True
-            elif event.key == pygame.K_e:
-                extractTime  = True
-
-    if craftTime:
-        screenSetUp("craft")
-    while craftTime:
-        screenDisplay("craft")
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                craftTime = False
-                cont = 1
-            if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_ESCAPE:
-                    craftTime = False
-                    cont = 1
-                elif event.key == pygame.K_SPACE:
-                    craftTime = False
-            if event.type == pygame.MOUSEBUTTONDOWN:
-                if buttons[0].collision():
-                    pygame.mixer.Sound.play(sounds[0])
-                    craftTime = False
-        pygame.display.update()
-        clock.tick(FPS)
-
-    if extractTime:
-        screenSetUp("extract")
-    while extractTime:
-        screenDisplay("extract")
-        extractItem = 0
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                extractTime = False
-                cont = 1
-            if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_ESCAPE:
-                    extractTime = False
-                    cont = 1
-                elif event.key == pygame.K_SPACE:
-                    extractTime = False
-            if event.type == pygame.MOUSEBUTTONDOWN:
-                for i in range(len(buttons)):
-                    if buttons[i].collision():
-                        pygame.mixer.Sound.play(sounds[0])
-                        if i == 0:
-                            extractTime = False
-                        elif i == 1:
-                            extractItem = "bct"
-                        elif i == 2:
-                            extractItem = "bug"
-                        elif i == 3:
-                            extractItem = "flw"
-                        elif i == 4:
-                            extractItem = "lef"
-                        elif i == 5:
-                            extractItem = "frt"
-                        elif i == 6:
-                            extractItem = "wpl"
-                        elif i == 7:
-                            extractItem = "srk"
-                        elif i == 8:
-                            extractItem = "brk"
-                        elif i == 9:
-                            extractItem = "vrk"
-                        elif i == 10:
-                            extractItem = "gem"
-                        elif i == 11:
-                            extractItem = "wtr"
-                        elif i == 12:
-                            extractItem = "swt"
-        if extractItem != 0:
-            if player.collect[extractItem] > 0:
-                extraction(extractItem)
-        if len(quickTexts) > 0:
-            if quickTexts[0].get_visible():
-                print(quickTexts[0].get_text())
-                displayText(quickTexts[0].get_text(),font20,quickTexts[0].get_colours(),quickTexts[0].get_pos())
-                quickTexts[0].update()
-        pygame.display.update()
-        clock.tick(FPS)
-
-    pygame.display.update()
-    clock.tick(FPS)
-    return cont
-
-
 
 def pauseScreen():
     cont = 0
@@ -666,23 +584,151 @@ def pauseScreen():
 
 
 
-def mapScreen():
+def extraction(item):
+    chances = game.itemChances[item]
+    chem = chances[random.randint(0,len(chances)-1)][0]
+    player.chemicals[chem] += 1
+    player.collect[item] -= 1
+    quickTexts.append(ShapeClasses.QuickText([WIDTH/2,700],f"{item}, {chem}, {player.chemicals[chem]}",time.time()))
+    print(item, chem, player.chemicals[chem])
+    return chem
+     
+def pTableMini():
     cont = 0
-    miniMap = False
-    screenDisplay("maps")
-    for event in pygame.event.get():
+    pTableTime = True
+    while pTableTime:
+        screenDisplay("pTable")
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pTableTime = False
+                cont = 1
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_ESCAPE:
+                    pTableTime = False
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                if buttons[0].collision():
+                    pTableTime = False
+        pygame.display.update()
+        clock.tick(FPS)
+    return cont 
+
+def extractMini():
+    cont = 0
+    extractTime = True
+    while extractTime:
+        screenDisplay("extract")
+        extractItem = 0
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                extractTime = False
+                cont = 1
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_ESCAPE:
+                    extractTime = False
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                for i in range(len(buttons)):
+                    if buttons[i].collision():
+                        pygame.mixer.Sound.play(sounds[0])
+                        if i == 0:
+                            extractTime = False
+                        elif i == 1:
+                            extractItem = "bct"
+                        elif i == 2:
+                            extractItem = "bug"
+                        elif i == 3:
+                            extractItem = "flw"
+                        elif i == 4:
+                            extractItem = "lef"
+                        elif i == 5:
+                            extractItem = "frt"
+                        elif i == 6:
+                            extractItem = "wpl"
+                        elif i == 7:
+                            extractItem = "srk"
+                        elif i == 8:
+                            extractItem = "brk"
+                        elif i == 9:
+                            extractItem = "vrk"
+                        elif i == 10:
+                            extractItem = "gem"
+                        elif i == 11:
+                            extractItem = "wtr"
+                        elif i == 12:
+                            extractItem = "swt"
+        if extractItem != 0:
+            if player.collect[extractItem] > 0:
+                extraction(extractItem)
+        if len(quickTexts) > 0:
+            if quickTexts[0].get_visible():
+                print(quickTexts[0].get_text())
+                displayText(quickTexts[0].get_text(),font20,quickTexts[0].get_colours(),quickTexts[0].get_pos())
+                quickTexts[0].update()
+        pygame.display.update()
+        clock.tick(FPS)
+    return cont 
+
+def craftMini():
+    cont = 0
+    craftTime = True
+    while craftTime:
+        screenDisplay("craft")
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                craftTime = False
+                cont = 1
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_ESCAPE:
+                    craftTime = False
+                elif event.key == pygame.K_SPACE:
+                    craftTime = False
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                if buttons[0].collision():
+                    pygame.mixer.Sound.play(sounds[0])
+                    craftTime = False
+        pygame.display.update()
+        clock.tick(FPS)
+    return cont 
+
+def homeScreen():
+    cont = 0
+    craftTime, extractTime, pTableTime = False, False, False
+    screenDisplay("home")
+    for event in pygame.event.get(): 
         if event.type == pygame.QUIT:
             cont = 1
         if event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_ESCAPE:
-                cont = 3
-            elif event.key == pygame.K_p:
+            if event.key == pygame.K_p:
                 cont = 2
-            elif event.key == pygame.K_m:
-                miniMap = True
+            elif event.key == pygame.K_SPACE:
+                for i in range(len(doors)):
+                    if doors[i].collision(player.get_pos()):
+                        cont = 3
+            elif event.key == pygame.K_c:
+                craftTime = True
+            elif event.key == pygame.K_e:
+                extractTime  = True
+            elif event.key == pygame.K_q:
+                pTableTime  = True
 
-    if miniMap:
-        screenSetUp("minimap")
+    if craftTime:
+        screenSetUp("craft")
+        cont = craftMini()
+    if extractTime:
+        screenSetUp("extract")
+        cont = extractMini()
+    if pTableTime:
+        screenSetUp("pTable")
+        cont = pTableMini()
+
+    pygame.display.update()
+    clock.tick(FPS)
+    return cont
+
+
+
+def miniMapMini():
+    cont = 0
+    miniMap = True
     while miniMap:
         screenDisplay("minimap")
         for event in pygame.event.get():
@@ -692,17 +738,38 @@ def mapScreen():
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
                     miniMap = False
-                    cont = 1
-                elif event.key == pygame.K_m:
-                    miniMap = False
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 if buttons[0].collision():
                     pygame.mixer.Sound.play(sounds[0])
                     miniMap = False
         pygame.display.update()
         clock.tick(FPS)
+    return cont 
 
-    battle = False
+def mapScreen():
+    cont = 0
+    miniMap, pTableTime, battle = False, False, False
+    screenDisplay("maps")
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            cont = 1
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_ESCAPE:
+                cont = 3
+            elif event.key == pygame.K_p:
+                cont = 2
+            elif event.key == pygame.K_q:
+                pTableTime = True
+            elif event.key == pygame.K_m:
+                miniMap = True
+
+    if miniMap:
+        screenSetUp("minimap")
+        cont = miniMapMini()
+    if pTableTime:
+        screenSetUp("pTable")
+        cont = pTableMini()
+
     for i in range(len(eSprites)):
         battle = eSprites[i].get_battle()
         if battle:
@@ -712,6 +779,7 @@ def mapScreen():
 
             while battle:
                 screenDisplay("battle")
+                complete = False
                 questions = eSprites[i].get_qSet()[eSprites[i].get_qNum()]
                 answer = eSprites[i].get_qSet()[eSprites[i].get_qNum()][5]
 
@@ -729,35 +797,47 @@ def mapScreen():
                         if event.key == pygame.K_ESCAPE:
                             battle = False
                             cont = 1
-                        elif event.key == pygame.K_b:
-                            battle = False
-                            for i in range(len(eSprites)):
-                                eSprites[i].set_battle(False)
-                            player.set_posx(30)
-                            sSprites.clear()
-                            pygame.mixer.music.stop()
-                            if game.get_playMusic():
-                                pygame.mixer.music.load(music[1])
-                                pygame.mixer.music.play(-1)
-                                game.set_music(1)
+                        elif event.key == pygame.K_q:
+                            print("q")
                     elif event.type == pygame.MOUSEBUTTONDOWN:
                         for j in range(len(buttons)):
                             if buttons[j].collision():
                                 pygame.mixer.Sound.play(sounds[0])
                                 if j+1 == answer:
                                     print("CORRECT")
+                                    if eSprites[i].get_qNum() == len(eSprites[i].get_qSet())-1:
+                                        print("ENd")
+                                        eSprites.remove(eSprites[i])
+                                        sSprites.clear()
+                                        pygame.mixer.music.stop()
+                                        if game.get_playMusic():
+                                            pygame.mixer.music.load(music[1])
+                                            pygame.mixer.music.play(-1)
+                                            game.set_music(1)
+                                        complete = True
+                                    else:
+                                        eSprites[i].set_qNum("inc")
                                 else:
                                     print("INCORRECT")
+                                    screen.fill(BURG)
+                                    pygame.display.update()
+                                    time.sleep(0.4) 
                                     player.decrease_health()
                                     hearts.pop()
 
                 if player.get_health() <= 0:
                     print("DEATH")
-                    screen.fill(RED)
+                    screen.fill(BURG)
                     pygame.display.update()
                     time.sleep(1.5)
                     battle = False
                     cont = 1
+                elif complete:
+                    print("WON")
+                    screen.fill(GREEN)
+                    pygame.display.update()
+                    time.sleep(0.5)
+                    battle = False
                 pygame.display.update()
                 clock.tick(FPS)
             break
@@ -781,6 +861,7 @@ cSprites = []
 eSprites = []
 nSprites = []
 sSprites = []
+doors = []
 hearts = []
 
 
