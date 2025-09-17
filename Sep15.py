@@ -23,7 +23,7 @@ pygame.display.set_caption("Chemistry Game")
 clock = pygame.time.Clock()
 TIME = time.time()
 
-music = [pygame.mixer.Sound("Menu.mp3"),pygame.mixer.Sound("DoctorWeird.mp3"),pygame.mixer.Sound("ForestBattle.mp3")]
+music = ["Menu.mp3","DoctorWeird.mp3","ForestBattle.mp3"]
 sounds = [pygame.mixer.Sound("click.mp3")]
 
 
@@ -108,7 +108,8 @@ def screenSetUp(screenType):
     if screenType == "menu":
         buttons.clear()
         if game.get_music() == -1 and game.get_playMusic():
-            pygame.mixer.Sound.play(music[0])
+            pygame.mixer.music.load(music[0])
+            pygame.mixer.music.play(-1)
             game.set_music(0)
         buttons.append(ShapeClasses.Button([WIDTH/4-90,3*HEIGHT/4],[180,80],"EXIT"))
         buttons.append(ShapeClasses.Button([3*WIDTH/4-90, 3*HEIGHT/4],[180,80],"START"))
@@ -130,8 +131,7 @@ def screenSetUp(screenType):
     #4
     if screenType == "home":
         buttons.clear()
-        pygame.mixer.Sound.stop(music[0])
-        pygame.mixer.Sound.stop(music[1])
+        pygame.mixer.music.stop()
         game.set_music(-1)
         game.set_screen("home")
         player.set_posx(100)
@@ -190,8 +190,9 @@ def screenSetUp(screenType):
         sSprites.clear()
         hearts.clear()
         if game.get_music() == -1 and game.get_playMusic():
-            pygame.mixer.Sound.stop(music[2])
-            pygame.mixer.Sound.play(music[1])
+            pygame.mixer.music.stop()
+            pygame.mixer.music.load(music[1])
+            pygame.mixer.music.play(-1)
             game.set_music(1)
         game.set_screen("grassland")
         areaMap.createAreaMap()
@@ -221,9 +222,11 @@ def screenSetUp(screenType):
         sSprites.clear()
         hearts.clear()
         if game.get_music() == 1 and game.get_playMusic():
-            pygame.mixer.Sound.stop(music[1])
-            pygame.mixer.Sound.play(music[2])
+            pygame.mixer.music.stop()
+            pygame.mixer.music.load(music[2])
+            pygame.mixer.music.play(-1)
             game.set_music(2)
+
         for i in range(4):
             if i < 2:
                 buttons.append(ShapeClasses.Button([615+i*380, 400],[360,80],i+1))
@@ -651,12 +654,12 @@ def pauseScreen():
                         game.set_playMusic()
                         buttons[i].set_text(game.get_playMusic())
                         if not game.get_playMusic():
-                            for j in range(len(music)):
-                                pygame.mixer.Sound.stop(music[j])
+                            pygame.mixer.music.stop()
                             game.set_music(-1)
                         else:
                             if game.get_screen() == "grassland":
-                                pygame.mixer.Sound.play(music[1])
+                                pygame.mixer.music.load(music[1])
+                                pygame.mixer.music.play(-1)
                                 game.set_music(1)
 
     return cont
@@ -732,9 +735,10 @@ def mapScreen():
                                 eSprites[i].set_battle(False)
                             player.set_posx(30)
                             sSprites.clear()
-                            pygame.mixer.Sound.stop(music[2])
+                            pygame.mixer.music.stop()
                             if game.get_playMusic():
-                                pygame.mixer.Sound.play(music[1])
+                                pygame.mixer.music.load(music[1])
+                                pygame.mixer.music.play(-1)
                                 game.set_music(1)
                     elif event.type == pygame.MOUSEBUTTONDOWN:
                         for j in range(len(buttons)):
