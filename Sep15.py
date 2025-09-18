@@ -38,7 +38,29 @@ def checkCollision(enemy):
             enemy.set_battle(True)
 
 def fetchQuestions():
-    return [["What is the formular for the sulfate ion?","SO4 (2-)","SO3 (2-)","SO4 (-1)","SO3 (-1)",1],["How do you make tollen's reagent?","AgNO3+NaNO3+NH3","AgNO2+NaH+NH3","AgNO3+NaOH+NH3","AgNO3+NaOH+Ag",3],["How many orbitals in the p sub shell","2","3","4","5",2]]
+    c = []
+    chosen = []
+    qSet = []
+    file = open("questions.txt","r")
+    for _ in range(8):
+        line = file.readline()
+        qSet.append(line.split(","))
+    for i in range(8):
+        qSet[i][5] = int(qSet[i][5])
+    file.close()
+    for _ in range(3):
+        valid = False
+        while not valid:
+            c1 = random.randint(0,7)
+            repeat = False
+            for j in range(len(c)):
+                if c[j] == c1:
+                    repeat = True
+            if not repeat:
+                valid = True
+        c.append(c1)
+    chosen = [qSet[c[0]],qSet[c[1]],qSet[c[2]]]
+    return chosen
 
     
 def displayText(txt,fnt,colour,pos):
@@ -448,6 +470,7 @@ def loadGame():
             game.diff = saveData[0]
         elif i == 3:
             player.set_speed(int(saveData[0]),"set")
+    file.close()
     print("LOADED")
 
 def saveGame():
@@ -473,7 +496,7 @@ def saveGame():
     file.writelines("\n") 
     file.writelines(gameLine1)
     file.writelines(gameLine2)
-    file.close
+    file.close()
     print("SAVED")
 
 
@@ -862,7 +885,7 @@ hearts = []
 
 running = "menu"
 while running != "":
-
+    print(fetchQuestions())
     if running == "menu":
         screenSetUp("menu")
     while running == "menu":

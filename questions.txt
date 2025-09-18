@@ -1,0 +1,9 @@
+What is the formular for the sulfate ion?,SO4 (2-),SO3 (2-),SO4 (-1),SO3 (-1),1
+How do you make tollen's reagent?,AgNO3+NaNO3+NH3,AgNO2+NaH+NH3,AgNO3+NaOH+NH3,AgNO3+NaOH+Ag,3
+How many orbitals in the p sub-shell?,2,3,4,5,2
+Whats the formular of potassium hydroxide?,POH,P2OH,P(OH)2,P2(OH)3,1
+What is avagradros number?,6.20x10^23,62.2x10^24,6.02x10^23,2.06x10^24,3
+What is false about ionic bonds?,an electrostatic force,an intramolecular force,due to difference in electronegativity,form a giant lattice,2
+What is the shape of s orbitals?,dumbell,clover,ovoid,sphere,4
+What do you use to test for carbonyls?,2-4DNP,2-8DAP,2-4DPN,2-3DDN,1
+
