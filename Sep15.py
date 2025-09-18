@@ -347,7 +347,7 @@ def screenDisplay(screenType):
         screen.fill(BURG)
         pygame.draw.rect(screen,RED,[20,20,WIDTH-40, HEIGHT-40])
         pygame.draw.rect(screen,BLACK,[40,40,WIDTH-80, HEIGHT-80])
-        displayText(f"Difficulty: {game.diff}", font20, WHITE, [800, 300])
+        displayText(f"Difficulty: {game._diff}", font20, WHITE, [800, 300])
         displayText(f"Speed: {player.get_speed()}", font20, WHITE, [530, 300])
         displayText(f"AllMiniMap: ", font20, WHITE, [280, 300])
         displayText(f"PlayMusic: ", font20, WHITE, [280, 400])
@@ -465,7 +465,7 @@ def saveGame():
         collectLine += str(player.collect[item])+","
     for chem in player.chemicals:
         chemicalLine += str(player.chemicals[chem])+","
-    gameLine1 += game.diff
+    gameLine1 += game._diff
     gameLine2 += str(player.get_speed())
     file.writelines(collectLine)
     file.writelines("\n") 
@@ -698,6 +698,7 @@ def homeScreen():
                 for i in range(len(doors)):
                     if doors[i].collision(player.get_pos()):
                         cont = 3
+                cont = 3
             elif event.key == pygame.K_c:
                 craftTime = True
             elif event.key == pygame.K_e:

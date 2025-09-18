@@ -210,21 +210,30 @@ class AreaMap():
         acrossMap, downMap = False, False
         if pathDrct == 0:
             acrossMap = True
-            currentTilePos = [random.randint(0,self._rowLim-1),0]
+            currentTilePos = [random.randint(2,self._rowLim-2),0]
         else:
             downMap = True
-            currentTilePos = [0,random.randint(0,self._rowLim-1)]
+            currentTilePos = [0,random.randint(2,self._rowLim-2)]
 
         valid = False
         while not valid:
             pathSet  = False
             while not pathSet:
-                if currentTilePos[0] >= self._rowLim-1 or currentTilePos[1] >= self._colLim-1:
+                if currentTilePos[0] >= self._rowLim-1:
+                    downMap = True 
                     pathSet = True
+                elif currentTilePos[1] >= self._colLim-1:
+                    pathSet = True
+                    acrossMap = True
                 self._store[currentTmPos[0]][currentTmPos[1]][currentTilePos[0]][currentTilePos[1]] = 5
+                switch = random.randint(0,4)
                 if acrossMap:
+                    if switch == 1 and currentTilePos[0] < self._rowLim-2:
+                        currentTilePos[0] += 1
                     currentTilePos[1] += 1
                 elif downMap:
+                    if switch == 1 and currentTilePos[1] < self._colLim-2:
+                        currentTilePos[1] += 1
                     currentTilePos[0] += 1
 
             if acrossMap:
@@ -235,7 +244,7 @@ class AreaMap():
                 currentTilePos[0] = 0
 
             acrossMap, downMap = False, False
-            if currentTmPos[0] == 8 and currentTmPos[1] == 7:
+            if currentTmPos[0] == 9 or currentTmPos[1] == 8:
                 valid = True
             elif currentTmPos[0] == 8:
                 acrossMap = True
@@ -260,7 +269,6 @@ class AreaMap():
                 startRow, startCol = random.randint(1,8), random.randint(1,7)
                 starty, startx = random.randint(1,self._rowLim-1), random.randint(1,self._colLim-1)
             self._store[startRow][startCol][starty][startx] = 3
-            print("START",startRow,startCol,starty,startx)
 
             size = random.randint(15,25)
             for _ in range(size):
@@ -288,7 +296,47 @@ class AreaMap():
                             new = True
                 self._store[row][col][y][x] = 3
                 starty, startx = y, x
-                print("set",y,x)
+        
+        for i in range(len(self._store)):
+            for j in range(len(self._store[i])):
+                if self._store[i][j] != -1:
+                    for k in range(len(self._store[i][j])):
+                        for l in range(len(self._store[i][j][k])):
+                            count = 0
+                            max = 4
+                            if self._store[i][j][k][l] != 3 and self._store[i][j][k][l] != 5:
+                                for m in range(3):
+                                    try:
+                                        if m == 0:
+                                            if self._store[i][j][k-1][l] == 3:
+                                                count += 1
+                                    except:
+                                        max -= 1
+                                    try:
+                                        if m == 1:
+                                            if self._store[i][j][k][l+1] == 3:
+                                                count += 1
+                                    except:
+                                        max -= 1
+                                    try:    
+                                        if m == 2:
+                                            if self._store[i][j][k+1][l] == 3:
+                                                count += 1
+                                    except:
+                                        max -= 1
+                                    try:
+                                        if m == 3:
+                                            if self._store[i][j][k][l-1] == 3:
+                                                count += 1
+                                    except:
+                                        max -= 1
+                            if count == max:
+                                print(self._store[i][j][k][l])
+                                self._store[i][j][k][l] = 3
+
+
+                                    
+                            
 
 
 
