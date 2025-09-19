@@ -107,9 +107,10 @@ class Player(Sprite):
     def decrease_health(self):
         self._health -= 1
 
-    def set_pos_int(self):
-        self.pos[0] = int(self.pos[0])
-        self.pos[1] = int(self.pos[1])
+    def set_int(self):
+        self._pos[0] = int(self._pos[0])
+        self._pos[1] = int(self._pos[1])
+        self._speed = int(self._speed)
 
     
     def updateSprite(self):

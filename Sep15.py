@@ -88,7 +88,7 @@ def displayObject(type,obj):
         displayText(text, font20, BLACK, [pos[0]+size[0]/2, pos[1]+size[1]/2])
     
     elif type == "player":
-        player.set_pos_int()
+        player.set_int()
         screen.blit(obj.update(game.get_screen(),WIDTH,HEIGHT),(obj.get_pos()))
     
     elif type == "collect":
