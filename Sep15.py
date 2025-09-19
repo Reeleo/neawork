@@ -19,7 +19,7 @@ GREEN = (0,255,0)
 GRASS = (0,50,0)
 BLUE = (0,0,255)
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
-pygame.display.set_caption("Chemistry Game")
+pygame.display.set_caption("Chemistry Game") 
 clock = pygame.time.Clock()
 TIME = time.time()
 
@@ -42,16 +42,16 @@ def fetchQuestions():
     chosen = []
     qSet = []
     file = open("questions.txt","r")
-    for _ in range(8):
+    for _ in range(18):
         line = file.readline()
         qSet.append(line.split(","))
-    for i in range(8):
+    for i in range(18):
         qSet[i][5] = int(qSet[i][5])
     file.close()
     for _ in range(3):
         valid = False
         while not valid:
-            c1 = random.randint(0,7)
+            c1 = random.randint(0,17)
             repeat = False
             for j in range(len(c)):
                 if c[j] == c1:
@@ -99,7 +99,7 @@ def displayObject(type,obj):
             keys = pygame.key.get_pressed()
             if keys[pygame.K_SPACE]:
                 obj.set_visible(False)
-                player.collect[obj._type[0]] += 1
+                player.inc_collect(obj._type[0])
                 areaMap.set_collected(obj.get_num())
     
     elif type == "door":
@@ -118,6 +118,13 @@ def displayObject(type,obj):
 
     elif type == "special":
         screen.blit(obj.update(),(obj.get_pos()))
+        if  obj.collision(player.get_pos()):
+            playerpos = player.get_pos()
+            playersize = player.get_size()
+            displayText("SPACE", font20, WHITE, [playerpos[0]+playersize[0]/2, playerpos[1]-20])
+            keys = pygame.key.get_pressed()
+            if keys[pygame.K_SPACE]:
+                print("BOSS TIME")
 
     elif type == "mini":
         pos = obj.get_pos()
@@ -335,19 +342,20 @@ def screenDisplay(screenType):
 
         x = 210
         y = 310
-        displayText(f"BACTERIA: {player.collect["bct"]}", font20, WHITE, [x, y])
-        displayText(f"BUG: {player.collect["bug"]}", font20, WHITE, [x+200, y])
-        displayText(f"FLOWER: {player.collect["flw"]}", font20, WHITE, [x+400, y])
-        displayText(f"LEAF: {player.collect["lef"]}", font20, WHITE, [x+600, y])
-        displayText(f"FRUIT: {player.collect["frt"]}", font20, WHITE, [x+800, y])
-        displayText(f"OCEAN PLANT: {player.collect["wpl"]}", font20, WHITE, [x+1000, y])
-        displayText(f"SMALL ROCK: {player.collect["srk"]}", font20, WHITE, [x, y+30])
-        displayText(f"BIG ROCK: {player.collect["brk"]}", font20, WHITE, [x+200, y+30])
-        displayText(f"VOLCANIC ROCK: {player.collect["vrk"]}", font20, WHITE, [x+400, y+30])
-        displayText(f"GEMSTONE: {player.collect["gem"]}", font20, WHITE, [x+600, y+30])
+        collection = player.get_collect()
+        displayText(f"BACTERIA: {collection["bct"]}", font20, WHITE, [x, y])
+        displayText(f"BUG: {collection["bug"]}", font20, WHITE, [x+200, y])
+        displayText(f"FLOWER: {collection["flw"]}", font20, WHITE, [x+400, y])
+        displayText(f"LEAF: {collection["lef"]}", font20, WHITE, [x+600, y])
+        displayText(f"FRUIT: {collection["frt"]}", font20, WHITE, [x+800, y])
+        displayText(f"OCEAN PLANT: {collection["wpl"]}", font20, WHITE, [x+1000, y])
+        displayText(f"SMALL ROCK: {collection["srk"]}", font20, WHITE, [x, y+30])
+        displayText(f"BIG ROCK: {collection["brk"]}", font20, WHITE, [x+200, y+30])
+        displayText(f"VOLCANIC ROCK: {collection["vrk"]}", font20, WHITE, [x+400, y+30])
+        displayText(f"GEMSTONE: {collection["gem"]}", font20, WHITE, [x+600, y+30])
 
-        displayText(f"WATER: {player.collect["wtr"]}", font20, WHITE, [x, y+60])
-        displayText(f"SEAWATER: {player.collect["swt"]}", font20, WHITE, [x+200, y+60])
+        displayText(f"WATER: {collection["wtr"]}", font20, WHITE, [x, y+60])
+        displayText(f"SEAWATER: {collection["swt"]}", font20, WHITE, [x+200, y+60])
 
     #6
     if screenType == "craft":
@@ -369,7 +377,7 @@ def screenDisplay(screenType):
         screen.fill(BURG)
         pygame.draw.rect(screen,RED,[20,20,WIDTH-40, HEIGHT-40])
         pygame.draw.rect(screen,BLACK,[40,40,WIDTH-80, HEIGHT-80])
-        displayText(f"Difficulty: {game._diff}", font20, WHITE, [800, 300])
+        displayText(f"Difficulty: {game.get_diff()}", font20, WHITE, [800, 300])
         displayText(f"Speed: {player.get_speed()}", font20, WHITE, [530, 300])
         displayText(f"AllMiniMap: ", font20, WHITE, [280, 300])
         displayText(f"PlayMusic: ", font20, WHITE, [280, 400])
@@ -459,17 +467,17 @@ def loadGame():
         saveData = line.split(",")
         count = 0
         if i == 0:
-            for item in player.collect:
-                player.collect[item] = int(saveData[count])
+            for item in player.get_collect():
+                player.set_collect(item,int(saveData[count])) 
                 count += 1
         elif i == 1:
-            for item in player.chemicals:
-                player.chemicals[item] = int(saveData[count])
+            for item in player.get_chemicals():
+                player.set_chemicals(item, int(saveData[count]))
                 count += 1
         elif i == 2:
-            game.diff = saveData[0]
+            game.set_diff(saveData[0])
         elif i == 3:
-            player.set_speed(int(saveData[0]),"set")
+            player.set_speed(saveData[0],"set")
     file.close()
     print("LOADED")
 
@@ -484,11 +492,13 @@ def saveGame():
     chemicalLine = ""
     gameLine1 = ""
     gameLine2 = ""
-    for item in player.collect:
-        collectLine += str(player.collect[item])+","
-    for chem in player.chemicals:
-        chemicalLine += str(player.chemicals[chem])+","
-    gameLine1 += game._diff
+    collection = player.get_collect()
+    chemicals = player.get_chemicals()
+    for item in player.get_collect():
+        collectLine += str(collection[item])+","
+    for chem in player.get_chemicals():
+        chemicalLine += str(chemicals[chem])+","
+    gameLine1 += game.get_diff()
     gameLine2 += str(player.get_speed())
     file.writelines(collectLine)
     file.writelines("\n") 
@@ -554,6 +564,7 @@ def saveFileScreen():
                     else:
                         cont = 3
                         game.set_saveFile(i+1)
+                        loadGame()
     pygame.display.update()
     clock.tick(FPS)
     return cont
@@ -571,7 +582,7 @@ def pauseScreen():
                 if buttons[i].collision():
                     pygame.mixer.Sound.play(sounds[0])
                     if i == 0:
-                        game.increaseDiff()
+                        game.inc_diff()
                     elif i == 1:
                         if player.get_speed() <= 50:
                             player.set_speed(5,"inc")
@@ -605,10 +616,10 @@ def pauseScreen():
 def extraction(item):
     chances = game.itemChances[item]
     chem = chances[random.randint(0,len(chances)-1)][0]
-    player.chemicals[chem] += 1
-    player.collect[item] -= 1
-    quickTexts.append(ShapeClasses.QuickText([WIDTH/2,700],f"{item}, {chem}, {player.chemicals[chem]}",time.time()))
-    print(item, chem, player.chemicals[chem])
+    player.extract(item,chem)
+    chems = player.get_chemicals()
+    quickTexts.append(ShapeClasses.QuickText([550,500],f"{item}, {chem}, {chems[chem]}",time.time()))
+    print(item, chem, chems[chem])
     return chem
      
 def pTableMini():
@@ -643,6 +654,8 @@ def extractMini():
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
                     extractTime = False
+                elif event.key == pygame.K_c:
+                    player.set_collect("bct",10000)
             if event.type == pygame.MOUSEBUTTONDOWN:
                 for i in range(len(buttons)):
                     if buttons[i].collision():
@@ -674,13 +687,19 @@ def extractMini():
                         elif i == 12:
                             extractItem = "swt"
         if extractItem != 0:
-            if player.collect[extractItem] > 0:
+            if player.get_collect()[extractItem] > 0:
                 extraction(extractItem)
-        if len(quickTexts) > 0:
-            if quickTexts[0].get_visible():
-                print(quickTexts[0].get_text())
-                displayText(quickTexts[0].get_text(),font20,quickTexts[0].get_colours(),quickTexts[0].get_pos())
-                quickTexts[0].update()
+        deleteing = []
+        for i in range(len(quickTexts)):
+            if quickTexts[i].get_visible():
+                print(quickTexts[i].get_text())
+                displayText(quickTexts[i].get_text(),font20,quickTexts[i].get_colours(),[quickTexts[i].get_pos()[0],quickTexts[i].get_pos()[1]+i*30])
+                remove = quickTexts[i].update()
+                if remove:
+                    deleteing.append(i)
+        print(len(quickTexts))
+        for _ in range(len(deleteing)):
+            quickTexts.pop(0)
         pygame.display.update()
         clock.tick(FPS)
     return cont 

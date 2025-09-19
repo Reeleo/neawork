@@ -56,10 +56,10 @@ class Player(Sprite):
         self._speed = 10
         self._idle = True
         self._health = 3
-        self.collect = {"bct":0,"bug":0,"flw":0,"lef":0,"frt":0,
+        self._collect = {"bct":0,"bug":0,"flw":0,"lef":0,"frt":0,
                         "wpl":0,"srk":0,"brk":0,"vrk":0,"gem":0,
                         "wtr":0,"swt":0}
-        self.chemicals = {"C":0,"O2":0,"CO2":0,"H2O":0,"NH3":0,
+        self._chemicals = {"C":0,"O2":0,"CO2":0,"H2O":0,"NH3":0,
                       "NaCl":0,"NaBr":0,"CN":0,"Si":0,"S":0,
                       "Mg":0,"Al":0,"Fe":0,"Na":0,"Cl":0,
                       "Br":0,"I":0,"aGlucose":0,"bGlucose":0,"Sucrose":0,
@@ -75,6 +75,10 @@ class Player(Sprite):
         return self._speed
     def get_health(self):
         return self._health
+    def get_collect(self):
+        return self._collect
+    def get_chemicals(self):
+        return self._chemicals
     
     def set_pos(self,drct,w,h):
         if drct == 0:
@@ -90,6 +94,16 @@ class Player(Sprite):
             self._speed += speed
         else:
             self._speed = speed
+    def set_collect(self,item,num):
+        self._collect[item] = num
+    def set_chemicals(self,item,num):
+        self._chemicals[item] = num
+    def inc_collect(self,item):
+        self._collect[item] += 1
+
+    def extract(self,item,chem):
+        self._collect[item] -= 1
+        self._chemicals[chem] += 1
     
     def decrease_health(self):
         self._health -= 1
@@ -266,7 +280,7 @@ class Enemy(Sprite):
 
 class Character(Sprite):
     def __init__(self,pos,type):
-        if type == "enemy":
+        if type == "enemy" or type == "boss":
             sheet = pygame.image.load("EnemySpriteSheet.png")
         else:
             sheet = pygame.image.load("SpriteSheet.png")
@@ -277,6 +291,13 @@ class Character(Sprite):
 
     def get_type(self):
         return self._type
+    
+    
+    def collision(self,playerpos):
+        if self._pos[0]-80 < playerpos[0] < self._pos[0]+self._size[0]+40:
+            if self._pos[1]-80 < playerpos[1] < self._pos[1]+self._size[1]+40:
+                return True
+        return False
 
     def updateSprite(self):
         x = self._cycle // 8

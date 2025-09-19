@@ -76,3 +76,5 @@ class QuickText(ScreenShape):
     def update(self):
         if time.time() - self._startTime > self._duration:
             self._visible = False
+            return True
+        return False

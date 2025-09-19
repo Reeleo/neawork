@@ -31,6 +31,8 @@ class GameSettings():
         return self._saveFile
     def get_showAll(self):
         return self._showAll
+    def get_diff(self):
+        return self._diff
     def get_music(self):
         return self._music
     def get_playMusic(self):
@@ -46,6 +48,8 @@ class GameSettings():
             self._showAll = False
         else:
             self._showAll = True
+    def set_diff(self,new):
+        self._diff = new
     def set_music(self,track):
         self._music = track
     def set_playMusic(self):
@@ -54,7 +58,7 @@ class GameSettings():
         else:
             self._playMusic = True
     
-    def increaseDiff(self):
+    def inc_diff(self):
         if self.diff == "Easy":
             self.diff = "Medium"
         elif self.diff == "Medium":
