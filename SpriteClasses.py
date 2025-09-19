@@ -56,20 +56,19 @@ class Player(Sprite):
         self._speed = 10
         self._idle = True
         self._health = 3
-        self._collect = {"bct":0,"bug":0,"flw":0,"lef":0,"frt":0,
-                        "wpl":0,"srk":0,"brk":0,"vrk":0,"gem":0,
-                        "wtr":0,"swt":0}
-        self._chemicals = {"C":0,"O2":0,"CO2":0,"H2O":0,"NH3":0,
-                      "NaCl":0,"NaBr":0,"CN":0,"Si":0,"S":0,
-                      "Mg":0,"Al":0,"Fe":0,"Na":0,"Cl":0,
-                      "Br":0,"I":0,"aGlucose":0,"bGlucose":0,"Sucrose":0,
-                      "Startch":0,"Cellulose":0,"m":0,"alkane":0,
-                      "alkene":0,"alcohol":0,"carAcid":0,
-                      "ester":0,"polyester":0,"CloroAlkane":0,
-                      "BromoAlkane":0,"amine":0,"amide":0,
-                      "AminoAcid":0,"benzene":0,"phenol":0,
-                      "acylCloride":0,"acidAnhydride":0,"NaOH":0,"KOH":0,
-                      "HCl":0,"HNO3":0,"H2SO4":0,"H3PO4":0}
+        self._collect = {"bacteria":0,"bug":0,"flower":0,"leaf":0,"fruit":0,
+                        "wplant":0,"srock":0,"lrock":0,"volrock":0,"gem":0,
+                        "water":0,"saltwater":0}
+        self._chemicals = {"carbon":0,"oxygen":0,"scilicon":0,"sulfur":0,"nitrogen":0,
+                        "magnesium":0,"aluminium":0,"iron":0,"sodium":0,"chlorine":0,
+                        "bromine":0,"iodine":0,
+                        "carbon dioxide":0,"water":0,"ammonia":0,"sodium chloride":0,"sodium bromide":0,
+                        "cyanide":0,"glucose":0,"sucrose":0,"startch":0,"cellulose":0,
+                        "alkane":0,"alkene":0,"alcohol":0,"carboxylic acid":0,
+                        "ester":0,"polyester":0,"chloroalkane":0,"bromoalkane":0,"amine":0,"amide":0,
+                        "aminoacid":0,"benzene":0,"phenol":0,"acyl cloride":0,"acid anhydride":0,
+                        "sodium hydroxide":0,"sodium carbonate":0,
+                        "hydrochloric acid":0,"hydrogen bromide":0,"nitric acid":0,"sulfuric acid":0}
 
     def get_speed(self):
         return self._speed
@@ -107,6 +106,10 @@ class Player(Sprite):
     
     def decrease_health(self):
         self._health -= 1
+
+    def set_pos_int(self):
+        self.pos[0] = int(self.pos[0])
+        self.pos[1] = int(self.pos[1])
 
     
     def updateSprite(self):

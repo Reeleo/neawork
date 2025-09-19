@@ -11,19 +11,19 @@ class GameSettings():
         self._showAll = True
         self._music = -1
         self._playMusic = False
-        self.collectTypes = [["bct",0,0],["bug",1,0],["flw",0,1],["lef",1,1],["frt",2,1],["wpl",3,1],["srk",0,2],["brk",1,2],["vrk",2,2],["gem",3,2],["wtr",2,0],["swt",3,0]]
-        self.itemChances = {"bct":[["C",3],["CO2",2],["m",1],["AminoAcid",1]],
-                        "bug":[["C",3],["CO2",2],["AminoAcid",1],["CN",1]],
-                        "flw":[["C",2],["O2",2],["AminoAcid",1]],
-                        "lef":[["C",2],["O2",4],["Startch",5],["Cellulose",5],["AminoAcid",1]],
-                        "frt":[["C",2],["O2",2],["Startch",2],["Sucrose",5],["AminoAcid",1]],
-                        "wpl":[["C",5],["O2",4],["Startch",5],["AminoAcid",1]],
-                        "srk":[["Si",5],["Fe",1],["Mg",1],["Al",1]],
-                        "brk":[["Si",10],["Fe",3],["Mg",3],["Al",3]],
-                        "vrk":[["C",5],["S",2],["NH3",2]],
-                        "gem":[["C",10],["Si",10],["Mg",5],["Al",5]],
-                        "wtr":[["H2O",5],["CO2",3],["O2",4]],
-                        "swt":[["H2O",5],["CO2",3],["O2",4],["NaCl",5],["NaBr",5]]}
+        self.collectTypes = [["bacteria",0,0],["bug",1,0],["flower",0,1],["leaf",1,1],["fruit",2,1],["wplant",3,1],["srock",0,2],["lrock",1,2],["volrock",2,2],["gem",3,2],["water",2,0],["saltwater",3,0]]
+        self.itemChances = {"bacteria":[["carbon",3],["carbon dioxide",2],["aminoacid",1]],
+                        "bug":[["carbon",3],["aminoacid",1],["cyanide",1]],
+                        "flower":[["carbon",2],["oxygen",2],["aminoacid",1]],
+                        "leaf":[["carbon",2],["oxygen",4],["startch",5],["cellulose",5]],
+                        "fruit":[["carbon",2],["oxygen",2],["startch",2],["sucrose",5]],
+                        "wplant":[["carbon",5],["oxygen",4],["startch",5],["aminoacid",1]],
+                        "srock":[["silicon",5],["iron",1],["magnesium",1],["aluminium",1]],
+                        "lrock":[["silicon",10],["iron",3],["magnesium",3],["aluminium",3]],
+                        "volrock":[["carbon",5],["sulfur",2],["ammonia",2]],
+                        "gem":[["carbon",10],["silicon",10],["Mg",5],["aluminium",5]],
+                        "water":[["water",5],["carbon dioxide",3],["oxygen",4]],
+                        "saltwater":[["water",5],["carbon dioxide",3],["oxygen",4],["sodium chloride",5],["sodium bromide",5]]}
     
     def get_screen(self):
         return self._screen

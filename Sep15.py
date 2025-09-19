@@ -88,6 +88,7 @@ def displayObject(type,obj):
         displayText(text, font20, BLACK, [pos[0]+size[0]/2, pos[1]+size[1]/2])
     
     elif type == "player":
+        player.set_pos_int()
         screen.blit(obj.update(game.get_screen(),WIDTH,HEIGHT),(obj.get_pos()))
     
     elif type == "collect":
@@ -454,7 +455,7 @@ def screenDisplay(screenType):
 
 
 
-
+ 
 def loadGame():
     if game.get_saveFile() == 1:
         file = open("saveData1.txt","r")
