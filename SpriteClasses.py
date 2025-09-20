@@ -58,7 +58,7 @@ class Player(Sprite):
         self._health = 3
         self._collect = {"bacteria":0,"bug":0,"flower":0,"leaf":0,"fruit":0,
                         "wplant":0,"srock":0,"lrock":0,"volrock":0,"gem":0,
-                        "water":0,"saltwater":0}
+                        "freshwater":0,"saltwater":0}
         self._chemicals = {"carbon":0,"oxygen":0,"scilicon":0,"sulfur":0,"nitrogen":0,
                         "magnesium":0,"aluminium":0,"iron":0,"sodium":0,"chlorine":0,
                         "bromine":0,"iodine":0,

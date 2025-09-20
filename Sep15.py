@@ -86,10 +86,63 @@ def displayObject(type,obj):
             pygame.draw.rect(screen,colours[0],[pos[0]-5, pos[1]-5, size[0]+10, size[1]+10])
         pygame.draw.rect(screen,colours[1],[pos[0], pos[1], size[0], size[1]])
         displayText(text, font20, BLACK, [pos[0]+size[0]/2, pos[1]+size[1]/2])
-    
+
     elif type == "player":
-        player.set_int()
-        screen.blit(obj.update(game.get_screen(),WIDTH,HEIGHT),(obj.get_pos()))
+        if game.get_screen() == "home":
+            screen.blit(obj.update(game.get_screen(),WIDTH,HEIGHT),(obj.get_pos()))
+        else:
+            screen.blit(obj.update(game.get_screen(),WIDTH,HEIGHT),(obj.get_pos()))
+            pPos = player.get_pos()
+            pSize = player.get_size()
+            lfoot = [pPos[0]+35,pPos[1]+102]
+            rfoot = [pPos[0]+67,pPos[1]+102]
+            # pygame.draw.rect(screen, RED, pygame.Rect(lfoot[0],lfoot[1],10,10))
+            # pygame.draw.rect(screen, RED, pygame.Rect(rfoot[0],rfoot[1],10,10))
+
+            speed = player.get_speed()
+            player.set_validWalk("all",[True,True,True,True])
+            tilePos = areaMap.get_waterPos()
+            for i in range(len(tilePos)):
+                wMask = pygame.mask.from_surface(areaMap.get_tile(3,2))
+                wImg = wMask.to_surface()
+
+                if tilePos[i][1]*64 < lfoot[0]-speed < tilePos[i][1]*64+64 or tilePos[i][1]*64 < lfoot[0]+10-speed < tilePos[i][1]*64+64:
+                    if tilePos[i][0]*64 < lfoot[1] < tilePos[i][0]*64+64 or tilePos[i][0]*64 < lfoot[1]+10 < tilePos[i][0]*64+64:
+                        #screen.blit(wImg,(tilePos[i][1]*64, tilePos[i][0]*64))
+                        player.set_validWalk(3,False)
+                if tilePos[i][1]*64 < lfoot[0]+speed < tilePos[i][1]*64+64 or tilePos[i][1]*64 < lfoot[0]+10+speed < tilePos[i][1]*64+64:
+                    if tilePos[i][0]*64 < lfoot[1] < tilePos[i][0]*64+64 or tilePos[i][0]*64 < lfoot[1]+10 < tilePos[i][0]*64+64:
+                        #screen.blit(wImg,(tilePos[i][1]*64, tilePos[i][0]*64))
+                        player.set_validWalk(1,False)
+                if tilePos[i][1]*64 < lfoot[0] < tilePos[i][1]*64+64 or tilePos[i][1]*64 < lfoot[0] < tilePos[i][1]*64+64:
+                    if tilePos[i][0]*64 < lfoot[1]+speed < tilePos[i][0]*64+64 or tilePos[i][0]*64 < lfoot[1]+10+speed < tilePos[i][0]*64+64:
+                        #screen.blit(wImg,(tilePos[i][1]*64, tilePos[i][0]*64))
+                        player.set_validWalk(2,False)
+                if tilePos[i][1]*64 < lfoot[0] < tilePos[i][1]*64+64 or tilePos[i][1]*64 < lfoot[0] < tilePos[i][1]*64+64:
+                    if tilePos[i][0]*64 < lfoot[1]-speed < tilePos[i][0]*64+64 or tilePos[i][0]*64 < lfoot[1]+10-speed < tilePos[i][0]*64+64:
+                        #screen.blit(wImg,(tilePos[i][1]*64, tilePos[i][0]*64))
+                        player.set_validWalk(0,False)
+
+            
+                if tilePos[i][1]*64 < rfoot[0]-speed < tilePos[i][1]*64+64 or tilePos[i][1]*64 < rfoot[0]+10-speed < tilePos[i][1]*64+64:
+                    if tilePos[i][0]*64 < rfoot[1] < tilePos[i][0]*64+64 or tilePos[i][0]*64 < rfoot[1]+10 < tilePos[i][0]*64+64:
+                        #screen.blit(wImg,(tilePos[i][1]*64, tilePos[i][0]*64))
+                        player.set_validWalk(3,False)
+                if tilePos[i][1]*64 < rfoot[0]+speed < tilePos[i][1]*64+64 or tilePos[i][1]*64 < rfoot[0]+10+speed < tilePos[i][1]*64+64:
+                    if tilePos[i][0]*64 < rfoot[1] < tilePos[i][0]*64+64 or tilePos[i][0]*64 < rfoot[1]+10 < tilePos[i][0]*64+64:
+                        #screen.blit(wImg,(tilePos[i][1]*64, tilePos[i][0]*64))
+                        player.set_validWalk(1,False)
+                if tilePos[i][1]*64 < rfoot[0] < tilePos[i][1]*64+64 or tilePos[i][1]*64 < rfoot[0] < tilePos[i][1]*64+64:
+                    if tilePos[i][0]*64 < rfoot[1]+speed < tilePos[i][0]*64+64 or tilePos[i][0]*64 < rfoot[1]+10+speed < tilePos[i][0]*64+64:
+                        #screen.blit(wImg,(tilePos[i][1]*64, tilePos[i][0]*64))
+                        player.set_validWalk(2,False)
+                if tilePos[i][1]*64 < rfoot[0] < tilePos[i][1]*64+64 or tilePos[i][1]*64 < rfoot[0] < tilePos[i][1]*64+64:
+                    if tilePos[i][0]*64 < rfoot[1]-speed < tilePos[i][0]*64+64 or tilePos[i][0]*64 < rfoot[1]+10-speed < tilePos[i][0]*64+64:
+                        #screen.blit(wImg,(tilePos[i][1]*64, tilePos[i][0]*64))
+                        player.set_validWalk(0,False)
+            
+            
+
     
     elif type == "collect":
         screen.blit(obj.update(game.get_screen()),(obj.get_pos()))
@@ -344,19 +397,19 @@ def screenDisplay(screenType):
         x = 210
         y = 310
         collection = player.get_collect()
-        displayText(f"BACTERIA: {collection["bct"]}", font20, WHITE, [x, y])
+        displayText(f"BACTERIA: {collection["bacteria"]}", font20, WHITE, [x, y])
         displayText(f"BUG: {collection["bug"]}", font20, WHITE, [x+200, y])
-        displayText(f"FLOWER: {collection["flw"]}", font20, WHITE, [x+400, y])
-        displayText(f"LEAF: {collection["lef"]}", font20, WHITE, [x+600, y])
-        displayText(f"FRUIT: {collection["frt"]}", font20, WHITE, [x+800, y])
-        displayText(f"OCEAN PLANT: {collection["wpl"]}", font20, WHITE, [x+1000, y])
-        displayText(f"SMALL ROCK: {collection["srk"]}", font20, WHITE, [x, y+30])
-        displayText(f"BIG ROCK: {collection["brk"]}", font20, WHITE, [x+200, y+30])
-        displayText(f"VOLCANIC ROCK: {collection["vrk"]}", font20, WHITE, [x+400, y+30])
+        displayText(f"FLOWER: {collection["flower"]}", font20, WHITE, [x+400, y])
+        displayText(f"LEAF: {collection["leaf"]}", font20, WHITE, [x+600, y])
+        displayText(f"FRUIT: {collection["fruit"]}", font20, WHITE, [x+800, y])
+        displayText(f"OCEAN PLANT: {collection["wplant"]}", font20, WHITE, [x+1000, y])
+        displayText(f"SMALL ROCK: {collection["srock"]}", font20, WHITE, [x, y+30])
+        displayText(f"BIG ROCK: {collection["lrock"]}", font20, WHITE, [x+200, y+30])
+        displayText(f"VOLCANIC ROCK: {collection["volrock"]}", font20, WHITE, [x+400, y+30])
         displayText(f"GEMSTONE: {collection["gem"]}", font20, WHITE, [x+600, y+30])
 
-        displayText(f"WATER: {collection["wtr"]}", font20, WHITE, [x, y+60])
-        displayText(f"SEAWATER: {collection["swt"]}", font20, WHITE, [x+200, y+60])
+        displayText(f"FRESHWATER: {collection["freshwater"]}", font20, WHITE, [x, y+60])
+        displayText(f"SEAWATER: {collection["saltwater"]}", font20, WHITE, [x+200, y+60])
 
     #6
     if screenType == "craft":
@@ -479,6 +532,7 @@ def loadGame():
             game.set_diff(saveData[0])
         elif i == 3:
             player.set_speed(saveData[0],"set")
+    player.set_int()
     file.close()
     print("LOADED")
 
@@ -656,7 +710,10 @@ def extractMini():
                 if event.key == pygame.K_ESCAPE:
                     extractTime = False
                 elif event.key == pygame.K_c:
-                    player.set_collect("bct",10000)
+                    player.set_collect("bacteria",10000)
+                    player.set_collect("leaf",10000)
+                    player.set_collect("srock",10000)
+                    player.set_collect("freshwater",10000)
             if event.type == pygame.MOUSEBUTTONDOWN:
                 for i in range(len(buttons)):
                     if buttons[i].collision():
@@ -664,29 +721,29 @@ def extractMini():
                         if i == 0:
                             extractTime = False
                         elif i == 1:
-                            extractItem = "bct"
+                            extractItem = "bacteria"
                         elif i == 2:
                             extractItem = "bug"
                         elif i == 3:
-                            extractItem = "flw"
+                            extractItem = "flower"
                         elif i == 4:
-                            extractItem = "lef"
+                            extractItem = "leaf"
                         elif i == 5:
-                            extractItem = "frt"
+                            extractItem = "fruit"
                         elif i == 6:
-                            extractItem = "wpl"
+                            extractItem = "wplant"
                         elif i == 7:
-                            extractItem = "srk"
+                            extractItem = "srock"
                         elif i == 8:
-                            extractItem = "brk"
+                            extractItem = "lrock"
                         elif i == 9:
-                            extractItem = "vrk"
+                            extractItem = "volrock"
                         elif i == 10:
                             extractItem = "gem"
                         elif i == 11:
-                            extractItem = "wtr"
+                            extractItem = "freshwater"
                         elif i == 12:
-                            extractItem = "swt"
+                            extractItem = "saltwater"
         if extractItem != 0:
             if player.get_collect()[extractItem] > 0:
                 extraction(extractItem)
@@ -905,7 +962,6 @@ hearts = []
 
 running = "menu"
 while running != "":
-    print(fetchQuestions())
     if running == "menu":
         screenSetUp("menu")
     while running == "menu":
