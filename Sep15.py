@@ -133,7 +133,7 @@ def displayObject(type,obj):
             
     elif type == "collect":
         screen.blit(obj.update(game.get_screen()),(obj.get_pos()))
-        if  obj.collision(player.get_pos()):
+        if obj.collision(player.get_pos()):
             playerpos = player.get_pos()
             playersize = player.get_size()
             displayText("SPACE", font20, WHITE, [playerpos[0]+playersize[0]/2, playerpos[1]-20])
@@ -156,6 +156,13 @@ def displayObject(type,obj):
     
     elif type == "char":
         screen.blit(obj.update(),(obj.get_pos()))
+        if obj.collision(player.get_pos()):
+            playerpos = player.get_pos()
+            playersize = player.get_size()
+            displayText("SPACE", font20, WHITE, [playerpos[0]+playersize[0]/2, playerpos[1]-20])
+            keys = pygame.key.get_pressed()
+            if keys[pygame.K_SPACE]:
+                print("HELLO")
 
     elif type == "special":
         screen.blit(obj.update(),(obj.get_pos()))

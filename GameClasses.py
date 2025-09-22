@@ -208,8 +208,12 @@ class AreaMap():
         collectNum = random.randint(1,5)
         for _ in range(collectNum):
             type = random.randint(0,6)
+            if type == 5:
+                type = 6
+            elif type == 6:
+                type = 7
             self._infoStore[row][col].append([random.randint(1,self._colLim-2)*64, random.randint(1,self._rowLim-2)*64, True, "collect",type])
-        enemyNum = random.randint(0,0)
+        enemyNum = random.randint(0,2)
         for _ in range(enemyNum):
             self._infoStore[row][col].append([random.randint(1,self._colLim-2)*64, random.randint(1,self._rowLim-2)*64, True, "enemy"]) 
         charNum = random.randint(0,1)
