@@ -108,6 +108,14 @@ class AreaMap():
         return self._pos
     def get_store(self):
         return self._store
+    def get_waterPos(self):
+        positions = []
+        for i in range(len(self._store[self._pos[0]][self._pos[1]])):
+            for j in range(len(self._store[self._pos[0]][self._pos[1]][i])):
+                if self._store[self._pos[0]][self._pos[1]][i][j] == 3:
+                    positions.append([i,j])
+        return positions
+
     
     def set_collected(self,itemNum):
         info = self._infoStore[self._pos[0]][self._pos[1]]
@@ -201,7 +209,7 @@ class AreaMap():
         for _ in range(collectNum):
             type = random.randint(0,6)
             self._infoStore[row][col].append([random.randint(1,self._colLim-2)*64, random.randint(1,self._rowLim-2)*64, True, "collect",type])
-        enemyNum = random.randint(1,2)
+        enemyNum = random.randint(0,0)
         for _ in range(enemyNum):
             self._infoStore[row][col].append([random.randint(1,self._colLim-2)*64, random.randint(1,self._rowLim-2)*64, True, "enemy"]) 
         charNum = random.randint(0,1)

@@ -56,10 +56,11 @@ class Player(Sprite):
         self._speed = 10
         self._idle = True
         self._health = 3
+        self._validDrct = [True,True,True,True]
         self._collect = {"bacteria":0,"bug":0,"flower":0,"leaf":0,"fruit":0,
                         "wplant":0,"srock":0,"lrock":0,"volrock":0,"gem":0,
                         "freshwater":0,"saltwater":0}
-        self._chemicals = {"carbon":0,"oxygen":0,"scilicon":0,"sulfur":0,"nitrogen":0,
+        self._chemicals = {"carbon":0,"oxygen":0,"silicon":0,"sulfur":0,"nitrogen":0,
                         "magnesium":0,"aluminium":0,"iron":0,"sodium":0,"chlorine":0,
                         "bromine":0,"iodine":0,
                         "carbon dioxide":0,"water":0,"ammonia":0,"sodium chloride":0,"sodium bromide":0,
@@ -97,6 +98,11 @@ class Player(Sprite):
         self._collect[item] = num
     def set_chemicals(self,item,num):
         self._chemicals[item] = num
+    def set_validWalk(self,drct,valid):
+        if drct == "all":
+            self._validDrct = valid
+        else:
+            self._validDrct[drct] = valid
     def inc_collect(self,item):
         self._collect[item] += 1
 
@@ -137,23 +143,23 @@ class Player(Sprite):
         self._idle = True
         keys = pygame.key.get_pressed()
         if keys[pygame.K_a] and not keys[pygame.K_w] and not keys[pygame.K_s]:
-            if self._pos[0] > 0:
+            if self._pos[0] > 0 and self._validDrct[3]:
                 self._pos[0] -= self._speed
                 self._drct = "left"
                 self._idle = False
         if keys[pygame.K_d] and not keys[pygame.K_w] and not keys[pygame.K_s]:
-            if self._pos[0]+self._size[0] < w:
+            if self._pos[0]+self._size[0] < w and self._validDrct[1]:
                 self._pos[0] += self._speed
                 self._drct = "right"
                 self._idle = False
         if gameScreen != "home":
             if keys[pygame.K_w]:
-                if self._pos[1] > 0:
+                if self._pos[1] > 0 and self._validDrct[0]:
                     self._pos[1] -= self._speed
                     self._drct = "up"
                     self._idle = False
             if keys[pygame.K_s]:
-                if self._pos[1]+self._size[1]< h:
+                if self._pos[1]+self._size[1]< h and self._validDrct[2]:
                     self._pos[1] += self._speed
                     self._drct = "down"
                     self._idle = False

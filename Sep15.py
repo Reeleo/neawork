@@ -96,8 +96,6 @@ def displayObject(type,obj):
             pSize = player.get_size()
             lfoot = [pPos[0]+35,pPos[1]+102]
             rfoot = [pPos[0]+67,pPos[1]+102]
-            # pygame.draw.rect(screen, RED, pygame.Rect(lfoot[0],lfoot[1],10,10))
-            # pygame.draw.rect(screen, RED, pygame.Rect(rfoot[0],rfoot[1],10,10))
 
             speed = player.get_speed()
             player.set_validWalk("all",[True,True,True,True])
@@ -108,42 +106,31 @@ def displayObject(type,obj):
 
                 if tilePos[i][1]*64 < lfoot[0]-speed < tilePos[i][1]*64+64 or tilePos[i][1]*64 < lfoot[0]+10-speed < tilePos[i][1]*64+64:
                     if tilePos[i][0]*64 < lfoot[1] < tilePos[i][0]*64+64 or tilePos[i][0]*64 < lfoot[1]+10 < tilePos[i][0]*64+64:
-                        #screen.blit(wImg,(tilePos[i][1]*64, tilePos[i][0]*64))
                         player.set_validWalk(3,False)
                 if tilePos[i][1]*64 < lfoot[0]+speed < tilePos[i][1]*64+64 or tilePos[i][1]*64 < lfoot[0]+10+speed < tilePos[i][1]*64+64:
                     if tilePos[i][0]*64 < lfoot[1] < tilePos[i][0]*64+64 or tilePos[i][0]*64 < lfoot[1]+10 < tilePos[i][0]*64+64:
-                        #screen.blit(wImg,(tilePos[i][1]*64, tilePos[i][0]*64))
                         player.set_validWalk(1,False)
                 if tilePos[i][1]*64 < lfoot[0] < tilePos[i][1]*64+64 or tilePos[i][1]*64 < lfoot[0] < tilePos[i][1]*64+64:
                     if tilePos[i][0]*64 < lfoot[1]+speed < tilePos[i][0]*64+64 or tilePos[i][0]*64 < lfoot[1]+10+speed < tilePos[i][0]*64+64:
-                        #screen.blit(wImg,(tilePos[i][1]*64, tilePos[i][0]*64))
                         player.set_validWalk(2,False)
                 if tilePos[i][1]*64 < lfoot[0] < tilePos[i][1]*64+64 or tilePos[i][1]*64 < lfoot[0] < tilePos[i][1]*64+64:
                     if tilePos[i][0]*64 < lfoot[1]-speed < tilePos[i][0]*64+64 or tilePos[i][0]*64 < lfoot[1]+10-speed < tilePos[i][0]*64+64:
-                        #screen.blit(wImg,(tilePos[i][1]*64, tilePos[i][0]*64))
                         player.set_validWalk(0,False)
 
             
                 if tilePos[i][1]*64 < rfoot[0]-speed < tilePos[i][1]*64+64 or tilePos[i][1]*64 < rfoot[0]+10-speed < tilePos[i][1]*64+64:
                     if tilePos[i][0]*64 < rfoot[1] < tilePos[i][0]*64+64 or tilePos[i][0]*64 < rfoot[1]+10 < tilePos[i][0]*64+64:
-                        #screen.blit(wImg,(tilePos[i][1]*64, tilePos[i][0]*64))
                         player.set_validWalk(3,False)
                 if tilePos[i][1]*64 < rfoot[0]+speed < tilePos[i][1]*64+64 or tilePos[i][1]*64 < rfoot[0]+10+speed < tilePos[i][1]*64+64:
                     if tilePos[i][0]*64 < rfoot[1] < tilePos[i][0]*64+64 or tilePos[i][0]*64 < rfoot[1]+10 < tilePos[i][0]*64+64:
-                        #screen.blit(wImg,(tilePos[i][1]*64, tilePos[i][0]*64))
                         player.set_validWalk(1,False)
                 if tilePos[i][1]*64 < rfoot[0] < tilePos[i][1]*64+64 or tilePos[i][1]*64 < rfoot[0] < tilePos[i][1]*64+64:
                     if tilePos[i][0]*64 < rfoot[1]+speed < tilePos[i][0]*64+64 or tilePos[i][0]*64 < rfoot[1]+10+speed < tilePos[i][0]*64+64:
-                        #screen.blit(wImg,(tilePos[i][1]*64, tilePos[i][0]*64))
                         player.set_validWalk(2,False)
                 if tilePos[i][1]*64 < rfoot[0] < tilePos[i][1]*64+64 or tilePos[i][1]*64 < rfoot[0] < tilePos[i][1]*64+64:
                     if tilePos[i][0]*64 < rfoot[1]-speed < tilePos[i][0]*64+64 or tilePos[i][0]*64 < rfoot[1]+10-speed < tilePos[i][0]*64+64:
-                        #screen.blit(wImg,(tilePos[i][1]*64, tilePos[i][0]*64))
                         player.set_validWalk(0,False)
             
-            
-
-    
     elif type == "collect":
         screen.blit(obj.update(game.get_screen()),(obj.get_pos()))
         if  obj.collision(player.get_pos()):
