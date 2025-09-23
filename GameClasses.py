@@ -136,10 +136,10 @@ class AreaMap():
             start = [0,0]
         elif tileNum == 1:
             # grass 2 
-            start = [0,1]
+            start = [1,1]
         elif tileNum == 2:
             # grass 3
-            start = [1,1]
+            start = [0,1]
         elif tileNum == 3:
             # water 1
             start = [1,0]
@@ -197,7 +197,7 @@ class AreaMap():
         for _ in range(self._rowLim):
             row = []
             for _ in range(self._colLim):
-                row.append(random.randint(0,2))
+                row.append(random.randint(0,1))
             skeleton.append(row)
             count += 1
         return skeleton
@@ -350,8 +350,43 @@ class AreaMap():
                                 print(self._store[i][j][k][l])
                                 self._store[i][j][k][l] = 3
 
+    def placeFlowers(self):
+        flowerAreas = random.randint(40,60)
+        for _ in range(flowerAreas):
+            startRow, startCol, starty, startx = random.randint(1,8), random.randint(1,7), random.randint(1,self._rowLim-1), random.randint(1,self._colLim-1)
+            while self._store[startRow][startCol][starty][startx] == 2:
+                startRow, startCol = random.randint(1,8), random.randint(1,7)
+                starty, startx = random.randint(1,self._rowLim-1), random.randint(1,self._colLim-1)
+            self._store[startRow][startCol][starty][startx] = 2
 
-                                    
+            size = random.randint(15,25)
+            for _ in range(size):
+                new = False
+                row, col = startRow, startCol 
+                y, x = starty, startx
+                while self._store[row][col][y][x] == 2 and not new:
+                    drct = random.randint(0,3)
+                    new = False
+                    if drct == 0:
+                        if y-1 >= 1:
+                            y, x = starty-1, startx
+                            new = True
+                    elif drct == 1:
+                        if x+1 <= self._colLim-1:
+                            y, x = starty, startx+1
+                            new = True
+                    elif drct == 2:
+                        if y+1 <= self._rowLim-1:
+                            y, x = starty+1, startx
+                            new = True
+                    elif drct == 3:
+                        if x-1 >= 1:
+                            y, x = starty, startx-1
+                            new = True
+                self._store[row][col][y][x] = 2
+                starty, startx = y, x
+
+                                   
                             
 
 
@@ -367,6 +402,7 @@ class AreaMap():
                     self._infoStore[row][col] = "GATE"
                 else:
                     self.placeItems(row,col)
+        self.placeFlowers()
         self.placeWater()
         self.placePath()
         print("MAP MADE")
