@@ -231,6 +231,21 @@ def screenSetUp(screenType):
         doors[1].assign_type(game.collectTypes)
 
     #5
+    if screenType == "inventory":
+        buttons.clear()
+        cSprites.clear()
+        buttons.append(ShapeClasses.Button([1150,750],[180,80],"RETURN"))
+        for j in range(12):
+            cSprites.append(SpriteClasses.Collectable([120, 100+j*60],j))
+        for k in range(12):
+            cSprites[k].assign_type(game.collectTypes)
+        if game.get_screen() == "home":
+            buttons.append(ShapeClasses.Button([850,460],[400,80],"EXTRACT"))
+            buttons.append(ShapeClasses.Button([390,460],[400,80],"CRAFT"))
+        mini.set_size([WIDTH-200, HEIGHT-200])
+        mini.set_pos([100, 100])
+        
+    #6
     if screenType == "extract":
         buttons.clear()
         cSprites.clear()
@@ -244,9 +259,10 @@ def screenSetUp(screenType):
         mini.set_size([WIDTH-200, HEIGHT-200])
         mini.set_pos([100, 100])
 
-    #6
+    #7
     if screenType == "craft":
         buttons.clear()
+        cSprites.clear()
         buttons.append(ShapeClasses.Button([1150,750],[180,80],"RETURN"))
         for i in range(12):
             buttons.append(ShapeClasses.Button([140+(i)*100, 200],[80,80],i))
@@ -254,15 +270,16 @@ def screenSetUp(screenType):
             cSprites.append(SpriteClasses.Collectable(j,[140+j*100, 200]))
         mini.set_size([WIDTH-200, HEIGHT-200])
         mini.set_pos([100, 100])
-    
-    #7 
+
+    #8
     if screenType == "pTable":
         buttons.clear()
+
         buttons.append(ShapeClasses.Button([1240,610],[90,180],"RETURN"))
         mini.set_size([WIDTH-200, HEIGHT-255])
         mini.set_pos([100, 130])
 
-    #8
+    #9
     if screenType == "pause":
         buttons.clear()
         for i in range(7):
@@ -281,7 +298,7 @@ def screenSetUp(screenType):
             elif i == 6:
                 buttons.append(ShapeClasses.Button([350,350],[80,80],str(game.get_playMusic())))
 
-    #9
+    #10
     if screenType == "maps":
         buttons.clear()
         cSprites.clear()
@@ -309,14 +326,14 @@ def screenSetUp(screenType):
         for i in range(player.get_health()):
             hearts.append(SpriteClasses.Sprite([10+i*60, 20],[50,50],1,BLACK,pygame.image.load("collectablesSprites.bmp")))
         
-    #10
+    #11
     if screenType == "minimap":
         buttons.clear()
         mini.set_pos([100,100])
         mini.set_size([WIDTH-200, HEIGHT-192])
         buttons.append(ShapeClasses.Button([1187,783],[180,80],"RETURN"))
 
-    #11
+    #12
     if screenType == "battle":
         buttons.clear()
         sSprites.clear()
@@ -373,11 +390,38 @@ def screenDisplay(screenType):
         screen.fill(BURG)
         pygame.draw.rect(screen,BLACK,[40, 40, WIDTH-80, HEIGHT-80])
         pygame.draw.rect(screen,BURG,[0, HEIGHT-200, WIDTH, 200])
-        displayText("c = craft, e = extract, q = periodicTable, p = pause, space = interact, esc = back",font20,WHITE,[425,55])
+        displayText("e = inventory, q = periodicTable, p = pause, space = interact, esc = back",font20,WHITE,[425,55])
         displayObject("player", player)
         displayObject("door", doors[0])
         displayObject("door", doors[1])
     
+    #5
+    if screenType == "inventory":
+        pygame.draw.rect(screen,WHITE,(100,HEIGHT/2-75,WIDTH-200,10))
+        displayObject("mini",mini)
+        displayText("Your Collection:", font20, WHITE, [290, 140])
+        for i in range(len(buttons)):
+            displayObject("button",buttons[i])
+        for j in range(len(cSprites)):
+            displayObject("collect",cSprites[j])
+
+        x = 530
+        y = 340
+        collection = player.get_collect()
+        displayText(f"BACTERIA: {collection["bacteria"]}", font20, WHITE, [x, y])
+        displayText(f"BUG: {collection["bug"]}", font20, WHITE, [x+200, y])
+        displayText(f"FLOWER: {collection["flower"]}", font20, WHITE, [x, y+40])
+        displayText(f"LEAF: {collection["leaf"]}", font20, WHITE, [x+200, y+40])
+        displayText(f"FRUIT: {collection["fruit"]}", font20, WHITE, [x+400, y+40])
+        displayText(f"OCEAN PLANT: {collection["wplant"]}", font20, WHITE, [x+600, y+40])
+        displayText(f"SMALL ROCK: {collection["srock"]}", font20, WHITE, [x, y+80])
+        displayText(f"BIG ROCK: {collection["lrock"]}", font20, WHITE, [x+200, y+80])
+        displayText(f"VOLCANIC ROCK: {collection["volrock"]}", font20, WHITE, [x+400, y+80])
+        displayText(f"GEMSTONE: {collection["gem"]}", font20, WHITE, [x+600, y+80])
+
+        displayText(f"FRESHWATER: {collection["freshwater"]}", font20, WHITE, [x+400, y])
+        displayText(f"SEAWATER: {collection["saltwater"]}", font20, WHITE, [x+600, y])
+  
     #5
     if screenType == "extract":
         pygame.draw.rect(screen,WHITE,(100,HEIGHT/2-75,WIDTH-200,10))
@@ -778,9 +822,48 @@ def craftMini():
         clock.tick(FPS)
     return cont 
 
+def inventoryMini():
+    cont = 0
+    inventoryTime, extractTime, craftTime = True, False, False
+    while inventoryTime:
+        screenDisplay("inventory")
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                inventoryTime = False
+                cont = 1
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_ESCAPE:
+                    inventoryTime = False
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                for i in range(len(buttons)):
+                    if buttons[i].collision():
+                        pygame.mixer.Sound.play(sounds[0])
+                        if i == 0:
+                            inventoryTime = False
+                            for i in range(12):
+                                cSprites.pop(-1)
+                        elif i == 1:
+                            inventoryTime = False
+                            extractTime = True
+                        elif i == 2:
+                            inventoryTime = False
+                            craftTime = True
+
+        if extractTime:
+            screenSetUp("extract")
+            cont = extractMini()
+        if craftTime:
+            screenSetUp("craft")
+            cont = craftMini()
+
+        pygame.display.update()
+        clock.tick(FPS)
+    return cont 
+
+
 def homeScreen():
     cont = 0
-    craftTime, extractTime, pTableTime = False, False, False
+    inventoryTime, pTableTime = False, False
     screenDisplay("home")
     for event in pygame.event.get(): 
         if event.type == pygame.QUIT:
@@ -793,19 +876,14 @@ def homeScreen():
                     if doors[i].collision(player.get_pos()):
                         cont = 3
                 cont = 3
-            elif event.key == pygame.K_c:
-                craftTime = True
             elif event.key == pygame.K_e:
-                extractTime  = True
+                inventoryTime  = True
             elif event.key == pygame.K_q:
                 pTableTime  = True
 
-    if craftTime:
-        screenSetUp("craft")
-        cont = craftMini()
-    if extractTime:
-        screenSetUp("extract")
-        cont = extractMini()
+    if inventoryTime:
+        screenSetUp("inventory")
+        cont = inventoryMini()
     if pTableTime:
         screenSetUp("pTable")
         cont = pTableMini()
