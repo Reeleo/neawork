@@ -112,7 +112,7 @@ class AreaMap():
         positions = []
         for i in range(len(self._store[self._pos[0]][self._pos[1]])):
             for j in range(len(self._store[self._pos[0]][self._pos[1]][i])):
-                if self._store[self._pos[0]][self._pos[1]][i][j] == 3:
+                if self._store[self._pos[0]][self._pos[1]][i][j] == 5 or self._store[self._pos[0]][self._pos[1]][i][j] == 6:
                     positions.append([i,j])
         return positions
 
@@ -129,23 +129,26 @@ class AreaMap():
     
 
     def get_tile(self,tileNum, scale):
-        start = [0,0]
         size = 32
+        tile = "empty"
+        tileTypes = {"grass1":[0,0],"grass2":[1,1],"grass3":[0,1],"grass4":[2,1],
+                    "water1":[1,0],"water2":[2,0],
+                    "path1":[0,2],"empty":[1,2]}
         if tileNum == 0:
-            # grass 1
-            start = [0,0]
+            tile = "grass1"
         elif tileNum == 1:
-            # grass 2 
-            start = [1,1]
+            tile = "grass2"
         elif tileNum == 2:
-            # grass 3
-            start = [0,1]
+            tile = "grass3"
         elif tileNum == 3:
-            # water 1
-            start = [1,0]
+            tile = "grass4"
         elif tileNum == 5:
-            # path 1
-            start = [0,2]
+            tile = "water1"
+        elif tileNum == 6:
+            tile = "water2"
+        elif tileNum == 7:
+            tile = "path1"
+        start = tileTypes[tile]
         image = pygame.Surface((size,size))
         image.blit(self._sheet,(0,0),((start[0]*size),(start[1]*size),size,size))
         image = pygame.transform.scale(image,(size*scale,size*scale))
@@ -241,7 +244,7 @@ class AreaMap():
                 elif currentTilePos[1] >= self._colLim-1:
                     pathSet = True
                     acrossMap = True
-                self._store[currentTmPos[0]][currentTmPos[1]][currentTilePos[0]][currentTilePos[1]] = 5
+                self._store[currentTmPos[0]][currentTmPos[1]][currentTilePos[0]][currentTilePos[1]] = 7
                 switch = random.randint(0,4)
                 if acrossMap:
                     if switch == 1 and currentTilePos[0] < self._rowLim-2:
@@ -277,21 +280,44 @@ class AreaMap():
 
         
 
-    def placeWater(self):
-        waterAreas = random.randint(50,80)
-        for _ in range(waterAreas):
+    def placeFeatures(self,feature):
+        areas = 0
+        size = 0
+        tileNum = 0
+        if feature == "water":
+            tileNum = 5
+            size = random.randint(15,25)
+            areas = random.randint(50,80)
+        elif feature == "flower":
+            tileNum = 2
+            size = random.randint(15,25)
+            areas = random.randint(40,60)
+        elif feature == "bush":
+            tileNum = 3
+            size = random.randint(15,25)
+            areas = random.randint(30,50)
+        elif feature == "lilipad":
+            tileNum = 6
+            size = random.randint(1,5)
+            areas = random.randint(30,50)
+        elif feature == "empty":
+            tileNum = 8
+            size = random.randint(15,25)
+            areas = random.randint(40,60)
+
+
+        for _ in range(areas):
             startRow, startCol, starty, startx = random.randint(1,8), random.randint(1,7), random.randint(1,self._rowLim-1), random.randint(1,self._colLim-1)
-            while self._store[startRow][startCol][starty][startx] == 3:
+            while self._store[startRow][startCol][starty][startx] == tileNum:
                 startRow, startCol = random.randint(1,8), random.randint(1,7)
                 starty, startx = random.randint(1,self._rowLim-1), random.randint(1,self._colLim-1)
-            self._store[startRow][startCol][starty][startx] = 3
+            self._store[startRow][startCol][starty][startx] = tileNum
 
-            size = random.randint(15,25)
             for _ in range(size):
                 new = False
                 row, col = startRow, startCol 
                 y, x = starty, startx
-                while self._store[row][col][y][x] == 3 and not new:
+                while self._store[row][col][y][x] == tileNum and not new:
                     drct = random.randint(0,3)
                     new = False
                     if drct == 0:
@@ -310,7 +336,7 @@ class AreaMap():
                         if x-1 >= 1:
                             y, x = starty, startx-1
                             new = True
-                self._store[row][col][y][x] = 3
+                self._store[row][col][y][x] = tileNum
                 starty, startx = y, x
         
         for i in range(len(self._store)):
@@ -320,75 +346,37 @@ class AreaMap():
                         for l in range(len(self._store[i][j][k])):
                             count = 0
                             max = 4
-                            if self._store[i][j][k][l] != 3 and self._store[i][j][k][l] != 5:
+                            if self._store[i][j][k][l] != tileNum and self._store[i][j][k][l] != 7:
                                 for m in range(3):
                                     try:
                                         if m == 0:
-                                            if self._store[i][j][k-1][l] == 3:
+                                            if self._store[i][j][k-1][l] == tileNum:
                                                 count += 1
                                     except:
                                         max -= 1
                                     try:
                                         if m == 1:
-                                            if self._store[i][j][k][l+1] == 3:
+                                            if self._store[i][j][k][l+1] == tileNum:
                                                 count += 1
                                     except:
                                         max -= 1
                                     try:    
                                         if m == 2:
-                                            if self._store[i][j][k+1][l] == 3:
+                                            if self._store[i][j][k+1][l] == tileNum:
                                                 count += 1
                                     except:
                                         max -= 1
                                     try:
                                         if m == 3:
-                                            if self._store[i][j][k][l-1] == 3:
+                                            if self._store[i][j][k][l-1] == tileNum:
                                                 count += 1
                                     except:
                                         max -= 1
                             if count == max:
                                 print(self._store[i][j][k][l])
-                                self._store[i][j][k][l] = 3
+                                self._store[i][j][k][l] = tileNum
 
-    def placeFlowers(self):
-        flowerAreas = random.randint(40,60)
-        for _ in range(flowerAreas):
-            startRow, startCol, starty, startx = random.randint(1,8), random.randint(1,7), random.randint(1,self._rowLim-1), random.randint(1,self._colLim-1)
-            while self._store[startRow][startCol][starty][startx] == 2:
-                startRow, startCol = random.randint(1,8), random.randint(1,7)
-                starty, startx = random.randint(1,self._rowLim-1), random.randint(1,self._colLim-1)
-            self._store[startRow][startCol][starty][startx] = 2
-
-            size = random.randint(15,25)
-            for _ in range(size):
-                new = False
-                row, col = startRow, startCol 
-                y, x = starty, startx
-                while self._store[row][col][y][x] == 2 and not new:
-                    drct = random.randint(0,3)
-                    new = False
-                    if drct == 0:
-                        if y-1 >= 1:
-                            y, x = starty-1, startx
-                            new = True
-                    elif drct == 1:
-                        if x+1 <= self._colLim-1:
-                            y, x = starty, startx+1
-                            new = True
-                    elif drct == 2:
-                        if y+1 <= self._rowLim-1:
-                            y, x = starty+1, startx
-                            new = True
-                    elif drct == 3:
-                        if x-1 >= 1:
-                            y, x = starty, startx-1
-                            new = True
-                self._store[row][col][y][x] = 2
-                starty, startx = y, x
-
-                                   
-                            
-
+      
 
 
     def createAreaMap(self):
@@ -402,8 +390,9 @@ class AreaMap():
                     self._infoStore[row][col] = "GATE"
                 else:
                     self.placeItems(row,col)
-        self.placeFlowers()
-        self.placeWater()
+        self.placeFeatures("flowers")
+        self.placeFeatures("bush")
+        self.placeFeatures("water")
         self.placePath()
         print("MAP MADE")
 

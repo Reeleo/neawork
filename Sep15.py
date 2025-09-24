@@ -93,7 +93,6 @@ def displayObject(type,obj):
         else:
             screen.blit(obj.update(game.get_screen(),WIDTH,HEIGHT),(obj.get_pos()))
             pPos = player.get_pos()
-            pSize = player.get_size()
             lfoot = [pPos[0]+35,pPos[1]+102]
             rfoot = [pPos[0]+67,pPos[1]+102]
 
@@ -102,7 +101,6 @@ def displayObject(type,obj):
             tilePos = areaMap.get_waterPos()
             for i in range(len(tilePos)):
                 wMask = pygame.mask.from_surface(areaMap.get_tile(3,2))
-                wImg = wMask.to_surface()
 
                 if tilePos[i][1]*64 < lfoot[0]-speed < tilePos[i][1]*64+64 or tilePos[i][1]*64 < lfoot[0]+10-speed < tilePos[i][1]*64+64:
                     if tilePos[i][0]*64 < lfoot[1] < tilePos[i][0]*64+64 or tilePos[i][0]*64 < lfoot[1]+10 < tilePos[i][0]*64+64:
