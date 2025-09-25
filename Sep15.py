@@ -703,7 +703,6 @@ def pauseScreen():
     return cont
 
 
-
 def extraction(item):
     chances = game.itemChances[item]
     chem = chances[random.randint(0,len(chances)-1)][0]
@@ -712,7 +711,7 @@ def extraction(item):
     quickTexts.append(ShapeClasses.QuickText([550,500],f"{item}, {chem}, {chems[chem]}",time.time()))
     print(item, chem, chems[chem])
     return chem
-     
+    
 def pTableMini():
     cont = 0
     pTableTime = True
