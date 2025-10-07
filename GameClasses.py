@@ -11,7 +11,7 @@ class GameSettings():
         self._showAll = True
         self._music = -1
         self._playMusic = False
-        self.collectTypes = [["bacteria",0,0],["bug",1,0],["flower",0,1],["leaf",1,1],["fruit",2,1],["wplant",3,1],["srock",0,2],["lrock",1,2],["volrock",2,2],["gem",3,2],["freshwater",2,0],["saltwater",3,0]]
+        self.collectTypes = [["bacteria",0,0],["bug",1,0],["flower",0,1],["leaf",1,1],["fruit",2,1],["wplant",3,1],["srock",0,2],["lrock",1,2],["volrock",2,2],["gem",3,2],["freshwater",2,0],["saltwater",3,0],["door",1,3]]
         self.itemChances = {"bacteria":[["carbon",3],["carbon dioxide",2],["aminoacid",1]],
                         "bug":[["carbon",3],["aminoacid",1],["cyanide",1]],
                         "flower":[["carbon",2],["oxygen",2],["aminoacid",1]],
@@ -78,6 +78,8 @@ class AreaMap():
         self._discovered = []
         self._infoStore = []
         self._sheet = pygame.image.load("grasslandsTiles.bmp")
+    
+    def reset(self):
         for i in range(10):
             rows = [[],[],[],[]]
             if i == 0 or i == 9:
@@ -207,20 +209,23 @@ class AreaMap():
     
 
     def placeItems(self,row,col):
-        print(self._infoStore[row][col])
         count = 0
         collectNum = random.randint(1,5)
         while count < collectNum:
-            type = random.randint(0,6)
+            type = random.randint(0,8)
             if type == 5:
                 type = 6
-            elif type == 6:
-                type = 7
+            # elif type == 6:
+            #     type = 7
             x = random.randint(1,self._colLim-2)
             y = random.randint(1,self._rowLim-2)
-            if self._store[row][col][y][x] != 5:
-                self._infoStore[row][col].append([x*46, y*64, True, "collect",type])
+            if self._store[row][col][y][x] != 5 and self._store[row][col][y][x] != 6:
+                self._infoStore[row][col].append([x*64, y*64, True, "collect",type])
                 count += 1
+            else:
+                self._infoStore[row][col].append([x*64, y*64, True, "collect",5])
+                count += 1
+
 
         count = 0
         enemyNum = random.randint(0,2)
@@ -411,7 +416,6 @@ class AreaMap():
         for r in range(len(self._store)):
             for c in range(len(self._store[r])):
                 if self._store[r][c] != -1 and self._infoStore[r][c] != "BOSS" and self._infoStore[r][c] != "GATE":
-                    print(self._store[r][c])
                     self.placeItems(r,c)
         self.placePath()
         print("MAP MADE")

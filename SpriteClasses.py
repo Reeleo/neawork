@@ -175,8 +175,8 @@ class Player(Sprite):
 
 class Collectable(Sprite):
     def __init__(self,pos,typeNum):
-        super().__init__(pos,[50,50],2,BLACK,pygame.image.load("collectablesSprites.bmp"))
-        self._frameSize = 50
+        super().__init__(pos,[32,32],2,BLACK,pygame.image.load("collectablesSprites.bmp"))
+        self._frameSize = 32
         self.pic = random.randint(0,6)
         self._num = typeNum
         self._type = ""
@@ -186,7 +186,6 @@ class Collectable(Sprite):
         return self._num
     def assign_type(self, gameTypes):
         self._type = gameTypes[self._num]
-    
 
     def collision(self,playerpos):
         if self._pos[0]-80 < playerpos[0] < self._pos[0]+self._size[0]+40:
@@ -197,10 +196,12 @@ class Collectable(Sprite):
     def update(self,gameScreen):
         x = self._type[1]
         y = self._type[2]
-        self._scale = 2
+        self._scale = 2.5
         if gameScreen == "home":
-            self._scale = 1.5
-        image = self.get_image(x,y,50,50)
+            self._scale = 2.5
+        if self._num == 12:
+            self._scale = 5.5
+        image = self.get_image(x,y,32,32)
         return image
 
 

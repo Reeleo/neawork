@@ -184,7 +184,7 @@ def displayObject(type,obj):
         screen.blit(obj[0],(obj[1]))
         
     elif type == "heart":
-        screen.blit(obj.get_image(0,0,50,50),(obj.get_pos()))
+        screen.blit(obj.get_image(0,3,32,32),(obj.get_pos()))
          
 
 
@@ -223,8 +223,8 @@ def screenSetUp(screenType):
         game.set_screen("home")
         player.set_posx(WIDTH/2-player.get_size()[0]/2)
         player.set_posy(HEIGHT-200-player.get_size()[1])
-        doors.append(SpriteClasses.Collectable([1350,650],0))
-        doors.append(SpriteClasses.Collectable([40,650],0))
+        doors.append(SpriteClasses.Collectable([1282,589],12))
+        doors.append(SpriteClasses.Collectable([12,589],12))
         doors[0].assign_type(game.collectTypes)
         doors[1].assign_type(game.collectTypes)
 
@@ -322,7 +322,7 @@ def screenSetUp(screenType):
                 elif blitList[item][3] == "char":
                     nSprites.append(SpriteClasses.Character([blitList[item][0],blitList[item][1]],""))
         for i in range(player.get_health()):
-            hearts.append(SpriteClasses.Sprite([10+i*60, 20],[50,50],1,BLACK,pygame.image.load("collectablesSprites.bmp")))
+            hearts.append(SpriteClasses.Sprite([2+i*60, 2],[50,50],2.5,BLACK,pygame.image.load("collectablesSprites.bmp")))
         
     #11
     if screenType == "minimap":
@@ -351,7 +351,7 @@ def screenSetUp(screenType):
         mini.set_size([WIDTH-200, HEIGHT-200])
         mini.set_pos([100, 100])
         for i in range(player.get_health()):
-            hearts.append(SpriteClasses.Sprite([10+i*60, 20],[50,50],1,BLACK,pygame.image.load("collectablesSprites.bmp")))  
+            hearts.append(SpriteClasses.Sprite([10+i*60, 20],[50,50],2.5,BLACK,pygame.image.load("collectablesSprites.bmp")))  
 
 def screenDisplay(screenType):
     #1
@@ -389,9 +389,9 @@ def screenDisplay(screenType):
         pygame.draw.rect(screen,BLACK,[40, 40, WIDTH-80, HEIGHT-80])
         pygame.draw.rect(screen,BURG,[0, HEIGHT-200, WIDTH, 200])
         displayText("e = inventory, q = periodicTable, p = pause, space = interact, esc = back",font20,WHITE,[425,55])
-        displayObject("player", player)
         displayObject("door", doors[0])
         displayObject("door", doors[1])
+        displayObject("player", player)
     
     #5
     if screenType == "inventory":
@@ -1018,6 +1018,7 @@ def mapScreen():
 player = SpriteClasses.Player()
 game = GameClasses.GameSettings()
 areaMap = GameClasses.AreaMap()
+areaMap.reset()
 mini = ShapeClasses.MiniWindow([100,100],[WIDTH-200, HEIGHT-200])
 buttons = []
 quickTexts = []
@@ -1027,6 +1028,7 @@ nSprites = []
 sSprites = []
 doors = []
 hearts = []
+
 
 
 running = "menu"
@@ -1091,6 +1093,7 @@ while running != "":
             running = "menu"
 
     if running == "maps" and game.get_screen() == "home":
+        areaMap.reset()
         screenSetUp("maps")
     while running == "maps":
         cont = mapScreen()
