@@ -199,8 +199,15 @@ class Collectable(Sprite):
         self._scale = 2.5
         if gameScreen == "home":
             self._scale = 2.5
-        if self._num == 12:
-            self._scale = 5.5
+            if self._num == 12:
+                self._scale = 5.5
+        else:
+            if self._num == 0 or self._num == 1 or self._num == 3 or self._num == 4:
+                self._scale = 1.5
+            elif 5 < self._num < 9:
+                self._scale = 3.2
+
+
         image = self.get_image(x,y,32,32)
         return image
 

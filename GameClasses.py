@@ -11,6 +11,7 @@ class GameSettings():
         self._showAll = True
         self._music = -1
         self._playMusic = False
+        self._showTutorial = True
         self.collectTypes = [["bacteria",0,0],["bug",1,0],["flower",0,1],["leaf",1,1],["fruit",2,1],["wplant",3,1],["srock",0,2],["lrock",1,2],["volrock",2,2],["gem",3,2],["freshwater",2,0],["saltwater",3,0],["door",1,3]]
         self.itemChances = {"bacteria":[["carbon",3],["carbon dioxide",2],["aminoacid",1]],
                         "bug":[["carbon",3],["aminoacid",1],["cyanide",1]],
@@ -37,12 +38,16 @@ class GameSettings():
         return self._music
     def get_playMusic(self):
         return self._playMusic
+    def get_tutorial(self):
+        return self._showTutorial
 
 
     def set_screen(self,screen):
         self._screen = screen
     def set_saveFile(self,file):
         self._saveFile = file
+    def set_tutorial(self,on):
+        self._showTutorial = on
     def set_showAll(self):
         if self._showAll:
             self._showAll = False
@@ -59,12 +64,12 @@ class GameSettings():
             self._playMusic = True
     
     def inc_diff(self):
-        if self.diff == "Easy":
-            self.diff = "Medium"
-        elif self.diff == "Medium":
-            self.diff = "Hard"
-        elif self.diff == "Hard":
-            self.diff = "Easy"
+        if self._diff == "Easy":
+            self._diff = "Medium"
+        elif self._diff == "Medium":
+            self._diff = "Hard"
+        elif self._diff == "Hard":
+            self._diff = "Easy"
     
 
 

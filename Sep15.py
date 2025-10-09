@@ -69,8 +69,7 @@ def displayText(txt,fnt,colour,pos):
     txtrect.center = (pos)
     screen.blit(txt, txtrect)
 
-def displayImage(image,pos,scale):
-    size = [WIDTH-250,HEIGHT-200]
+def displayImage(image,pos,scale,size):
     surface = pygame.Surface((size))
     surface.blit(image,(0,0),((0),(0),size[0],size[1]))
     surface = pygame.transform.scale(surface,(size[0]*scale,size[1]*scale))
@@ -223,8 +222,8 @@ def screenSetUp(screenType):
         game.set_screen("home")
         player.set_posx(WIDTH/2-player.get_size()[0]/2)
         player.set_posy(HEIGHT-200-player.get_size()[1])
-        doors.append(SpriteClasses.Collectable([1282,589],12))
-        doors.append(SpriteClasses.Collectable([12,589],12))
+        doors.append(SpriteClasses.Collectable([1273,608],12))
+        doors.append(SpriteClasses.Collectable([22,608],12))
         doors[0].assign_type(game.collectTypes)
         doors[1].assign_type(game.collectTypes)
 
@@ -280,7 +279,7 @@ def screenSetUp(screenType):
     #9
     if screenType == "pause":
         buttons.clear()
-        for i in range(7):
+        for i in range(8):
             if i == 0:
                 buttons.append(ShapeClasses.Button([900,250],[80,80],"+"))
             elif i == 1:
@@ -295,6 +294,8 @@ def screenSetUp(screenType):
                 buttons.append(ShapeClasses.Button([WIDTH/3+20, 3*HEIGHT/4],[180,80],"SAVE"))
             elif i == 6:
                 buttons.append(ShapeClasses.Button([350,350],[80,80],str(game.get_playMusic())))
+            elif i == 7:
+                buttons.append(ShapeClasses.Button([900,350],[80,80],str(game.get_tutorial())))
 
     #10
     if screenType == "maps":
@@ -386,9 +387,17 @@ def screenDisplay(screenType):
     #4
     if screenType == "home":
         screen.fill(BURG)
-        pygame.draw.rect(screen,BLACK,[40, 40, WIDTH-80, HEIGHT-80])
-        pygame.draw.rect(screen,BURG,[0, HEIGHT-200, WIDTH, 200])
-        displayText("e = inventory, q = periodicTable, p = pause, space = interact, esc = back",font20,WHITE,[425,55])
+        pygame.draw.rect(screen,BLACK,[20, 20, WIDTH-40, HEIGHT-40])
+        pygame.draw.rect(screen,BURG,[50, 50, WIDTH-100, HEIGHT-100])
+        #displayImage(pygame.image.load("homeBackground.png"),[WIDTH/2-480,50],3,[320,320])
+        displayImage(pygame.image.load("homeBackground.png"),[WIDTH/2-400,120],2.5,[320,320])
+        pygame.draw.rect(screen,BURG,[0, HEIGHT-180, WIDTH, 180])
+        if game.get_tutorial():
+            displayText("press 'q' for periodic table",font20,WHITE,[1086,360])
+            displayText("press 'e' for inventory",font20,WHITE,[455,535])
+            displayText("press 'p' for pause",font20,WHITE,[736,220])
+            displayText("press 'space' to interact",font20,WHITE,[132,590])
+            displayText("press 'esc' to go back",font20,WHITE,[165,65])
         displayObject("door", doors[0])
         displayObject("door", doors[1])
         displayObject("player", player)
@@ -460,7 +469,7 @@ def screenDisplay(screenType):
         pygame.draw.rect(screen,WHITE,(100,HEIGHT/2-75,WIDTH-200,10))
         displayObject("mini",mini)
         displayObject("button",buttons[0])
-        displayImage(pygame.image.load("pTable.png"),[110,140],0.9)
+        displayImage(pygame.image.load("pTable.png"),[110,140],0.9,[WIDTH-250,HEIGHT-200])
 
     #8
     if screenType == "pause":
@@ -471,6 +480,7 @@ def screenDisplay(screenType):
         displayText(f"Speed: {player.get_speed()}", font20, WHITE, [530, 300])
         displayText(f"AllMiniMap: ", font20, WHITE, [280, 300])
         displayText(f"PlayMusic: ", font20, WHITE, [280, 400])
+        displayText(f"Show Tutorial: ", font20, WHITE, [820, 400])
         for i in range(len(buttons)):
             displayObject("button",buttons[i])
 
@@ -699,6 +709,12 @@ def pauseScreen():
                                 pygame.mixer.music.load(music[1])
                                 pygame.mixer.music.play(-1)
                                 game.set_music(1)
+                    elif i == 7:
+                        if game.get_tutorial():
+                            game.set_tutorial(False)
+                        else:
+                            game.set_tutorial(True)
+                        buttons[i].set_text(game.get_tutorial())
 
     return cont
 
