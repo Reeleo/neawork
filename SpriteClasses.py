@@ -222,6 +222,7 @@ class Enemy(Sprite):
         self._battleTime = False
         self._qSet = []
         self._qNum = 0
+        self._validDrct = [True,True,True,True]
 
     def get_battle(self):
         return self._battleTime
@@ -229,6 +230,8 @@ class Enemy(Sprite):
         return self._qSet
     def get_qNum(self):
         return self._qNum
+    def get_speed(self):
+        return self._speed
     
     def set_battle(self,battle):
         self._battleTime = battle
@@ -239,6 +242,12 @@ class Enemy(Sprite):
             self._qNum += 1
         else:
             self._qNum = num
+    def set_validWalk(self,drct,valid):
+        if drct == "all":
+            self._validDrct = valid
+        else:
+            self._validDrct[drct] = valid
+    
     
     
     def updateSprite(self,check):
@@ -264,7 +273,8 @@ class Enemy(Sprite):
         frame = self.get_image(x,y,self._size[0]/2.5,self._size[1]/2.5)
         return frame
 
-    def update(self,playerpos,w,h):
+    def update(self,playerpos):
+        favouredDrct = []
         for i in range(4):
             if i == 0:
                 newpos = [self._pos[0],self._pos[1]-self._speed]
@@ -278,16 +288,29 @@ class Enemy(Sprite):
             elif i == 3:
                 newpos = [self._pos[0]-self._speed,self._pos[1]]
                 new = [abs(newpos[0]-playerpos[0])+abs(newpos[1]-playerpos[1]),"left"]
-            if i == 0:
-                distance = new
-            elif distance[0] == new[0]:
-                if self._drct == "up":
-                    change = random.randint(0,5)
-                    if change == 1:
-                        distance = new
-            elif distance[0] > new[0]:
-                distance = new
-        self._drct = distance[1]
+            favouredDrct.append(new)
+            favouredDrct.sort()
+        for j in range(len(self._validDrct)):
+            if not self._validDrct[j]:
+                if j == 0:
+                    drct = "up"
+                elif j == 1:
+                    drct = "right"
+                elif j == 2:
+                    drct = "down" 
+                else:
+                    drct = "left"
+                for k in range(len(favouredDrct)):
+                    if favouredDrct[k][1] == drct:
+                        favouredDrct.pop(k)
+                        break
+        print(favouredDrct)
+        print(self._validDrct)
+        if len(favouredDrct) > 0 :
+            change = random.randint(0,10)
+            if 0 < change < 5:
+                self._drct = favouredDrct[0][1]
+
 
         self._cycle += 1
         if self._cycle == 32:

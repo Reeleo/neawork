@@ -91,42 +91,40 @@ def displayObject(type,obj):
             screen.blit(obj.update(game.get_screen(),WIDTH,HEIGHT),(obj.get_pos()))
         else:
             screen.blit(obj.update(game.get_screen(),WIDTH,HEIGHT),(obj.get_pos()))
-            pPos = player.get_pos()
+            pPos = obj.get_pos()
             lfoot = [pPos[0]+35,pPos[1]+102]
             rfoot = [pPos[0]+67,pPos[1]+102]
 
-            speed = player.get_speed()
-            player.set_validWalk("all",[True,True,True,True])
+            speed = obj.get_speed()
+            obj.set_validWalk("all",[True,True,True,True])
             tilePos = areaMap.get_waterPos()
             for i in range(len(tilePos)):
-                wMask = pygame.mask.from_surface(areaMap.get_tile(3,2))
-
                 if tilePos[i][1]*64 < lfoot[0]-speed < tilePos[i][1]*64+64 or tilePos[i][1]*64 < lfoot[0]+10-speed < tilePos[i][1]*64+64:
                     if tilePos[i][0]*64 < lfoot[1] < tilePos[i][0]*64+64 or tilePos[i][0]*64 < lfoot[1]+10 < tilePos[i][0]*64+64:
-                        player.set_validWalk(3,False)
+                        obj.set_validWalk(3,False)
                 if tilePos[i][1]*64 < lfoot[0]+speed < tilePos[i][1]*64+64 or tilePos[i][1]*64 < lfoot[0]+10+speed < tilePos[i][1]*64+64:
                     if tilePos[i][0]*64 < lfoot[1] < tilePos[i][0]*64+64 or tilePos[i][0]*64 < lfoot[1]+10 < tilePos[i][0]*64+64:
-                        player.set_validWalk(1,False)
+                        obj.set_validWalk(1,False)
                 if tilePos[i][1]*64 < lfoot[0] < tilePos[i][1]*64+64 or tilePos[i][1]*64 < lfoot[0] < tilePos[i][1]*64+64:
                     if tilePos[i][0]*64 < lfoot[1]+speed < tilePos[i][0]*64+64 or tilePos[i][0]*64 < lfoot[1]+10+speed < tilePos[i][0]*64+64:
-                        player.set_validWalk(2,False)
+                        obj.set_validWalk(2,False)
                 if tilePos[i][1]*64 < lfoot[0] < tilePos[i][1]*64+64 or tilePos[i][1]*64 < lfoot[0] < tilePos[i][1]*64+64:
                     if tilePos[i][0]*64 < lfoot[1]-speed < tilePos[i][0]*64+64 or tilePos[i][0]*64 < lfoot[1]+10-speed < tilePos[i][0]*64+64:
-                        player.set_validWalk(0,False)
+                        obj.set_validWalk(0,False)
 
             
                 if tilePos[i][1]*64 < rfoot[0]-speed < tilePos[i][1]*64+64 or tilePos[i][1]*64 < rfoot[0]+10-speed < tilePos[i][1]*64+64:
                     if tilePos[i][0]*64 < rfoot[1] < tilePos[i][0]*64+64 or tilePos[i][0]*64 < rfoot[1]+10 < tilePos[i][0]*64+64:
-                        player.set_validWalk(3,False)
+                        obj.set_validWalk(3,False)
                 if tilePos[i][1]*64 < rfoot[0]+speed < tilePos[i][1]*64+64 or tilePos[i][1]*64 < rfoot[0]+10+speed < tilePos[i][1]*64+64:
                     if tilePos[i][0]*64 < rfoot[1] < tilePos[i][0]*64+64 or tilePos[i][0]*64 < rfoot[1]+10 < tilePos[i][0]*64+64:
-                        player.set_validWalk(1,False)
+                        obj.set_validWalk(1,False)
                 if tilePos[i][1]*64 < rfoot[0] < tilePos[i][1]*64+64 or tilePos[i][1]*64 < rfoot[0] < tilePos[i][1]*64+64:
                     if tilePos[i][0]*64 < rfoot[1]+speed < tilePos[i][0]*64+64 or tilePos[i][0]*64 < rfoot[1]+10+speed < tilePos[i][0]*64+64:
-                        player.set_validWalk(2,False)
+                        obj.set_validWalk(2,False)
                 if tilePos[i][1]*64 < rfoot[0] < tilePos[i][1]*64+64 or tilePos[i][1]*64 < rfoot[0] < tilePos[i][1]*64+64:
                     if tilePos[i][0]*64 < rfoot[1]-speed < tilePos[i][0]*64+64 or tilePos[i][0]*64 < rfoot[1]+10-speed < tilePos[i][0]*64+64:
-                        player.set_validWalk(0,False)
+                        obj.set_validWalk(0,False)
             
     elif type == "collect":
         screen.blit(obj.update(game.get_screen()),(obj.get_pos()))
@@ -149,7 +147,50 @@ def displayObject(type,obj):
 
     elif type == "enemy":
         checkCollision(obj)
-        screen.blit(obj.update(player.get_pos(),WIDTH,HEIGHT),(obj.get_pos()))
+        screen.blit(obj.update(player.get_pos()),(obj.get_pos()))
+        ePos = player.get_pos()
+        lfoot = [ePos[0]+35,ePos[1]+102]
+        rfoot = [ePos[0]+67,ePos[1]+102]
+
+        speed = obj.get_speed()
+        obj.set_validWalk("all",[True,True,True,True])
+        tilePos = areaMap.get_waterPos()
+        for i in range(len(tilePos)):
+            if tilePos[i][1]*64 < lfoot[0]-speed < tilePos[i][1]*64+64 or tilePos[i][1]*64 < lfoot[0]+10-speed < tilePos[i][1]*64+64:
+                if tilePos[i][0]*64 < lfoot[1] < tilePos[i][0]*64+64 or tilePos[i][0]*64 < lfoot[1]+10 < tilePos[i][0]*64+64:
+                    obj.set_validWalk(3,False)
+                    print("no lefa")
+            if tilePos[i][1]*64 < lfoot[0]+speed < tilePos[i][1]*64+64 or tilePos[i][1]*64 < lfoot[0]+10+speed < tilePos[i][1]*64+64:
+                if tilePos[i][0]*64 < lfoot[1] < tilePos[i][0]*64+64 or tilePos[i][0]*64 < lfoot[1]+10 < tilePos[i][0]*64+64:
+                    obj.set_validWalk(1,False)
+                    print("no rihj")
+            if tilePos[i][1]*64 < lfoot[0] < tilePos[i][1]*64+64 or tilePos[i][1]*64 < lfoot[0] < tilePos[i][1]*64+64:
+                if tilePos[i][0]*64 < lfoot[1]+speed < tilePos[i][0]*64+64 or tilePos[i][0]*64 < lfoot[1]+10+speed < tilePos[i][0]*64+64:
+                    obj.set_validWalk(2,False)
+                    print("no dowA")
+            if tilePos[i][1]*64 < lfoot[0] < tilePos[i][1]*64+64 or tilePos[i][1]*64 < lfoot[0] < tilePos[i][1]*64+64:
+                if tilePos[i][0]*64 < lfoot[1]-speed < tilePos[i][0]*64+64 or tilePos[i][0]*64 < lfoot[1]+10-speed < tilePos[i][0]*64+64:
+                    obj.set_validWalk(0,False)
+                    print("no up")
+
+        
+            if tilePos[i][1]*64 < rfoot[0]-speed < tilePos[i][1]*64+64 or tilePos[i][1]*64 < rfoot[0]+10-speed < tilePos[i][1]*64+64:
+                if tilePos[i][0]*64 < rfoot[1] < tilePos[i][0]*64+64 or tilePos[i][0]*64 < rfoot[1]+10 < tilePos[i][0]*64+64:
+                    obj.set_validWalk(3,False)
+                    print("no lef")
+            if tilePos[i][1]*64 < rfoot[0]+speed < tilePos[i][1]*64+64 or tilePos[i][1]*64 < rfoot[0]+10+speed < tilePos[i][1]*64+64:
+                if tilePos[i][0]*64 < rfoot[1] < tilePos[i][0]*64+64 or tilePos[i][0]*64 < rfoot[1]+10 < tilePos[i][0]*64+64:
+                    obj.set_validWalk(1,False)
+                    print("no rigt")
+            if tilePos[i][1]*64 < rfoot[0] < tilePos[i][1]*64+64 or tilePos[i][1]*64 < rfoot[0] < tilePos[i][1]*64+64:
+                if tilePos[i][0]*64 < rfoot[1]+speed < tilePos[i][0]*64+64 or tilePos[i][0]*64 < rfoot[1]+10+speed < tilePos[i][0]*64+64:
+                    obj.set_validWalk(2,False)
+                    print("no down")
+            if tilePos[i][1]*64 < rfoot[0] < tilePos[i][1]*64+64 or tilePos[i][1]*64 < rfoot[0] < tilePos[i][1]*64+64:
+                if tilePos[i][0]*64 < rfoot[1]-speed < tilePos[i][0]*64+64 or tilePos[i][0]*64 < rfoot[1]+10-speed < tilePos[i][0]*64+64:
+                    obj.set_validWalk(0,False)
+                    print("no up")
+
     
     elif type == "char":
         screen.blit(obj.update(),(obj.get_pos()))
