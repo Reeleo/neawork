@@ -43,6 +43,17 @@ class Button(ScreenShape):
         self._colours = [RED,WHITE]
         self._text = text
         self._touch = False
+        self._isInput = False
+    
+    def get_isInput(self):
+        return self._isInput
+    def set_isInput(self):
+        self._isInput = True
+    
+    def increase_text(self,txt):
+        self._text += txt
+    def decrease_text(self):
+        self._text = self._text[:-1]
 
     def collision(self):
         mouse = pygame.mouse.get_pos()

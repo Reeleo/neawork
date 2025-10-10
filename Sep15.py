@@ -191,7 +191,6 @@ def displayObject(type,obj):
                     obj.set_validWalk(0,False)
                     print("no up")
 
-    
     elif type == "char":
         screen.blit(obj.update(),(obj.get_pos()))
         if obj.collision(player.get_pos()):
@@ -302,10 +301,9 @@ def screenSetUp(screenType):
         buttons.clear()
         cSprites.clear()
         buttons.append(ShapeClasses.Button([1150,750],[180,80],"RETURN"))
-        for i in range(12):
-            buttons.append(ShapeClasses.Button([140+(i)*100, 200],[80,80],i))
-        for j in range(12):
-            cSprites.append(SpriteClasses.Collectable(j,[140+j*100, 200]))
+        buttons.append(ShapeClasses.Button([660,200],[80,80],"GO"))
+        inputBoxes.append(ShapeClasses.Button([320,200],[320,80],""))
+
         mini.set_size([WIDTH-200, HEIGHT-200])
         mini.set_pos([100, 100])
 
@@ -501,9 +499,13 @@ def screenDisplay(screenType):
     if screenType == "craft":
         pygame.draw.rect(screen,WHITE,(100,HEIGHT/2-75,WIDTH-200,10))
         displayObject("mini",mini)
-        displayText("Your Chemicals:", font20, WHITE, [212, 150])
+        displayText("CRAFTING:", font20, WHITE, [212, 150])
+        displayText("Synthesis of:", font20, WHITE, [222, 235])
+        displayText("please you lowercase and avoid spaces so get some sleep", font20, WHITE, [1200, 235])
         for i in range(len(buttons)):
             displayObject("button",buttons[i])
+        for j in range(len(inputBoxes)):
+            displayObject("button",inputBoxes[j])
 
     #7
     if screenType == "pTable":
@@ -590,9 +592,43 @@ def screenDisplay(screenType):
             displayObject("heart",hearts[j])
 
 
+def qtHandelling():
+        deleteing = []
+        for i in range(len(quickTexts)):
+            if quickTexts[i].get_visible():
+                displayText(quickTexts[i].get_text(),font20,quickTexts[i].get_colours(),[quickTexts[i].get_pos()[0],quickTexts[i].get_pos()[1]+i*30])
+                remove = quickTexts[i].update()
+                if remove:
+                    deleteing.append(i)
+        for _ in range(len(deleteing)):
+            quickTexts.pop(0)
 
 
+def extraction(item):
+    chances = game.itemChances[item]
+    chem = chances[random.randint(0,len(chances)-1)][0]
+    player.extract(item,chem)
+    chems = player.get_chemicals()
+    quickTexts.append(ShapeClasses.QuickText([550,500],f"{item}, {chem}, {chems[chem]}",time.time()))
+    print(item, chem, chems[chem])
+    return chem
+    
 
+def checkProduct(txt):
+    valid = False
+    file = open("synthesisFile.txt","r")
+    line = file.readline()
+    data = line.split(",")
+    print(data, txt)
+    for i in range(len(data)):
+        if data[i] == txt:
+            valid = True  
+            break  
+    if valid:
+        quickTexts.append(ShapeClasses.QuickText([800,240],f"VALID",time.time()))
+    else:
+        quickTexts.append(ShapeClasses.QuickText([800,240],f"INVALID",time.time()))
+    file.close()
 
 
  
@@ -760,15 +796,6 @@ def pauseScreen():
     return cont
 
 
-def extraction(item):
-    chances = game.itemChances[item]
-    chem = chances[random.randint(0,len(chances)-1)][0]
-    player.extract(item,chem)
-    chems = player.get_chemicals()
-    quickTexts.append(ShapeClasses.QuickText([550,500],f"{item}, {chem}, {chems[chem]}",time.time()))
-    print(item, chem, chems[chem])
-    return chem
-    
 def pTableMini():
     cont = 0
     pTableTime = True
@@ -839,17 +866,7 @@ def extractMini():
         if extractItem != 0:
             if player.get_collect()[extractItem] > 0:
                 extraction(extractItem)
-        deleteing = []
-        for i in range(len(quickTexts)):
-            if quickTexts[i].get_visible():
-                print(quickTexts[i].get_text())
-                displayText(quickTexts[i].get_text(),font20,quickTexts[i].get_colours(),[quickTexts[i].get_pos()[0],quickTexts[i].get_pos()[1]+i*30])
-                remove = quickTexts[i].update()
-                if remove:
-                    deleteing.append(i)
-        print(len(quickTexts))
-        for _ in range(len(deleteing)):
-            quickTexts.pop(0)
+        qtHandelling()
         pygame.display.update()
         clock.tick(FPS)
     return cont 
@@ -866,12 +883,24 @@ def craftMini():
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
                     craftTime = False
-                elif event.key == pygame.K_SPACE:
-                    craftTime = False
+                else:
+                    for box in range(len(inputBoxes)):
+                        if inputBoxes[box].get_isInput():
+                            if event.key == pygame.K_BACKSPACE:
+                                inputBoxes[box].decrease_text()
+                            elif event.key == pygame.K_RETURN:
+                                checkProduct(inputBoxes[0].get_text())
+                            else:
+                                inputBoxes[box].increase_text(event.unicode)
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if buttons[0].collision():
                     pygame.mixer.Sound.play(sounds[0])
                     craftTime = False
+                elif buttons[1].collision():
+                    checkProduct(inputBoxes[0].get_text())
+                elif inputBoxes[0].collision():
+                    inputBoxes[0].set_isInput()
+        qtHandelling()
         pygame.display.update()
         clock.tick(FPS)
     return cont 
@@ -1078,6 +1107,7 @@ areaMap = GameClasses.AreaMap()
 areaMap.reset()
 mini = ShapeClasses.MiniWindow([100,100],[WIDTH-200, HEIGHT-200])
 buttons = []
+inputBoxes = []
 quickTexts = []
 cSprites = []
 eSprites = []

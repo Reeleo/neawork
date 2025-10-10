@@ -1,0 +1,1 @@
+carboxylicacid,ester,methylbenzene,haloalkane,alkane,alcohol,ketone,halobenzene,hydroxynitrile,nitrile,amine,amide
