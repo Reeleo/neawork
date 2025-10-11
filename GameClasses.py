@@ -2,6 +2,7 @@ import pygame
 import random
 
 
+#---------------GAME SETTINGS---------------#
 class GameSettings():
     def __init__(self):
         self._saveFile = 0
@@ -73,6 +74,7 @@ class GameSettings():
     
 
 
+#---------------MAPS---------------#
 class AreaMap():
     def __init__(self):
         self._pos = [1,1]

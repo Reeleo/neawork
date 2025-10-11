@@ -6,6 +6,7 @@ RED = (255,0,0)
 BLUE = (0,0,255)
 
 
+#---------------PARENT(SPRITE)---------------#
 class Sprite(pygame.sprite.Sprite):
     def __init__(self,pos,size,scale,colour,sheet):
         self._pos = pos
@@ -48,6 +49,7 @@ class Sprite(pygame.sprite.Sprite):
 
 
 
+#---------------PLAYER---------------#
 class Player(Sprite):
     def __init__(self):
         super().__init__([100,100],[80,80],3.5,BLACK,pygame.image.load("SpriteSheet.png"))
@@ -169,10 +171,8 @@ class Player(Sprite):
         return self.updateSprite()
 
 
-
         
-
-
+#---------------COLLECTABLES---------------#
 class Collectable(Sprite):
     def __init__(self,pos,typeNum):
         super().__init__(pos,[32,32],2,BLACK,pygame.image.load("collectablesSprites.bmp"))
@@ -213,6 +213,7 @@ class Collectable(Sprite):
 
 
 
+#---------------ENEMYS---------------#
 class Enemy(Sprite):
     def __init__(self,pos):
         super().__init__(pos,[80,80],3.5,BLACK,pygame.image.load("EnemySpriteSheet.png"))
@@ -319,6 +320,7 @@ class Enemy(Sprite):
 
 
 
+#---------------NON PLAYER CHARACTERS---------------#
 class Character(Sprite):
     def __init__(self,pos,type):
         if type == "enemy" or type == "boss":

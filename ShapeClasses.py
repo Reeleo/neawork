@@ -5,6 +5,7 @@ RED = (255,0,0)
 GRASS = (0,50,0)
 
 
+#---------------PARENT(SHAPE)---------------#
 class ScreenShape():
     def __init__(self,pos,size):
         self._pos = pos
@@ -29,6 +30,8 @@ class ScreenShape():
         self._text = text
 
 
+
+#---------------NON INTERACTABLE BOXES---------------#
 class TextBox(ScreenShape):
     def __init__(self,pos,size,text,type):
         super().__init__(pos,size)
@@ -37,6 +40,8 @@ class TextBox(ScreenShape):
         self._type = type
 
 
+
+#---------------INTERACTABLE BOXES---------------#
 class Button(ScreenShape):
     def __init__(self,pos,size,text):
         super().__init__(pos,size)
@@ -66,13 +71,17 @@ class Button(ScreenShape):
     def get_touch(self):
         return self._touch
     
-    
+
+
+#---------------MINI WINDOW---------------#  
 class MiniWindow(ScreenShape):
     def __init__(self,pos,size):
         super().__init__(pos,size)
         self._colours = [WHITE, GRASS]
 
 
+
+#---------------QUICK SCREEN TEXT---------------#
 class QuickText(ScreenShape):
     def __init__(self,pos,text,startTime):
         super().__init__(pos,[0,0])

@@ -6,6 +6,7 @@ import ShapeClasses
 import GameClasses
 pygame.init()
 
+#---------------GLOBAL CONSTANTS---------------#
 font20 = pygame.font.Font('freesansbold.ttf', 20)
 font100 = pygame.font.Font('freesansbold.ttf',100)
 WIDTH, HEIGHT = 1472, 960
@@ -27,6 +28,7 @@ music = ["Menu.mp3","DoctorWeird.mp3","ForestBattle.mp3"]
 sounds = [pygame.mixer.Sound("click.mp3")]
 
 
+#---------------DISPLAYING ITEMS---------------#
 def checkCollision(enemy):
         pPos = player.get_pos()
         ePos = enemy.get_pos()
@@ -36,32 +38,6 @@ def checkCollision(enemy):
         pos = [abs(ePos[0]-pPos[0]),abs(ePos[1]-pPos[1])]
         if pMask.overlap(eMask, (pos)):
             enemy.set_battle(True)
-
-def fetchQuestions():
-    c = []
-    chosen = []
-    qSet = []
-    file = open("questions.txt","r")
-    for _ in range(18):
-        line = file.readline()
-        qSet.append(line.split(","))
-    for i in range(18):
-        qSet[i][5] = int(qSet[i][5])
-    file.close()
-    for _ in range(3):
-        valid = False
-        while not valid:
-            c1 = random.randint(0,17)
-            repeat = False
-            for j in range(len(c)):
-                if c[j] == c1:
-                    repeat = True
-            if not repeat:
-                valid = True
-        c.append(c1)
-    chosen = [qSet[c[0]],qSet[c[1]],qSet[c[2]]]
-    return chosen
-
     
 def displayText(txt,fnt,colour,pos):
     txt = fnt.render(str(txt), True, colour)
@@ -224,10 +200,21 @@ def displayObject(type,obj):
         
     elif type == "heart":
         screen.blit(obj.get_image(0,3,32,32),(obj.get_pos()))
-         
+
+def qtHandelling():
+        deleteing = []
+        for i in range(len(quickTexts)):
+            if quickTexts[i].get_visible():
+                displayText(quickTexts[i].get_text(),font20,quickTexts[i].get_colours(),[quickTexts[i].get_pos()[0],quickTexts[i].get_pos()[1]+i*30])
+                remove = quickTexts[i].update()
+                if remove:
+                    deleteing.append(i)
+        for _ in range(len(deleteing)):
+            quickTexts.pop(0)
 
 
 
+#---------------SETUP/DISPLAY---------------#
 def screenSetUp(screenType):
     #1
     if screenType == "menu":
@@ -300,6 +287,7 @@ def screenSetUp(screenType):
     if screenType == "craft":
         buttons.clear()
         cSprites.clear()
+        inputBoxes.clear()
         buttons.append(ShapeClasses.Button([1150,750],[180,80],"RETURN"))
         buttons.append(ShapeClasses.Button([660,200],[80,80],"GO"))
         inputBoxes.append(ShapeClasses.Button([320,200],[320,80],""))
@@ -592,46 +580,8 @@ def screenDisplay(screenType):
             displayObject("heart",hearts[j])
 
 
-def qtHandelling():
-        deleteing = []
-        for i in range(len(quickTexts)):
-            if quickTexts[i].get_visible():
-                displayText(quickTexts[i].get_text(),font20,quickTexts[i].get_colours(),[quickTexts[i].get_pos()[0],quickTexts[i].get_pos()[1]+i*30])
-                remove = quickTexts[i].update()
-                if remove:
-                    deleteing.append(i)
-        for _ in range(len(deleteing)):
-            quickTexts.pop(0)
 
-
-def extraction(item):
-    chances = game.itemChances[item]
-    chem = chances[random.randint(0,len(chances)-1)][0]
-    player.extract(item,chem)
-    chems = player.get_chemicals()
-    quickTexts.append(ShapeClasses.QuickText([550,500],f"{item}, {chem}, {chems[chem]}",time.time()))
-    print(item, chem, chems[chem])
-    return chem
-    
-
-def checkProduct(txt):
-    valid = False
-    file = open("synthesisFile.txt","r")
-    line = file.readline()
-    data = line.split(",")
-    print(data, txt)
-    for i in range(len(data)):
-        if data[i] == txt:
-            valid = True  
-            break  
-    if valid:
-        quickTexts.append(ShapeClasses.QuickText([800,240],f"VALID",time.time()))
-    else:
-        quickTexts.append(ShapeClasses.QuickText([800,240],f"INVALID",time.time()))
-    file.close()
-
-
- 
+#---------------PLAYER DATA---------------#
 def loadGame():
     if game.get_saveFile() == 1:
         file = open("saveData1.txt","r")
@@ -689,6 +639,87 @@ def saveGame():
 
 
 
+#---------------SCREEN SUBFUNCTIONS---------------#
+def extraction(item):
+    chances = game.itemChances[item]
+    chem = chances[random.randint(0,len(chances)-1)][0]
+    player.extract(item,chem)
+    chems = player.get_chemicals()
+    quickTexts.append(ShapeClasses.QuickText([550,500],f"{item}, {chem}, {chems[chem]}",time.time()))
+    print(item, chem, chems[chem])
+    return chem
+    
+def synthesis(setUp,item):
+    if setUp:
+        buttons.clear()
+        inputBoxes.clear()
+        buttons.append(ShapeClasses.Button([1150,750],[180,80],"RETURN"))
+        buttons.append(ShapeClasses.Button([1230,650],[100,80],"CHECK"))
+        if item == "ester":
+            inputBoxes.append(ShapeClasses.Button([140,400],[260,80],""))
+            inputBoxes.append(ShapeClasses.Button([420,400],[260,80],""))
+            inputBoxes.append(ShapeClasses.Button([800,400],[260,80],""))
+            inputBoxes.append(ShapeClasses.Button([1080,400],[260,80],""))
+            inputBoxes.append(ShapeClasses.Button([610,520],[260,80],""))
+    else:
+        pygame.draw.rect(screen,WHITE,(100,HEIGHT/2-75,WIDTH-200,10))
+        displayObject("mini",mini)
+        displayText("CRAFTING:", font20, WHITE, [212, 150])
+        displayText("input the correct things:", font20, WHITE, [500, 220])
+        displayText("reactants:", font20, WHITE, [410, 350])
+        displayText("products:", font20, WHITE, [1070, 350])
+        displayText("catalyst/condition:", font20, WHITE, [500, 565])
+        displayText("-->", font20, WHITE, [740, 440])
+        for i in range(len(buttons)):
+            displayObject("button",buttons[i])
+        for j in range(len(inputBoxes)):
+            displayObject("button",inputBoxes[j])
+
+def checkEquation():
+    pass
+
+def checkProduct(txt):
+    valid = False
+    file = open("synthesisFile.txt","r")
+    line = file.readline()
+    data = line.split(",")
+    for i in range(len(data)):
+        if data[i] == txt:
+            valid = True  
+            break  
+    if not valid:
+        quickTexts.append(ShapeClasses.QuickText([800,240],f"INVALID",time.time()))
+    file.close()
+    return valid, txt
+
+def fetchQuestions():
+    c = []
+    chosen = []
+    qSet = []
+    file = open("questions.txt","r")
+    for _ in range(18):
+        line = file.readline()
+        qSet.append(line.split(","))
+    for i in range(18):
+        qSet[i][5] = int(qSet[i][5])
+    file.close()
+    for _ in range(3):
+        valid = False
+        while not valid:
+            c1 = random.randint(0,17)
+            repeat = False
+            for j in range(len(c)):
+                if c[j] == c1:
+                    repeat = True
+            if not repeat:
+                valid = True
+        c.append(c1)
+    chosen = [qSet[c[0]],qSet[c[1]],qSet[c[2]]]
+    return chosen
+
+
+
+#---------------SCREEN FUNCTIONS---------------#
 def menuScreen():
     cont = 0
     screenDisplay("menu")
@@ -876,6 +907,7 @@ def craftMini():
     craftTime = True
     while craftTime:
         screenDisplay("craft")
+        synthesisTime = [False,""]
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 craftTime = False
@@ -889,7 +921,7 @@ def craftMini():
                             if event.key == pygame.K_BACKSPACE:
                                 inputBoxes[box].decrease_text()
                             elif event.key == pygame.K_RETURN:
-                                checkProduct(inputBoxes[0].get_text())
+                                synthesisTime = checkProduct(inputBoxes[0].get_text())
                             else:
                                 inputBoxes[box].increase_text(event.unicode)
             if event.type == pygame.MOUSEBUTTONDOWN:
@@ -897,9 +929,49 @@ def craftMini():
                     pygame.mixer.Sound.play(sounds[0])
                     craftTime = False
                 elif buttons[1].collision():
-                    checkProduct(inputBoxes[0].get_text())
+                     synthesisTime = checkProduct(inputBoxes[0].get_text())
                 elif inputBoxes[0].collision():
                     inputBoxes[0].set_isInput()
+
+        if synthesisTime[0] == True:
+            synthesis(True,synthesisTime[1])
+        while synthesisTime[0] == True:
+            synthesis(False,synthesisTime[1])
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    synthesisTime = (False,"")
+                    craftTime = False
+                    cont = 1
+                if event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_ESCAPE:
+                        synthesisTime = (False,"")
+                        craftTime = False
+                    else:
+                        for box in range(len(inputBoxes)):
+                            if inputBoxes[box].get_isInput():
+                                if event.key == pygame.K_BACKSPACE:
+                                    inputBoxes[box].decrease_text()
+                                # elif event.key == pygame.K_RETURN:
+                                #     synthesisTime = checkProduct(inputBoxes[0].get_text())
+                                else:
+                                    inputBoxes[box].increase_text(event.unicode)
+                if event.type == pygame.MOUSEBUTTONDOWN:
+                    if buttons[0].collision():
+                        pygame.mixer.Sound.play(sounds[0])
+                        synthesisTime = (False,"")
+                        craftTime = False
+                    elif buttons[1].collision():
+                        pygame.mixer.Sound.play(sounds[0])
+                        checkEquation()
+                        synthesisTime = (False,"")
+                        craftTime = False
+
+                    # elif inputBoxes[0].collision():
+                    #     inputBoxes[0].set_isInput()
+
+            pygame.display.update()
+            clock.tick(FPS)
+
         qtHandelling()
         pygame.display.update()
         clock.tick(FPS)
@@ -1100,7 +1172,7 @@ def mapScreen():
 
 
 
-
+#---------------GLOBAL OBJECTS---------------#
 player = SpriteClasses.Player()
 game = GameClasses.GameSettings()
 areaMap = GameClasses.AreaMap()
@@ -1117,7 +1189,7 @@ doors = []
 hearts = []
 
 
-
+#---------------MAIN---------------#
 running = "menu"
 while running != "":
     if running == "menu":
@@ -1194,3 +1266,4 @@ while running != "":
     pygame.display.update()
     clock.tick(FPS)
 pygame.quit()
+#---------------MAIN---------------#
