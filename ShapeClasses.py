@@ -52,9 +52,9 @@ class Button(ScreenShape):
     
     def get_isInput(self):
         return self._isInput
-    def set_isInput(self):
-        self._isInput = True
-    
+    def set_isInput(self, change):
+        self._isInput = change
+
     def increase_text(self,txt):
         self._text += txt
     def decrease_text(self):

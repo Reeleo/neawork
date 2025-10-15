@@ -675,22 +675,29 @@ def synthesis(setUp,item):
         for j in range(len(inputBoxes)):
             displayObject("button",inputBoxes[j])
 
-def checkEquation():
-    pass
-
 def checkProduct(txt):
     valid = False
+    product = ""
     file = open("synthesisFile.txt","r")
     line = file.readline()
     data = line.split(",")
     for i in range(len(data)):
-        if data[i] == txt:
+        data[i] = data[i].split("/")
+    for j in range(len(data)):
+        if data[j][0] == txt:
             valid = True  
+            product = data[j]
             break  
     if not valid:
         quickTexts.append(ShapeClasses.QuickText([800,240],f"INVALID",time.time()))
     file.close()
-    return valid, txt
+    return valid, product
+
+def checkEquation(txt,check):
+    check.pop(0)
+    for i in range(len(check)):
+        check[i] = check[i].split(".")
+    print(txt, check)
 
 def fetchQuestions():
     c = []
@@ -931,12 +938,12 @@ def craftMini():
                 elif buttons[1].collision():
                      synthesisTime = checkProduct(inputBoxes[0].get_text())
                 elif inputBoxes[0].collision():
-                    inputBoxes[0].set_isInput()
+                    inputBoxes[0].set_isInput(True)
 
         if synthesisTime[0] == True:
-            synthesis(True,synthesisTime[1])
+            synthesis(True,synthesisTime[1][0])
         while synthesisTime[0] == True:
-            synthesis(False,synthesisTime[1])
+            synthesis(False,synthesisTime[1][0])
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     synthesisTime = (False,"")
@@ -951,8 +958,6 @@ def craftMini():
                             if inputBoxes[box].get_isInput():
                                 if event.key == pygame.K_BACKSPACE:
                                     inputBoxes[box].decrease_text()
-                                # elif event.key == pygame.K_RETURN:
-                                #     synthesisTime = checkProduct(inputBoxes[0].get_text())
                                 else:
                                     inputBoxes[box].increase_text(event.unicode)
                 if event.type == pygame.MOUSEBUTTONDOWN:
@@ -962,12 +967,17 @@ def craftMini():
                         craftTime = False
                     elif buttons[1].collision():
                         pygame.mixer.Sound.play(sounds[0])
-                        checkEquation()
-                        synthesisTime = (False,"")
-                        craftTime = False
-
-                    # elif inputBoxes[0].collision():
-                    #     inputBoxes[0].set_isInput()
+                        playerInput = []
+                        for i in range(len(inputBoxes)):
+                            playerInput.append(inputBoxes[i].get_text())
+                        checkEquation(playerInput, synthesisTime[1])
+                    else:
+                        for j in range(len(inputBoxes)):
+                            if inputBoxes[j].collision():
+                                for k in range(len(inputBoxes)):
+                                    inputBoxes[k].set_isInput(False)
+                                inputBoxes[j].set_isInput(True)
+                                
 
             pygame.display.update()
             clock.tick(FPS)
