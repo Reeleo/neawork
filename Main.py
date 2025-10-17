@@ -695,8 +695,10 @@ def checkProduct(txt):
 
 def checkEquation(txt,check):
     check.pop(0)
+    validlen = len(check)
     for i in range(len(check)):
         check[i] = check[i].split(".")
+    
     print(txt, check)
 
 def fetchQuestions():
