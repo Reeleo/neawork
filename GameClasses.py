@@ -14,18 +14,18 @@ class GameSettings():
         self._playMusic = False
         self._showTutorial = True
         self.collectTypes = [["bacteria",0,0],["bug",1,0],["flower",0,1],["leaf",1,1],["fruit",2,1],["wplant",3,1],["srock",0,2],["lrock",1,2],["volrock",2,2],["gem",3,2],["freshwater",2,0],["saltwater",3,0],["door",1,3]]
-        self.itemChances = {"bacteria":[["carbon",3],["carbon dioxide",2],["aminoacid",1]],
-                        "bug":[["carbon",3],["aminoacid",1],["cyanide",1]],
+        self.itemChances = {"bacteria":[["carbon",3],["CO2",2],["aminoacid",1]],
+                        "bug":[["carbon",3],["aminoacid",1],["cyanidesalt",1]],
                         "flower":[["carbon",2],["oxygen",2],["aminoacid",1]],
-                        "leaf":[["carbon",2],["oxygen",4],["startch",5],["cellulose",5]],
-                        "fruit":[["carbon",2],["oxygen",2],["startch",2],["sucrose",5]],
+                        "leaf":[["carbon",2],["oxygen",4],["startch",5]],
+                        "fruit":[["carbon",2],["oxygen",2],["startch",2]],
                         "wplant":[["carbon",5],["oxygen",4],["startch",5],["aminoacid",1]],
                         "srock":[["silicon",5],["iron",1],["magnesium",1],["aluminium",1]],
                         "lrock":[["silicon",10],["iron",3],["magnesium",3],["aluminium",3]],
                         "volrock":[["carbon",5],["sulfur",2],["ammonia",2]],
-                        "gem":[["carbon",10],["silicon",10],["Mg",5],["aluminium",5]],
-                        "water":[["freshwater",5],["carbon dioxide",3],["oxygen",4]],
-                        "saltwater":[["freshwater",5],["carbon dioxide",3],["oxygen",4],["sodium chloride",5],["sodium bromide",5]]}
+                        "gem":[["carbon",10],["silicon",10],["magnesium",5],["aluminium",5]],
+                        "water":[["freshwater",5],["CO2",3],["oxygen",4]],
+                        "saltwater":[["freshwater",5],["CO2",3],["oxygen",4],["halogensalt",5]]}
     
     def get_screen(self):
         return self._screen

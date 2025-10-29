@@ -43,9 +43,9 @@ class TextBox(ScreenShape):
 
 #---------------INTERACTABLE BOXES---------------#
 class Button(ScreenShape):
-    def __init__(self,pos,size,text):
+    def __init__(self,pos,size,text,colour):
         super().__init__(pos,size)
-        self._colours = [RED,WHITE]
+        self._colours = [colour,WHITE]
         self._text = text
         self._touch = False
         self._isInput = False

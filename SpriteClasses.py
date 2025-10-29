@@ -62,16 +62,13 @@ class Player(Sprite):
         self._collect = {"bacteria":0,"bug":0,"flower":0,"leaf":0,"fruit":0,
                         "wplant":0,"srock":0,"lrock":0,"volrock":0,"gem":0,
                         "freshwater":0,"saltwater":0}
-        self._chemicals = {"carbon":0,"oxygen":0,"silicon":0,"sulfur":0,"nitrogen":0,
-                        "magnesium":0,"aluminium":0,"iron":0,"sodium":0,"chlorine":0,
-                        "bromine":0,"iodine":0,
-                        "carbon dioxide":0,"water":0,"ammonia":0,"sodium chloride":0,"sodium bromide":0,
-                        "cyanide":0,"glucose":0,"sucrose":0,"startch":0,"cellulose":0,
-                        "alkane":0,"alkene":0,"alcohol":0,"carboxylic acid":0,
-                        "ester":0,"polyester":0,"chloroalkane":0,"bromoalkane":0,"amine":0,"amide":0,
-                        "aminoacid":0,"benzene":0,"phenol":0,"acyl cloride":0,"acid anhydride":0,
-                        "sodium hydroxide":0,"sodium carbonate":0,
-                        "hydrochloric acid":0,"hydrogen bromide":0,"nitric acid":0,"sulfuric acid":0}
+        self._chemicals = {"carbon":0,"CO2":0,"oxygen":0,"aminoacid":0,"cyanidesalt":0,
+                        "startch":0,"glucose":0,"silicon":0,"iron":0,"magnesium":0,"aluminium":0,
+                        "ammonia":0,"sulfur":0,"sulfurdioxide":0,"water":0,"halogensalt":0,"ammoniumsalt":0,
+                        "alkane":0,"alkene":0,"hydrogen":0,"nickle":0,"alcohol":0,"sulfuricacid":0,
+                        "amine":0,"haloalkane":0,"acylchloride":0,"amide":0,"nitrile":0,
+                        "hydrogenhalide":0,"hyroxidesalt":0,"ketone":0,"aldehyde":0,"carboxylicacid":0,
+                        "hydroxynitrile":0,"SOCl2":0,"ester":0}
 
     def get_speed(self):
         return self._speed
@@ -188,9 +185,13 @@ class Collectable(Sprite):
         self._type = gameTypes[self._num]
 
     def collision(self,playerpos):
-        if self._pos[0]-80 < playerpos[0] < self._pos[0]+self._size[0]+40:
-            if self._pos[1]-80 < playerpos[1] < self._pos[1]+self._size[1]+40:
+        if self._num == 12:
+            if self._pos[0]-100 < playerpos[0] < self._pos[0]+self._size[0]+100:
                 return True
+        else:
+            if self._pos[0]-80 < playerpos[0] < self._pos[0]+self._size[0]+40:
+                if self._pos[1]-80 < playerpos[1] < self._pos[1]+self._size[1]+40:
+                    return True
         return False
        
     def update(self,gameScreen):

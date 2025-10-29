@@ -16,7 +16,8 @@ WHITE = (255,255,255)
 GREY = (100,100,100)
 RED = (255,0,0)
 BURG = (100,0,0)
-GREEN = (0,255,0)
+DARK = (50,0,0)
+GREEN = (0,200,0)
 GRASS = (0,50,0)
 BLUE = (0,0,255)
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
@@ -223,22 +224,22 @@ def screenSetUp(screenType):
             pygame.mixer.music.load(music[0])
             pygame.mixer.music.play(-1)
             game.set_music(0)
-        buttons.append(ShapeClasses.Button([WIDTH/4-90,3*HEIGHT/4],[180,80],"EXIT"))
-        buttons.append(ShapeClasses.Button([3*WIDTH/4-90, 3*HEIGHT/4],[180,80],"START"))
-        buttons.append(ShapeClasses.Button([WIDTH/2-90, HEIGHT/2],[180,80],"HOW TO PLAY"))
+        buttons.append(ShapeClasses.Button([WIDTH/4-90,3*HEIGHT/4],[180,80],"EXIT",RED))
+        buttons.append(ShapeClasses.Button([3*WIDTH/4-90, 3*HEIGHT/4],[180,80],"START",RED))
+        buttons.append(ShapeClasses.Button([WIDTH/2-90, HEIGHT/2],[180,80],"HOW TO PLAY",RED))
 
     #2
     if screenType == "htp":
         buttons.clear()
-        buttons.append(ShapeClasses.Button([WIDTH-300, 200],[180,80],"MENU"))
+        buttons.append(ShapeClasses.Button([WIDTH-300, 200],[180,80],"MENU",RED))
 
     #3
     if screenType == "savefiles":
         buttons.clear()
-        buttons.append(ShapeClasses.Button([400,100],[1000,150],"Save1"))
-        buttons.append(ShapeClasses.Button([400,300],[1000,150],"Save2"))
-        buttons.append(ShapeClasses.Button([400,500],[1000,150],"Save3"))
-        buttons.append(ShapeClasses.Button([WIDTH/4-200, 3*HEIGHT/4],[180,80],"MENU"))
+        buttons.append(ShapeClasses.Button([400,100],[1000,150],"Save1",RED))
+        buttons.append(ShapeClasses.Button([400,300],[1000,150],"Save2",RED))
+        buttons.append(ShapeClasses.Button([400,500],[1000,150],"Save3",RED))
+        buttons.append(ShapeClasses.Button([WIDTH/4-200, 3*HEIGHT/4],[180,80],"MENU",RED))
 
     #4
     if screenType == "home":
@@ -258,14 +259,14 @@ def screenSetUp(screenType):
     if screenType == "inventory":
         buttons.clear()
         cSprites.clear()
-        buttons.append(ShapeClasses.Button([1150,750],[180,80],"RETURN"))
+        buttons.append(ShapeClasses.Button([1150,750],[180,80],"RETURN",GREEN))
         for j in range(12):
             cSprites.append(SpriteClasses.Collectable([120, 100+j*60],j))
         for k in range(12):
             cSprites[k].assign_type(game.collectTypes)
         if game.get_screen() == "home":
-            buttons.append(ShapeClasses.Button([850,460],[400,80],"EXTRACT"))
-            buttons.append(ShapeClasses.Button([390,460],[400,80],"CRAFT"))
+            buttons.append(ShapeClasses.Button([850,460],[400,80],"EXTRACT",GREEN))
+            buttons.append(ShapeClasses.Button([390,460],[400,80],"CRAFT",GREEN))
         mini.set_size([WIDTH-200, HEIGHT-200])
         mini.set_pos([100, 100])
         
@@ -273,9 +274,9 @@ def screenSetUp(screenType):
     if screenType == "extract":
         buttons.clear()
         cSprites.clear()
-        buttons.append(ShapeClasses.Button([1150,750],[180,80],"RETURN"))
+        buttons.append(ShapeClasses.Button([1150,750],[180,80],"RETURN",GREEN))
         for i in range(12):
-            buttons.append(ShapeClasses.Button([140+(i)*100, 200],[80,80],i))
+            buttons.append(ShapeClasses.Button([140+(i)*100, 200],[80,80],i,GREEN))
         for j in range(12):
             cSprites.append(SpriteClasses.Collectable([140+j*100, 200],j))
         for k in range(12):
@@ -288,9 +289,9 @@ def screenSetUp(screenType):
         buttons.clear()
         cSprites.clear()
         inputBoxes.clear()
-        buttons.append(ShapeClasses.Button([1150,750],[180,80],"RETURN"))
-        buttons.append(ShapeClasses.Button([660,200],[80,80],"GO"))
-        inputBoxes.append(ShapeClasses.Button([320,200],[320,80],""))
+        buttons.append(ShapeClasses.Button([1150,750],[180,80],"RETURN",GREEN))
+        buttons.append(ShapeClasses.Button([660,200],[80,80],"GO",GREEN))
+        inputBoxes.append(ShapeClasses.Button([320,200],[320,80],"",GREEN))
 
         mini.set_size([WIDTH-200, HEIGHT-200])
         mini.set_pos([100, 100])
@@ -299,7 +300,7 @@ def screenSetUp(screenType):
     if screenType == "pTable":
         buttons.clear()
 
-        buttons.append(ShapeClasses.Button([1240,610],[90,180],"RETURN"))
+        buttons.append(ShapeClasses.Button([1240,610],[90,180],"RETURN",RED))
         mini.set_size([WIDTH-200, HEIGHT-255])
         mini.set_pos([100, 130])
 
@@ -308,21 +309,21 @@ def screenSetUp(screenType):
         buttons.clear()
         for i in range(8):
             if i == 0:
-                buttons.append(ShapeClasses.Button([900,250],[80,80],"+"))
+                buttons.append(ShapeClasses.Button([900,250],[80,80],"+",RED))
             elif i == 1:
-                buttons.append(ShapeClasses.Button([600,250],[80,80],"+"))
+                buttons.append(ShapeClasses.Button([600,250],[80,80],"+",RED))
             elif i == 2:
-                buttons.append(ShapeClasses.Button([350,250],[80,80],str(game.get_showAll())))
+                buttons.append(ShapeClasses.Button([350,250],[80,80],str(game.get_showAll()),RED))
             elif i == 3:
-                buttons.append(ShapeClasses.Button([WIDTH/2, 3*HEIGHT/4],[180,80],"RETURN"))
+                buttons.append(ShapeClasses.Button([WIDTH/2, 3*HEIGHT/4],[180,80],"RETURN",RED))
             elif i == 4:
-                buttons.append(ShapeClasses.Button([WIDTH/4-90, 3*HEIGHT/4],[180,80],"MENU"))
+                buttons.append(ShapeClasses.Button([WIDTH/4-90, 3*HEIGHT/4],[180,80],"MENU",RED))
             elif i == 5:
-                buttons.append(ShapeClasses.Button([WIDTH/3+20, 3*HEIGHT/4],[180,80],"SAVE"))
+                buttons.append(ShapeClasses.Button([WIDTH/3+20, 3*HEIGHT/4],[180,80],"SAVE",RED))
             elif i == 6:
-                buttons.append(ShapeClasses.Button([350,350],[80,80],str(game.get_playMusic())))
+                buttons.append(ShapeClasses.Button([350,350],[80,80],str(game.get_playMusic()),RED))
             elif i == 7:
-                buttons.append(ShapeClasses.Button([900,350],[80,80],str(game.get_tutorial())))
+                buttons.append(ShapeClasses.Button([900,350],[80,80],str(game.get_tutorial()),RED))
 
     #10
     if screenType == "maps":
@@ -357,7 +358,7 @@ def screenSetUp(screenType):
         buttons.clear()
         mini.set_pos([100,100])
         mini.set_size([WIDTH-200, HEIGHT-192])
-        buttons.append(ShapeClasses.Button([1187,783],[180,80],"RETURN"))
+        buttons.append(ShapeClasses.Button([1187,783],[180,80],"RETURN",RED))
 
     #12
     if screenType == "battle":
@@ -372,9 +373,9 @@ def screenSetUp(screenType):
 
         for i in range(4):
             if i < 2:
-                buttons.append(ShapeClasses.Button([615+i*380, 400],[360,80],i+1))
+                buttons.append(ShapeClasses.Button([615+i*380, 400],[360,80],i+1,RED))
             else:
-                buttons.append(ShapeClasses.Button([615+(i-2)*380, 500],[360,80],i+1))
+                buttons.append(ShapeClasses.Button([615+(i-2)*380, 500],[360,80],i+1,RED))
         sSprites.append(SpriteClasses.Character([30,180],"enemy"))
         mini.set_size([WIDTH-200, HEIGHT-200])
         mini.set_pos([100, 100])
@@ -387,7 +388,7 @@ def screenDisplay(screenType):
         screen.fill(BURG)
         pygame.draw.rect(screen,RED,[20,20,WIDTH-40, HEIGHT-40])
         pygame.draw.rect(screen,BLACK,[40,40,WIDTH-80, HEIGHT-80])
-        displayText("game", font100, WHITE, [WIDTH/2, 200])
+        displayText("ChemCraft", font100, WHITE, [WIDTH/2, 200])
         for i in range(len(buttons)):
             displayObject("button",buttons[i])
 
@@ -416,9 +417,9 @@ def screenDisplay(screenType):
         screen.fill(BURG)
         pygame.draw.rect(screen,BLACK,[20, 20, WIDTH-40, HEIGHT-40])
         pygame.draw.rect(screen,BURG,[50, 50, WIDTH-100, HEIGHT-100])
-        #displayImage(pygame.image.load("homeBackground.png"),[WIDTH/2-480,50],3,[320,320])
         displayImage(pygame.image.load("homeBackground.png"),[WIDTH/2-400,120],2.5,[320,320])
         pygame.draw.rect(screen,BURG,[0, HEIGHT-180, WIDTH, 180])
+        pygame.draw.rect(screen,BLACK,(0,780,WIDTH,10))
         if game.get_tutorial():
             displayText("press 'q' for periodic table",font20,WHITE,[1086,360])
             displayText("press 'e' for inventory",font20,WHITE,[455,535])
@@ -441,20 +442,23 @@ def screenDisplay(screenType):
 
         x = 530
         y = 340
+        xcount, ycount = 0, 0
         collection = player.get_collect()
-        displayText(f"BACTERIA: {collection["bacteria"]}", font20, WHITE, [x, y])
-        displayText(f"BUG: {collection["bug"]}", font20, WHITE, [x+200, y])
-        displayText(f"FLOWER: {collection["flower"]}", font20, WHITE, [x, y+40])
-        displayText(f"LEAF: {collection["leaf"]}", font20, WHITE, [x+200, y+40])
-        displayText(f"FRUIT: {collection["fruit"]}", font20, WHITE, [x+400, y+40])
-        displayText(f"OCEAN PLANT: {collection["wplant"]}", font20, WHITE, [x+600, y+40])
-        displayText(f"SMALL ROCK: {collection["srock"]}", font20, WHITE, [x, y+80])
-        displayText(f"BIG ROCK: {collection["lrock"]}", font20, WHITE, [x+200, y+80])
-        displayText(f"VOLCANIC ROCK: {collection["volrock"]}", font20, WHITE, [x+400, y+80])
-        displayText(f"GEMSTONE: {collection["gem"]}", font20, WHITE, [x+600, y+80])
-
-        displayText(f"FRESHWATER: {collection["freshwater"]}", font20, WHITE, [x+400, y])
-        displayText(f"SEAWATER: {collection["saltwater"]}", font20, WHITE, [x+600, y])
+        for item in collection:
+            itemname = item
+            if itemname == "wplant":
+                itemname = "waterplant"
+            elif itemname == "sorck":
+                itemname = "smallrock"
+            elif itemname == "lrock":
+                itemname = "largerock"
+            elif itemname == "volrock":
+                itemname = "volcanicrock"
+            displayText(f"{itemname}: {collection[item]}", font20, WHITE, [x+xcount, y+ycount])
+            xcount += 200
+            if xcount == 800:
+                xcount = 0 
+                ycount += 40
   
     #5
     if screenType == "extract":
@@ -489,11 +493,24 @@ def screenDisplay(screenType):
         displayObject("mini",mini)
         displayText("CRAFTING:", font20, WHITE, [212, 150])
         displayText("Synthesis of:", font20, WHITE, [222, 235])
-        displayText("please you lowercase and avoid spaces so get some sleep", font20, WHITE, [1200, 235])
+        displayText("please use lowercase", font20, WHITE, [642, 300])
+        pygame.draw.rect(screen,WHITE,(100,HEIGHT/2-110,WIDTH-200,10))
         for i in range(len(buttons)):
             displayObject("button",buttons[i])
         for j in range(len(inputBoxes)):
             displayObject("button",inputBoxes[j])
+        
+        x = 270
+        y = 460
+        xcount, ycount = 0, 0
+        collection = player.get_chemicals()
+        for item in collection:
+            itemname = item
+            displayText(f"{itemname}: {collection[item]}", font20, WHITE, [x+xcount, y+ycount])
+            xcount += 220
+            if xcount >= 880:
+                xcount = 0 
+                ycount += 40
 
     #7
     if screenType == "pTable":
@@ -607,7 +624,6 @@ def loadGame():
             player.set_speed(saveData[0],"set")
     player.set_int()
     file.close()
-    print("LOADED")
 
 def saveGame():
     if game.get_saveFile() == 1:
@@ -635,7 +651,6 @@ def saveGame():
     file.writelines(gameLine1)
     file.writelines(gameLine2)
     file.close()
-    print("SAVED")
 
 
 
@@ -649,26 +664,50 @@ def extraction(item):
     print(item, chem, chems[chem])
     return chem
     
-def synthesis(setUp,item):
+def synthesis(setUp,items):
     if setUp:
         buttons.clear()
         inputBoxes.clear()
-        buttons.append(ShapeClasses.Button([1150,750],[180,80],"RETURN"))
-        buttons.append(ShapeClasses.Button([1230,650],[100,80],"CHECK"))
-        if item == "ester":
-            inputBoxes.append(ShapeClasses.Button([140,400],[260,80],""))
-            inputBoxes.append(ShapeClasses.Button([420,400],[260,80],""))
-            inputBoxes.append(ShapeClasses.Button([800,400],[260,80],""))
-            inputBoxes.append(ShapeClasses.Button([1080,400],[260,80],""))
-            inputBoxes.append(ShapeClasses.Button([610,520],[260,80],""))
+        buttons.append(ShapeClasses.Button([1150,750],[180,80],"RETURN",GREEN))
+        buttons.append(ShapeClasses.Button([1230,650],[100,80],"CHECK",GREEN))
+        buttons.append(ShapeClasses.Button([1230,250],[100,80],"HINT",GREEN))
+        for i in range(len(items)):
+            try:
+                items[i] = items[i].split(".") 
+            except:
+                pass
+
+        for j in range(len(items)):
+            if j != 0:
+                for k in range(len(items[j])):
+                    if j == 1 and k == 0:
+                        inputBoxes.append(ShapeClasses.Button([290,400],[260,80],"",GREEN))
+                    elif j == 1 and k == 1:
+                        inputBoxes.pop(-1)
+                        inputBoxes.append(ShapeClasses.Button([130,400],[260,80],"",GREEN))
+                        inputBoxes.append(ShapeClasses.Button([430,400],[260,80],"",GREEN))
+
+                    elif j == 2 and k == 0:
+                        inputBoxes.append(ShapeClasses.Button([950,400],[260,80],"",GREEN))
+                    elif j == 2 and k == 1:
+                        inputBoxes.pop(-1)
+                        inputBoxes.append(ShapeClasses.Button([790,400],[260,80],"",GREEN))
+                        inputBoxes.append(ShapeClasses.Button([1090,400],[260,80],"",GREEN))
+
+                    elif j == 3 and k == 0:
+                        inputBoxes.append(ShapeClasses.Button([610,520],[260,80],"",GREEN))
+                    elif j == 3 and k == 1:
+                        inputBoxes.pop(-1)
+                        inputBoxes.append(ShapeClasses.Button([450,520],[260,80],"",GREEN))
+                        inputBoxes.append(ShapeClasses.Button([750,520],[260,80],"",GREEN))  
+            
     else:
         pygame.draw.rect(screen,WHITE,(100,HEIGHT/2-75,WIDTH-200,10))
         displayObject("mini",mini)
-        displayText("CRAFTING:", font20, WHITE, [212, 150])
-        displayText("input the correct things:", font20, WHITE, [500, 220])
+        displayText("CRAFTING: Input the correct reactants, conditions and products", font20, WHITE, [440, 140])
         displayText("reactants:", font20, WHITE, [410, 350])
         displayText("products:", font20, WHITE, [1070, 350])
-        displayText("catalyst/condition:", font20, WHITE, [500, 565])
+        displayText("catalyst/condition:", font20, WHITE, [350, 565])
         displayText("-->", font20, WHITE, [740, 440])
         for i in range(len(buttons)):
             displayObject("button",buttons[i])
@@ -748,10 +787,29 @@ def checkEquation(txt,check):
         for j in range(len(check[i])):
             length += 1
     print(txt, check, validlen)
+
+    message = []
+    chems = player.get_chemicals()
+    for i in range(len(check[0])):
+        print("i",chems[check[0][i]])
+        if chems[check[0][i]] > 0:
+            player.set_chemicals(check[0][i],chems[check[0][i]]-1)
+        else:
+            message.append(f"you dont have it {check[0][i]}")
+            
+
+    for j in range(len(check[2])):
+        if check[2][j] == "sufuricacid" or check[2][j] == "nickle":
+            print("j",chems[check[2][j]])
+            if chems[check[i]] > 0:
+                player.set_chemicals(check[i],chems[check[i]]-1)
+            else:
+                message.append(f"you dont have {check[2][j]}")
+
     
-    if validlen == length:
+    if validlen == length and message == []:
         return True
-    return False
+    return False, message
 
 
 
@@ -997,9 +1055,9 @@ def craftMini():
                     inputBoxes[0].set_isInput(True)
 
         if synthesisTime[0] == True:
-            synthesis(True,synthesisTime[1][0])
+            synthesis(True,synthesisTime[1])
         while synthesisTime[0] == True:
-            synthesis(False,synthesisTime[1][0])
+            synthesis(False,synthesisTime[1])
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     synthesisTime = (False,"")
@@ -1026,7 +1084,9 @@ def craftMini():
                         playerInput = []
                         for i in range(len(inputBoxes)):
                             playerInput.append(inputBoxes[i].get_text())
-                        print(checkEquation(playerInput, synthesisTime[1]))
+                        check = checkEquation(playerInput, synthesisTime[1])
+                        if check:
+                            print("GET",synthesisTime[1][1])
                     else:
                         for j in range(len(inputBoxes)):
                             if inputBoxes[j].collision():
@@ -1096,7 +1156,6 @@ def homeScreen():
                 for i in range(len(doors)):
                     if doors[i].collision(player.get_pos()):
                         cont = 3
-                cont = 3
             elif event.key == pygame.K_e:
                 inventoryTime  = True
             elif event.key == pygame.K_q:
@@ -1194,7 +1253,6 @@ def mapScreen():
                                 if j+1 == answer:
                                     print("CORRECT")
                                     if eSprites[i].get_qNum() == len(eSprites[i].get_qSet())-1:
-                                        print("ENd")
                                         eSprites.remove(eSprites[i])
                                         sSprites.clear()
                                         pygame.mixer.music.stop()
@@ -1214,14 +1272,12 @@ def mapScreen():
                                     hearts.pop()
 
                 if player.get_health() <= 0:
-                    print("DEATH")
                     screen.fill(BURG)
                     pygame.display.update()
                     time.sleep(1.5)
                     battle = False
                     cont = 1
                 elif complete:
-                    print("WON")
                     screen.fill(GREEN)
                     pygame.display.update()
                     time.sleep(0.5)
