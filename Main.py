@@ -695,11 +695,65 @@ def checkProduct(txt):
 
 def checkEquation(txt,check):
     check.pop(0)
-    validlen = len(check)
+    validlen = 0
     for i in range(len(check)):
-        check[i] = check[i].split(".")
+        try:
+            check[i] = check[i].split(".") 
+        except:
+            pass
     
-    print(txt, check)
+    reactants = []
+    products = []
+    others = []
+    for i in range(len(check)):
+        for j in range(len(check[i])):
+            if i == 0:
+                reactants.append(check[i][j])
+            elif i == 1:
+                products.append(check[i][j])
+            elif i == 2:
+                others.append(check[i][j])
+    inputR = []
+    inputP = []
+    inputO = []
+    for k in range(len(reactants)):
+        inputR.append(txt[k])
+    for k in range(len(products)):
+        inputP.append(txt[k+len(reactants)])
+    for k in range(len(others)):
+        inputO.append(txt[k+len(reactants)+len(products)])
+    txt = [inputR,inputP,inputO]
+
+        
+    for r in range(len(reactants)):
+        for t in range(len(txt[0])):
+            if txt[0][t] == reactants[r]:
+                validlen += 1
+                txt[0][t] = ""
+    
+    for p in range(len(products)):
+        for t in range(len(txt[1])):
+            if txt[1][t] == products[p]:
+                validlen += 1
+                txt[1][t] = ""
+    
+    for o in range(len(others)):
+        for t in range(len(txt[2])):
+            if txt[2][t] == others[o]:
+                validlen += 1
+                txt[2][t] = ""
+    
+    length = 0
+    for i in range(len(check)):
+        for j in range(len(check[i])):
+            length += 1
+    print(txt, check, validlen)
+    
+    if validlen == length:
+        return True
+    return False
+
+
 
 def fetchQuestions():
     c = []
@@ -972,7 +1026,7 @@ def craftMini():
                         playerInput = []
                         for i in range(len(inputBoxes)):
                             playerInput.append(inputBoxes[i].get_text())
-                        checkEquation(playerInput, synthesisTime[1])
+                        print(checkEquation(playerInput, synthesisTime[1]))
                     else:
                         for j in range(len(inputBoxes)):
                             if inputBoxes[j].collision():
