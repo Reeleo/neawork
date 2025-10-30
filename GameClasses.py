@@ -9,7 +9,7 @@ class GameSettings():
         self.eSpawnRate = 2
         self._diff = "Easy"
         self._screen = "menu"
-        self._showAll = True
+        self._showAll = False
         self._music = -1
         self._playMusic = False
         self._showTutorial = True
@@ -24,8 +24,8 @@ class GameSettings():
                         "lrock":[["silicon",10],["iron",3],["magnesium",3],["aluminium",3]],
                         "volrock":[["carbon",5],["sulfur",2],["ammonia",2]],
                         "gem":[["carbon",10],["silicon",10],["magnesium",5],["aluminium",5]],
-                        "water":[["freshwater",5],["CO2",3],["oxygen",4]],
-                        "saltwater":[["freshwater",5],["CO2",3],["oxygen",4],["halogensalt",5]]}
+                        "freshwater":[["water",5],["CO2",3],["oxygen",4]],
+                        "saltwater":[["water",5],["CO2",3],["oxygen",4],["halogensalt",5]]}
     
     def get_screen(self):
         return self._screen
@@ -222,8 +222,6 @@ class AreaMap():
             type = random.randint(0,8)
             if type == 5:
                 type = 6
-            # elif type == 6:
-            #     type = 7
             x = random.randint(1,self._colLim-2)
             y = random.randint(1,self._rowLim-2)
             if self._store[row][col][y][x] != 5 and self._store[row][col][y][x] != 6:

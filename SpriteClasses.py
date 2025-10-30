@@ -68,7 +68,7 @@ class Player(Sprite):
                         "alkane":0,"alkene":0,"hydrogen":0,"nickle":0,"alcohol":0,"sulfuricacid":0,
                         "amine":0,"haloalkane":0,"acylchloride":0,"amide":0,"nitrile":0,
                         "hydrogenhalide":0,"hyroxidesalt":0,"ketone":0,"aldehyde":0,"carboxylicacid":0,
-                        "hydroxynitrile":0,"SOCl2":0,"ester":0}
+                        "hydroxynitrile":0,"SOCl2":0,"ester":0,"K2Cr2O7":0}
 
     def get_speed(self):
         return self._speed
@@ -104,6 +104,8 @@ class Player(Sprite):
             self._validDrct[drct] = valid
     def inc_collect(self,item):
         self._collect[item] += 1
+    def inc_chemicals(self,chem):
+        self._chemicals[chem] += 1
 
     def extract(self,item,chem):
         self._collect[item] -= 1
@@ -306,8 +308,8 @@ class Enemy(Sprite):
                     if favouredDrct[k][1] == drct:
                         favouredDrct.pop(k)
                         break
-        print(favouredDrct)
-        print(self._validDrct)
+        #print(favouredDrct)
+        #print(self._validDrct)
         if len(favouredDrct) > 0 :
             change = random.randint(0,10)
             if 0 < change < 5:
@@ -324,18 +326,36 @@ class Enemy(Sprite):
 #---------------NON PLAYER CHARACTERS---------------#
 class Character(Sprite):
     def __init__(self,pos,type):
-        if type == "enemy" or type == "boss":
+        if type == "enemyImage" or type == "boss":
             sheet = pygame.image.load("EnemySpriteSheet.png")
         else:
             sheet = pygame.image.load("SpriteSheet.png")
         super().__init__(pos,[80,80],3.5,BLACK,sheet)
         self._cycle = 0 
         self._type = type
+        self._startTime = 0
+        self._pointer = 0
+        file = open("characterDialogue.txt","r")
+        for i in range(10):
+            line = file.readline()
+            if i == self._type:
+                self._dialogue = line.split(",")
+        file.close()
 
 
     def get_type(self):
         return self._type
+    def get_dialogue(self):
+        return self._dialogue[self._pointer]
+    def get_timer(self,currentTime):
+        return currentTime - self._startTime
     
+    def set_timer(self,time):
+        self._startTime = time
+        self._pointer += 1
+        if self._pointer == 3:
+            self._pointer = 0
+        
     
     def collision(self,playerpos):
         if self._pos[0]-80 < playerpos[0] < self._pos[0]+self._size[0]+40:
@@ -345,7 +365,7 @@ class Character(Sprite):
 
     def updateSprite(self):
         x = self._cycle // 8
-        if self._type == "":
+        if self._type != "enemyImage" and self._type != "boss":
             frame = self.get_image(x,0,self._size[0]/2.5,self._size[1]/2.5)
         else:
             self._scale = 20

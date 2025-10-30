@@ -136,47 +136,40 @@ def displayObject(type,obj):
             if tilePos[i][1]*64 < lfoot[0]-speed < tilePos[i][1]*64+64 or tilePos[i][1]*64 < lfoot[0]+10-speed < tilePos[i][1]*64+64:
                 if tilePos[i][0]*64 < lfoot[1] < tilePos[i][0]*64+64 or tilePos[i][0]*64 < lfoot[1]+10 < tilePos[i][0]*64+64:
                     obj.set_validWalk(3,False)
-                    print("no lefa")
             if tilePos[i][1]*64 < lfoot[0]+speed < tilePos[i][1]*64+64 or tilePos[i][1]*64 < lfoot[0]+10+speed < tilePos[i][1]*64+64:
                 if tilePos[i][0]*64 < lfoot[1] < tilePos[i][0]*64+64 or tilePos[i][0]*64 < lfoot[1]+10 < tilePos[i][0]*64+64:
                     obj.set_validWalk(1,False)
-                    print("no rihj")
             if tilePos[i][1]*64 < lfoot[0] < tilePos[i][1]*64+64 or tilePos[i][1]*64 < lfoot[0] < tilePos[i][1]*64+64:
                 if tilePos[i][0]*64 < lfoot[1]+speed < tilePos[i][0]*64+64 or tilePos[i][0]*64 < lfoot[1]+10+speed < tilePos[i][0]*64+64:
                     obj.set_validWalk(2,False)
-                    print("no dowA")
             if tilePos[i][1]*64 < lfoot[0] < tilePos[i][1]*64+64 or tilePos[i][1]*64 < lfoot[0] < tilePos[i][1]*64+64:
                 if tilePos[i][0]*64 < lfoot[1]-speed < tilePos[i][0]*64+64 or tilePos[i][0]*64 < lfoot[1]+10-speed < tilePos[i][0]*64+64:
                     obj.set_validWalk(0,False)
-                    print("no up")
 
         
             if tilePos[i][1]*64 < rfoot[0]-speed < tilePos[i][1]*64+64 or tilePos[i][1]*64 < rfoot[0]+10-speed < tilePos[i][1]*64+64:
                 if tilePos[i][0]*64 < rfoot[1] < tilePos[i][0]*64+64 or tilePos[i][0]*64 < rfoot[1]+10 < tilePos[i][0]*64+64:
                     obj.set_validWalk(3,False)
-                    print("no lef")
             if tilePos[i][1]*64 < rfoot[0]+speed < tilePos[i][1]*64+64 or tilePos[i][1]*64 < rfoot[0]+10+speed < tilePos[i][1]*64+64:
                 if tilePos[i][0]*64 < rfoot[1] < tilePos[i][0]*64+64 or tilePos[i][0]*64 < rfoot[1]+10 < tilePos[i][0]*64+64:
                     obj.set_validWalk(1,False)
-                    print("no rigt")
             if tilePos[i][1]*64 < rfoot[0] < tilePos[i][1]*64+64 or tilePos[i][1]*64 < rfoot[0] < tilePos[i][1]*64+64:
                 if tilePos[i][0]*64 < rfoot[1]+speed < tilePos[i][0]*64+64 or tilePos[i][0]*64 < rfoot[1]+10+speed < tilePos[i][0]*64+64:
                     obj.set_validWalk(2,False)
-                    print("no down")
             if tilePos[i][1]*64 < rfoot[0] < tilePos[i][1]*64+64 or tilePos[i][1]*64 < rfoot[0] < tilePos[i][1]*64+64:
                 if tilePos[i][0]*64 < rfoot[1]-speed < tilePos[i][0]*64+64 or tilePos[i][0]*64 < rfoot[1]+10-speed < tilePos[i][0]*64+64:
                     obj.set_validWalk(0,False)
-                    print("no up")
+            print(obj._validDrct)
 
     elif type == "char":
         screen.blit(obj.update(),(obj.get_pos()))
         if obj.collision(player.get_pos()):
-            playerpos = player.get_pos()
-            playersize = player.get_size()
+            playerpos, playersize = player.get_pos(), player.get_size()
             displayText("SPACE", font20, WHITE, [playerpos[0]+playersize[0]/2, playerpos[1]-20])
             keys = pygame.key.get_pressed()
-            if keys[pygame.K_SPACE]:
-                print("HELLO")
+            if keys[pygame.K_SPACE] and obj.get_timer(time.time()) > 1.5:
+                quickTexts.append(ShapeClasses.QuickText([playerpos[0]+playersize[0]/2, playerpos[1]-20-50],obj.get_dialogue(),time.time()))
+                obj.set_timer(time.time())
 
     elif type == "special":
         screen.blit(obj.update(),(obj.get_pos()))
@@ -203,15 +196,15 @@ def displayObject(type,obj):
         screen.blit(obj.get_image(0,3,32,32),(obj.get_pos()))
 
 def qtHandelling():
-        deleteing = []
-        for i in range(len(quickTexts)):
-            if quickTexts[i].get_visible():
-                displayText(quickTexts[i].get_text(),font20,quickTexts[i].get_colours(),[quickTexts[i].get_pos()[0],quickTexts[i].get_pos()[1]+i*30])
-                remove = quickTexts[i].update()
-                if remove:
-                    deleteing.append(i)
-        for _ in range(len(deleteing)):
-            quickTexts.pop(0)
+    deleteing = []
+    for i in range(len(quickTexts)):
+        if quickTexts[i].get_visible():
+            displayText(quickTexts[i].get_text(),font20,quickTexts[i].get_colours(),[quickTexts[i].get_pos()[0],quickTexts[i].get_pos()[1]+i*30])
+            remove = quickTexts[i].update()
+            if remove:
+                deleteing.append(i)
+    for _ in range(len(deleteing)):
+        quickTexts.pop(0)
 
 
 
@@ -254,6 +247,7 @@ def screenSetUp(screenType):
         doors.append(SpriteClasses.Collectable([22,608],12))
         doors[0].assign_type(game.collectTypes)
         doors[1].assign_type(game.collectTypes)
+        player.set_validWalk("all",[True,True,True,True])
 
     #5
     if screenType == "inventory":
@@ -349,10 +343,10 @@ def screenSetUp(screenType):
                 elif blitList[item][3] == "enemy":
                     eSprites.append(SpriteClasses.Enemy([blitList[item][0],blitList[item][1]]))
                 elif blitList[item][3] == "char":
-                    nSprites.append(SpriteClasses.Character([blitList[item][0],blitList[item][1]],""))
+                    nSprites.append(SpriteClasses.Character([blitList[item][0],blitList[item][1]],random.randint(1,10)))
         for i in range(player.get_health()):
             hearts.append(SpriteClasses.Sprite([2+i*60, 2],[50,50],2.5,BLACK,pygame.image.load("collectablesSprites.bmp")))
-        
+            
     #11
     if screenType == "minimap":
         buttons.clear()
@@ -376,7 +370,7 @@ def screenSetUp(screenType):
                 buttons.append(ShapeClasses.Button([615+i*380, 400],[360,80],i+1,RED))
             else:
                 buttons.append(ShapeClasses.Button([615+(i-2)*380, 500],[360,80],i+1,RED))
-        sSprites.append(SpriteClasses.Character([30,180],"enemy"))
+        sSprites.append(SpriteClasses.Character([30,180],"enemyImage"))
         mini.set_size([WIDTH-200, HEIGHT-200])
         mini.set_pos([100, 100])
         for i in range(player.get_health()):
@@ -661,7 +655,6 @@ def extraction(item):
     player.extract(item,chem)
     chems = player.get_chemicals()
     quickTexts.append(ShapeClasses.QuickText([550,500],f"{item}, {chem}, {chems[chem]}",time.time()))
-    print(item, chem, chems[chem])
     return chem
     
 def synthesis(setUp,items):
@@ -733,14 +726,19 @@ def checkProduct(txt):
     return valid, product
 
 def checkEquation(txt,check):
-    check.pop(0)
-    validlen = 0
     for i in range(len(check)):
         try:
             check[i] = check[i].split(".") 
         except:
             pass
-    
+    length = 0
+    for j in range(len(check)):
+        for k in range(len(check[j])):
+            length += 1
+    if length > len(txt):
+        check.pop(0)
+
+    validlen = 0
     reactants = []
     products = []
     others = []
@@ -786,29 +784,25 @@ def checkEquation(txt,check):
     for i in range(len(check)):
         for j in range(len(check[i])):
             length += 1
-    print(txt, check, validlen)
+    #print(txt, check, validlen)
 
     message = []
     chems = player.get_chemicals()
     for i in range(len(check[0])):
-        print("i",chems[check[0][i]])
         if chems[check[0][i]] > 0:
             player.set_chemicals(check[0][i],chems[check[0][i]]-1)
         else:
             message.append(f"you dont have it {check[0][i]}")
             
-
     for j in range(len(check[2])):
         if check[2][j] == "sufuricacid" or check[2][j] == "nickle":
-            print("j",chems[check[2][j]])
             if chems[check[i]] > 0:
                 player.set_chemicals(check[i],chems[check[i]]-1)
             else:
                 message.append(f"you dont have {check[2][j]}")
 
-    
     if validlen == length and message == []:
-        return True
+        return True, message
     return False, message
 
 
@@ -962,6 +956,7 @@ def pTableMini():
                     pTableTime = False
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if buttons[0].collision():
+                    pygame.mixer.Sound.play(sounds[0])
                     pTableTime = False
         pygame.display.update()
         clock.tick(FPS)
@@ -1050,7 +1045,8 @@ def craftMini():
                     pygame.mixer.Sound.play(sounds[0])
                     craftTime = False
                 elif buttons[1].collision():
-                     synthesisTime = checkProduct(inputBoxes[0].get_text())
+                    pygame.mixer.Sound.play(sounds[0])
+                    synthesisTime = checkProduct(inputBoxes[0].get_text())
                 elif inputBoxes[0].collision():
                     inputBoxes[0].set_isInput(True)
 
@@ -1084,17 +1080,27 @@ def craftMini():
                         playerInput = []
                         for i in range(len(inputBoxes)):
                             playerInput.append(inputBoxes[i].get_text())
-                        check = checkEquation(playerInput, synthesisTime[1])
-                        if check:
-                            print("GET",synthesisTime[1][1])
+                        check, message = checkEquation(playerInput, synthesisTime[1])
+                        if check and message == []:
+                            pygame.draw.rect(screen,BLACK,[175,175,WIDTH-350, HEIGHT-350])
+                            pygame.draw.rect(screen,WHITE,[180,180,WIDTH-360, HEIGHT-360])
+                            pygame.draw.rect(screen,BLACK,[200,200,WIDTH-400, HEIGHT-400])
+                            displayText("SUCCESS", font100, WHITE, [WIDTH/2, 400])
+                            displayText(f"you recieve {synthesisTime[1][1]}", font20, WHITE, [WIDTH/2, 550])
+                            for i in range(len(synthesisTime[1][1])):
+                                player.inc_chemicals(synthesisTime[1][1][i])
+                            pygame.display.update()
+                            time.sleep(2)
+                        elif message == []:
+                            print("INCORRECT")
+                        else:
+                            print(message)
                     else:
                         for j in range(len(inputBoxes)):
                             if inputBoxes[j].collision():
                                 for k in range(len(inputBoxes)):
                                     inputBoxes[k].set_isInput(False)
                                 inputBoxes[j].set_isInput(True)
-                                
-
             pygame.display.update()
             clock.tick(FPS)
 
@@ -1285,7 +1291,8 @@ def mapScreen():
                 pygame.display.update()
                 clock.tick(FPS)
             break
-
+    
+    qtHandelling()
     pygame.display.update()
     clock.tick(FPS)
     return cont
