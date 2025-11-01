@@ -827,7 +827,6 @@ def checkEquation(txt,check):
     for i in range(len(check)):
         for j in range(len(check[i])):
             length += 1
-    #print(txt, check, validlen)
 
     message = []
     chems = player.get_chemicals()
@@ -835,7 +834,7 @@ def checkEquation(txt,check):
         if chems[check[0][i]] > 0:
             player.set_chemicals(check[0][i],chems[check[0][i]]-1)
         else:
-            message.append(f"you dont have it {check[0][i]}")
+            message.append(f"you dont have {check[0][i]}")
             
     for j in range(len(check[2])):
         if check[2][j] == "sufuricacid" or check[2][j] == "nickle":
@@ -1131,15 +1130,17 @@ def craftMini():
                             pygame.display.update()
                             time.sleep(2)
                         elif message == []:
-                            print("INCORRECT")
+                            quickTexts.append(ShapeClasses.QuickText([840,240],f"Incorrect",time.time()))
                         else:
-                            print(message)
+                            for i in range(len(message)):
+                                quickTexts.append(ShapeClasses.QuickText([840+100*i,240],f"{message[i]}",time.time()))
                     else:
                         for j in range(len(inputBoxes)):
                             if inputBoxes[j].collision():
                                 for k in range(len(inputBoxes)):
                                     inputBoxes[k].set_isInput(False)
                                 inputBoxes[j].set_isInput(True)
+            qtHandelling()
             pygame.display.update()
             clock.tick(FPS)
 
