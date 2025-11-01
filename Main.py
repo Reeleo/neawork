@@ -215,7 +215,6 @@ def qtHandelling():
         quickTexts.pop(0)
 
 
-
 #---------------SETUP/DISPLAY---------------#
 def screenSetUp(screenType):
     #1
