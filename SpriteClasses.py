@@ -55,9 +55,10 @@ class Player(Sprite):
         super().__init__([100,100],[80,80],3.5,BLACK,pygame.image.load("SpriteSheet.png"))
         self._drct = "down"
         self._cycle = 1
-        self._speed = 10
+        self._speed = 20
         self._idle = True
         self._health = 3
+        self._hasKey = False
         self._validDrct = [True,True,True,True]
         self._collect = {"bacteria":0,"bug":0,"flower":0,"leaf":0,"fruit":0,
                         "wplant":0,"srock":0,"lrock":0,"volrock":0,"gem":0,
@@ -78,6 +79,8 @@ class Player(Sprite):
         return self._collect
     def get_chemicals(self):
         return self._chemicals
+    def get_hasKey(self):
+        return self._hasKey
     
     def set_pos(self,drct,w,h):
         if drct == 0:
@@ -102,6 +105,8 @@ class Player(Sprite):
             self._validDrct = valid
         else:
             self._validDrct[drct] = valid
+    def set_hasKey(self):
+        self._hasKey = True
     def inc_collect(self,item):
         self._collect[item] += 1
     def inc_chemicals(self,chem):
@@ -326,8 +331,11 @@ class Enemy(Sprite):
 #---------------NON PLAYER CHARACTERS---------------#
 class Character(Sprite):
     def __init__(self,pos,type):
+        self._specialTime = False
         if type == "enemyImage" or type == "boss":
             sheet = pygame.image.load("EnemySpriteSheet.png")
+        elif type == "gate":
+            sheet = pygame.image.load("homeBackground.png")
         else:
             sheet = pygame.image.load("SpriteSheet.png")
         super().__init__(pos,[80,80],3.5,BLACK,sheet)
@@ -336,7 +344,7 @@ class Character(Sprite):
         self._startTime = 0
         self._pointer = 0
         file = open("characterDialogue.txt","r")
-        for i in range(10):
+        for i in range(1,10):
             line = file.readline()
             if i == self._type:
                 self._dialogue = line.split(",")
@@ -349,12 +357,16 @@ class Character(Sprite):
         return self._dialogue[self._pointer]
     def get_timer(self,currentTime):
         return currentTime - self._startTime
+    def get_specialTime(self):
+        return self._specialTime
     
     def set_timer(self,time):
         self._startTime = time
         self._pointer += 1
         if self._pointer == 3:
             self._pointer = 0
+    def set_specialTime(self,sets):
+        self._specialTime = sets
         
     
     def collision(self,playerpos):

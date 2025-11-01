@@ -87,6 +87,7 @@ class AreaMap():
         self._sheet = pygame.image.load("grasslandsTiles.bmp")
     
     def reset(self):
+        self._pos = [1,1]
         for i in range(10):
             rows = [[],[],[],[]]
             if i == 0 or i == 9:
@@ -111,6 +112,7 @@ class AreaMap():
                 for l in range(len(self._infoStore[k])):
                     self._infoStore[k][l] = []
         self._discovered[self._pos[0]][self._pos[1]] = 1
+        print(self._discovered)
 
 
     def get_pos(self):
@@ -131,7 +133,6 @@ class AreaMap():
         for i in range(len(info)):
             try:
                 if info[i][4] == itemNum:
-                    print("byebye")
                     self._infoStore[self._pos[0]][self._pos[1]][i][2] = False
             except:
                 pass
@@ -365,43 +366,6 @@ class AreaMap():
                             new = True
                 self._store[row][col][y][x] = tileNum
                 starty, startx = y, x
-        
-        for i in range(len(self._store)):
-            for j in range(len(self._store[i])):
-                if self._store[i][j] != -1:
-                    for k in range(len(self._store[i][j])):
-                        for l in range(len(self._store[i][j][k])):
-                            count = 0
-                            max = 4
-                            if self._store[i][j][k][l] != tileNum and self._store[i][j][k][l] != 7:
-                                for m in range(3):
-                                    try:
-                                        if m == 0:
-                                            if self._store[i][j][k-1][l] == tileNum:
-                                                count += 1
-                                    except:
-                                        max -= 1
-                                    try:
-                                        if m == 1:
-                                            if self._store[i][j][k][l+1] == tileNum:
-                                                count += 1
-                                    except:
-                                        max -= 1
-                                    try:    
-                                        if m == 2:
-                                            if self._store[i][j][k+1][l] == tileNum:
-                                                count += 1
-                                    except:
-                                        max -= 1
-                                    try:
-                                        if m == 3:
-                                            if self._store[i][j][k][l-1] == tileNum:
-                                                count += 1
-                                    except:
-                                        max -= 1
-                            if count == max:
-                                print(self._store[i][j][k][l])
-                                self._store[i][j][k][l] = tileNum
 
       
 
@@ -423,7 +387,6 @@ class AreaMap():
                 if self._store[r][c] != -1 and self._infoStore[r][c] != "BOSS" and self._infoStore[r][c] != "GATE":
                     self.placeItems(r,c)
         self.placePath()
-        print("MAP MADE")
 
 
     def drawMiniMap(self,width,height,showAll):

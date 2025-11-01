@@ -20,6 +20,7 @@ DARK = (50,0,0)
 GREEN = (0,200,0)
 GRASS = (0,50,0)
 BLUE = (0,0,255)
+SKY = (60,60,225)
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("Chemistry Game") 
 clock = pygame.time.Clock()
@@ -179,7 +180,7 @@ def displayObject(type,obj):
             displayText("SPACE", font20, WHITE, [playerpos[0]+playersize[0]/2, playerpos[1]-20])
             keys = pygame.key.get_pressed()
             if keys[pygame.K_SPACE]:
-                print("BOSS TIME")
+                obj.set_specialTime(True)
 
     elif type == "mini":
         pos = obj.get_pos()
@@ -194,6 +195,13 @@ def displayObject(type,obj):
         
     elif type == "heart":
         screen.blit(obj.get_image(0,3,32,32),(obj.get_pos()))
+
+def displayResult(t1,t2):
+    pygame.draw.rect(screen,BLACK,[175,175,WIDTH-350, HEIGHT-350])
+    pygame.draw.rect(screen,WHITE,[180,180,WIDTH-360, HEIGHT-360])
+    pygame.draw.rect(screen,BLACK,[200,200,WIDTH-400, HEIGHT-400])
+    displayText(t1, font100, WHITE, [WIDTH/2, 400])
+    displayText(t2, font20, WHITE, [WIDTH/2, 550])
 
 def qtHandelling():
     deleteing = []
@@ -376,6 +384,27 @@ def screenSetUp(screenType):
         for i in range(player.get_health()):
             hearts.append(SpriteClasses.Sprite([10+i*60, 20],[50,50],2.5,BLACK,pygame.image.load("collectablesSprites.bmp")))  
 
+    #13
+    if screenType == "boss":
+        buttons.clear()
+        buttons.append(ShapeClasses.Button([1150,750],[180,80],"RETURN",GREEN))
+        buttons.append(ShapeClasses.Button([300,500],[200,80],"r1",GREEN))
+        buttons.append(ShapeClasses.Button([600,450],[200,80],"r2",GREEN))
+        buttons.append(ShapeClasses.Button([900,500],[200,80],"r3",GREEN))
+        buttons.append(ShapeClasses.Button([450,750],[200,80],"r4",GREEN))
+        buttons.append(ShapeClasses.Button([750,750],[200,80],"r5",GREEN))
+        mini.set_size([WIDTH-200, HEIGHT-200])
+        mini.set_pos([100, 100])
+    
+    #14
+    if screenType == "gate":
+        buttons.clear()
+        buttons.append(ShapeClasses.Button([1150,750],[180,80],"RETURN",GREEN))
+        buttons.append(ShapeClasses.Button([500,400],[100,80],"Give KEY",GREEN))
+        mini.set_size([WIDTH-200, HEIGHT-200])
+        mini.set_pos([100, 100])
+
+
 def screenDisplay(screenType):
     #1
     if screenType == "menu":
@@ -515,7 +544,7 @@ def screenDisplay(screenType):
 
     #8
     if screenType == "pause":
-        screen.fill(BURG)
+        screen.fill(BURG)  
         pygame.draw.rect(screen,RED,[20,20,WIDTH-40, HEIGHT-40])
         pygame.draw.rect(screen,BLACK,[40,40,WIDTH-80, HEIGHT-80])
         displayText(f"Difficulty: {game.get_diff()}", font20, WHITE, [800, 300])
@@ -575,6 +604,7 @@ def screenDisplay(screenType):
         for i in range(len(tiles)):
             for j in range(len(tiles[i])):
                 displayObject("tile",tiles[i][j])
+        pygame.draw.rect(screen,SKY,[(areaMap.get_pos()[1]-1)*147+160,(areaMap.get_pos()[0]-1)*96+135,20,20])
         displayText(f"PlayerCol = {areaMap.get_pos()[1]}",font20,WHITE,[1270,130])
         displayText(f"PlayerRow = {areaMap.get_pos()[0]}",font20,WHITE,[1270,160])
 
@@ -590,6 +620,22 @@ def screenDisplay(screenType):
         for j in range(len(hearts)):
             displayObject("heart",hearts[j])
 
+    #13
+    if screenType == "boss":
+        pygame.draw.rect(screen,WHITE,(100,HEIGHT/2-75,WIDTH-200,10))
+        displayObject("mini",mini)
+        displayText("BOSS:", font20, WHITE, [240, 150])
+        for i in range(len(buttons)):
+            displayObject("button",buttons[i])
+    
+    #14
+    if screenType == "gate":
+        pygame.draw.rect(screen,WHITE,(100,HEIGHT/2-75,WIDTH-200,10))
+        displayObject("mini",mini)
+        displayText("GATE:", font100, WHITE, [240, 150])
+        displayText("Do you have the KEY:", font20, WHITE, [212, 250])
+        for i in range(len(buttons)):
+            displayObject("button",buttons[i])
 
 
 #---------------PLAYER DATA---------------#
@@ -600,7 +646,7 @@ def loadGame():
         file = open("saveData2.txt","r")
     elif game.get_saveFile() == 3:
         file = open("saveData3.txt","r")
-    for i in range(4):
+    for i in range(3):
         line = file.readline()
         saveData = line.split(",")
         count = 0
@@ -614,8 +660,9 @@ def loadGame():
                 count += 1
         elif i == 2:
             game.set_diff(saveData[0])
-        elif i == 3:
-            player.set_speed(saveData[0],"set")
+            player.set_speed(saveData[1],"set")
+            if saveData[2] == "True":
+                player.set_hasKey()
     player.set_int()
     file.close()
 
@@ -628,22 +675,19 @@ def saveGame():
         file = open("saveData3.txt","w")
     collectLine = ""
     chemicalLine = ""
-    gameLine1 = ""
-    gameLine2 = ""
+    gameLine = ""
     collection = player.get_collect()
     chemicals = player.get_chemicals()
     for item in player.get_collect():
         collectLine += str(collection[item])+","
     for chem in player.get_chemicals():
         chemicalLine += str(chemicals[chem])+","
-    gameLine1 += game.get_diff()
-    gameLine2 += str(player.get_speed())
+    gameLine += game.get_diff()+","+str(player.get_speed())+","+str(player.get_hasKey())
     file.writelines(collectLine)
     file.writelines("\n") 
     file.writelines(chemicalLine)
     file.writelines("\n") 
-    file.writelines(gameLine1)
-    file.writelines(gameLine2)
+    file.writelines(gameLine)
     file.close()
 
 
@@ -1082,11 +1126,7 @@ def craftMini():
                             playerInput.append(inputBoxes[i].get_text())
                         check, message = checkEquation(playerInput, synthesisTime[1])
                         if check and message == []:
-                            pygame.draw.rect(screen,BLACK,[175,175,WIDTH-350, HEIGHT-350])
-                            pygame.draw.rect(screen,WHITE,[180,180,WIDTH-360, HEIGHT-360])
-                            pygame.draw.rect(screen,BLACK,[200,200,WIDTH-400, HEIGHT-400])
-                            displayText("SUCCESS", font100, WHITE, [WIDTH/2, 400])
-                            displayText(f"you recieve {synthesisTime[1][1]}", font20, WHITE, [WIDTH/2, 550])
+                            displayResult("SUCCESS",f"you recieve {synthesisTime[1][1]}")
                             for i in range(len(synthesisTime[1][1])):
                                 player.inc_chemicals(synthesisTime[1][1][i])
                             pygame.display.update()
@@ -1200,6 +1240,82 @@ def miniMapMini():
         clock.tick(FPS)
     return cont 
 
+def bossMini():
+    cont = 0
+    bossTime = True
+    while bossTime:
+        screenDisplay("boss")
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                bossTime = False
+                cont = 1
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_ESCAPE:
+                    bossTime = False
+            elif event.type == pygame.MOUSEBUTTONDOWN:
+                if buttons[0].collision():
+                    pygame.mixer.Sound.play(sounds[0])
+                    bossTime = False
+                for i in range(len(buttons)):
+                    if i >= len(buttons):
+                        break
+                    if i != 0:
+                        if buttons[i].collision():
+                            pygame.mixer.Sound.play(sounds[0])
+                            has = False
+                            #### requirements go here
+                            if has:
+                                buttons.pop(i)
+                                quickTexts.append(ShapeClasses.QuickText([840,240],f"Yippee",time.time()))
+                            else:
+                                quickTexts.append(ShapeClasses.QuickText([840,240],f"Do dont have",time.time()))
+        if len(buttons) == 1:
+            displayResult("YOU BEAT THE BOSS",f"you recieve the KEY")
+            player.set_hasKey()
+        qtHandelling()
+        pygame.display.update()
+        clock.tick(FPS)
+    for s in range(len(sSprites)):
+        if sSprites[s].get_type() == "boss":
+            sSprites[s].set_specialTime(False)
+    return cont 
+
+def gateMini():
+    cont = 0
+    gateTime = True
+    while gateTime:
+        screenDisplay("gate")
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                gateTime = False
+                cont = 1
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_ESCAPE:
+                    gateTime = False
+            elif event.type == pygame.MOUSEBUTTONDOWN:
+                if buttons[0].collision():
+                    pygame.mixer.Sound.play(sounds[0])
+                    gateTime = False
+                elif buttons[1].collision():
+                    pygame.mixer.Sound.play(sounds[0])
+                    print(player.get_hasKey())
+                    if player.get_hasKey():
+                        pygame.draw.rect(screen,BLACK,[175,175,WIDTH-350, HEIGHT-350])
+                        pygame.draw.rect(screen,WHITE,[180,180,WIDTH-360, HEIGHT-360])
+                        pygame.draw.rect(screen,BLACK,[200,200,WIDTH-400, HEIGHT-400])
+                        displayText("YOU WIIIIIIIIIIIIIIIIIIIN", font100, WHITE, [WIDTH/2, 400])
+                        pygame.display.update()
+                        time.sleep(10)
+                    else:
+                        quickTexts.append(ShapeClasses.QuickText([840,240],f"Do dont have the KEY YOU IDIOT",time.time()))
+        qtHandelling()
+        pygame.display.update()
+        clock.tick(FPS)
+    for s in range(len(sSprites)):
+        if sSprites[s].get_type() == "gate":
+            sSprites[s].set_specialTime(False)
+    return cont 
+
 def mapScreen():
     cont = 0
     miniMap, pTableTime, battle = False, False, False
@@ -1216,6 +1332,8 @@ def mapScreen():
                 pTableTime = True
             elif event.key == pygame.K_m:
                 miniMap = True
+            elif event.key == pygame.K_l:
+                player._pos = [500,500]
 
     if miniMap:
         screenSetUp("minimap")
@@ -1223,26 +1341,35 @@ def mapScreen():
     if pTableTime:
         screenSetUp("pTable")
         cont = pTableMini()
+    
+    for s in range(len(sSprites)):
+        if sSprites[s].get_specialTime():
+            if sSprites[s].get_type() == "boss":
+                screenSetUp("boss")
+                cont = bossMini()
+            elif sSprites[s].get_type() == "gate":
+                screenSetUp("gate")
+                cont = gateMini()
 
-    for i in range(len(eSprites)):
-        battle = eSprites[i].get_battle()
+    for e in range(len(eSprites)):
+        battle = eSprites[e].get_battle()
         if battle:
             screenSetUp("battle")
-            eSprites[i].set_qSet(fetchQuestions())
-            eSprites[i].set_qNum(0)
+            eSprites[e].set_qSet(fetchQuestions())
+            eSprites[e].set_qNum(0)
 
             while battle:
                 screenDisplay("battle")
                 complete = False
-                questions = eSprites[i].get_qSet()[eSprites[i].get_qNum()]
-                answer = eSprites[i].get_qSet()[eSprites[i].get_qNum()][5]
+                questions = eSprites[e].get_qSet()[eSprites[e].get_qNum()]
+                answer = eSprites[e].get_qSet()[eSprites[e].get_qNum()][5]
 
                 displayText(questions[0],font20,WHITE,[900,200])
                 buttons[0].set_text(questions[1])
                 buttons[1].set_text(questions[2])
                 buttons[2].set_text(questions[3])
                 buttons[3].set_text(questions[4])
-
+            
                 for event in pygame.event.get():
                     if event.type == pygame.QUIT:
                         battle = False
@@ -1253,13 +1380,13 @@ def mapScreen():
                         elif event.key == pygame.K_q:
                             print("q")
                     elif event.type == pygame.MOUSEBUTTONDOWN:
-                        for j in range(len(buttons)):
-                            if buttons[j].collision():
+                        for b in range(len(buttons)):
+                            if buttons[b].collision():
                                 pygame.mixer.Sound.play(sounds[0])
-                                if j+1 == answer:
+                                if b+1 == answer:
                                     print("CORRECT")
-                                    if eSprites[i].get_qNum() == len(eSprites[i].get_qSet())-1:
-                                        eSprites.remove(eSprites[i])
+                                    if eSprites[e].get_qNum() == len(eSprites[e].get_qSet())-1:
+                                        eSprites.remove(eSprites[e])
                                         sSprites.clear()
                                         pygame.mixer.music.stop()
                                         if game.get_playMusic():
@@ -1268,7 +1395,7 @@ def mapScreen():
                                             game.set_music(1)
                                         complete = True
                                     else:
-                                        eSprites[i].set_qNum("inc")
+                                        eSprites[e].set_qNum("inc")
                                 else:
                                     print("INCORRECT")
                                     screen.fill(BURG)
@@ -1279,14 +1406,17 @@ def mapScreen():
 
                 if player.get_health() <= 0:
                     screen.fill(BURG)
+                    displayResult("DEATH",f"you recieve nothing")
                     pygame.display.update()
                     time.sleep(1.5)
                     battle = False
                     cont = 1
                 elif complete:
                     screen.fill(GREEN)
+                    displayResult("WELL DONE",f"you recieve something")
+                    ### randomise recieve something
                     pygame.display.update()
-                    time.sleep(0.5)
+                    time.sleep(1)
                     battle = False
                 pygame.display.update()
                 clock.tick(FPS)
