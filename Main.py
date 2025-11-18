@@ -268,6 +268,7 @@ def screenSetUp(screenType):
         if game.get_screen() == "home":
             buttons.append(ShapeClasses.Button([850,460],[400,80],"EXTRACT",GREEN))
             buttons.append(ShapeClasses.Button([390,460],[400,80],"CRAFT",GREEN))
+            buttons.append(ShapeClasses.Button([620,580],[400,80],"HEAL",GREEN))
         mini.set_size([WIDTH-200, HEIGHT-200])
         mini.set_pos([100, 100])
         
@@ -340,7 +341,7 @@ def screenSetUp(screenType):
             pygame.mixer.music.play(-1)
             game.set_music(1)
         game.set_screen("grassland")
-        areaMap.createAreaMap()
+        areaMap.createAreaMap(game.get_diff())
         tiles, blitList, setPlayer = areaMap.loadMap(player.get_pos(),player.get_size(),WIDTH,HEIGHT)
         for item in range(len(blitList)):
             if blitList[item][2]:
@@ -495,7 +496,7 @@ def screenDisplay(screenType):
         x = 210
         y = 310
         collection = player.get_collect()
-        displayText(f"PEBBLE: {collection["bacteria"]}", font20, WHITE, [x, y])
+        displayText(f"PEBBLE: {collection["pebble"]}", font20, WHITE, [x, y])
         displayText(f"BUG: {collection["bug"]}", font20, WHITE, [x+200, y])
         displayText(f"FLOWER: {collection["flower"]}", font20, WHITE, [x+400, y])
         displayText(f"LEAF: {collection["leaf"]}", font20, WHITE, [x+600, y])
@@ -694,8 +695,10 @@ def saveGame():
 #---------------SCREEN SUBFUNCTIONS---------------#
 def extraction(item):
     chances = game.itemChances[item]
-    chem = chances[random.randint(0,len(chances)-1)][0]
-    player.extract(item,chem)
+    randomNum = random.randint(0,len(chances)-1)
+    chem = chances[randomNum][0]
+    amount = chances[randomNum][1]
+    player.set_extracted(item,chem,amount)
     chems = player.get_chemicals()
     quickTexts.append(ShapeClasses.QuickText([550,500],f"{item}, {chem}, {chems[chem]}",time.time()))
     return chem
@@ -938,8 +941,6 @@ def saveFileScreen():
 def pauseScreen():
     cont = 0
     screenDisplay("pause")
-    pygame.display.update()
-    clock.tick(FPS)
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             cont = 1
@@ -963,6 +964,7 @@ def pauseScreen():
                         cont = 3
                     elif i == 5:
                         saveGame()
+                        displayText("Saved", font20, WHITE, [WIDTH/3+20+90, 3*HEIGHT/4-40])
                     elif i == 6:
                         game.set_playMusic()
                         buttons[i].set_text(game.get_playMusic())
@@ -980,7 +982,9 @@ def pauseScreen():
                         else:
                             game.set_tutorial(True)
                         buttons[i].set_text(game.get_tutorial())
-
+    qtHandelling()
+    clock.tick(FPS)
+    pygame.display.update()
     return cont
 
 
@@ -1175,14 +1179,32 @@ def inventoryMini():
                         elif i == 2:
                             inventoryTime = False
                             craftTime = True
+                        elif i == 3:
+                            cost = 20
+                            maxHealth = 5
+                            if game.get_diff() == "Easy":
+                                cost = 10
+                                maxHealth = 8
+                            elif game.get_diff() == "Hard":
+                                cost = 50
+                                maxHealth = 3
+                            if player.get_carbonCount() > cost and player.get_health() < maxHealth+1:
+                                player.heal_self()
+                                quickTexts.append(ShapeClasses.QuickText([830,700],f"You Gained A heart!",time.time()))
+                            elif player.get_carbonCount() > cost:
+                                quickTexts.append(ShapeClasses.QuickText([830,700],f"You are on max health ({maxHealth})",time.time()))
+                            else:
+                                quickTexts.append(ShapeClasses.QuickText([830,700],f"You dont have enough carbon (1 heart = {cost}C)",time.time()))
+                            
 
         if extractTime:
             screenSetUp("extract")
             cont = extractMini()
         if craftTime:
             screenSetUp("craft")
-            cont = craftMini()
-
+            cont = craftMini()  
+            
+        qtHandelling()
         pygame.display.update()
         clock.tick(FPS)
     return cont 
@@ -1201,6 +1223,10 @@ def homeScreen():
             elif event.key == pygame.K_SPACE:
                 for i in range(len(doors)):
                     if doors[i].collision(player.get_pos()):
+                        if game.get_tutorial():
+                            displayResult("Adventure!","Collect resources, battle enemies, talk with guides")
+                            pygame.display.update()
+                            time.sleep(2)
                         cont = 3
             elif event.key == pygame.K_e:
                 inventoryTime  = True
@@ -1303,11 +1329,11 @@ def gateMini():
                         pygame.draw.rect(screen,BLACK,[175,175,WIDTH-350, HEIGHT-350])
                         pygame.draw.rect(screen,WHITE,[180,180,WIDTH-360, HEIGHT-360])
                         pygame.draw.rect(screen,BLACK,[200,200,WIDTH-400, HEIGHT-400])
-                        displayText("YOU WIIIIIIIIIIIIIIIIIIIN", font100, WHITE, [WIDTH/2, 400])
+                        displayText("YOU WIN!!!", font100, WHITE, [WIDTH/2, 400])
                         pygame.display.update()
                         time.sleep(10)
                     else:
-                        quickTexts.append(ShapeClasses.QuickText([840,240],f"Do dont have the KEY YOU IDIOT",time.time()))
+                        quickTexts.append(ShapeClasses.QuickText([840,240],f"Do don't have the KEY",time.time()))
         qtHandelling()
         pygame.display.update()
         clock.tick(FPS)
@@ -1449,80 +1475,85 @@ hearts = []
 
 
 #---------------MAIN---------------#
-running = "menu"
-while running != "":
-    if running == "menu":
-        screenSetUp("menu")
-    while running == "menu":
-        cont = menuScreen()
-        if cont == 1:
-            running = ""
-            break
-        elif cont == 2:
-            running = "savefiles"
-            break
-        elif cont == 3:
-            running = "htp"
-            break
-    
-    if running == "htp":
-        screenSetUp("htp")
-    while running == "htp":
-        cont = htpScreen()
-        if cont == 1:
-            running = ""
-        elif cont == 2:
-            running = "menu"
+def main():
+    running = "menu"
+    while running != "":
+        if running == "menu":
+            screenSetUp("menu")
+        while running == "menu":
+            cont = menuScreen()
+            if cont == 1:
+                running = ""
+                break
+            elif cont == 2:
+                running = "savefiles"
+                break
+            elif cont == 3:
+                running = "htp"
+                break
+        
+        if running == "htp":
+            screenSetUp("htp")
+        while running == "htp":
+            cont = htpScreen()
+            if cont == 1:
+                running = ""
+            elif cont == 2:
+                running = "menu"
 
-    if running == "savefiles":
-        screenSetUp("savefiles")
-    while running == "savefiles":
-        cont = saveFileScreen()
-        if cont == 1:
-            running = ""
-        elif cont == 2:
-            running = "menu"
-        elif cont == 3:
-            running = "home"
-
-    if running == "home":
-        screenSetUp("home")
-    while running == "home":
-        cont = homeScreen()
-        if cont == 1:
-            running = ""
-        elif cont == 2:
-            running = "pause"
-        elif cont == 3:
-            running = "maps"
-
-    if running == "pause":
-        screenSetUp("pause")
-    while running == "pause":
-        cont = pauseScreen()
-        if cont == 1:
-            running = ""
-        elif cont == 2:
-            if game.get_screen() == "home":
+        if running == "savefiles":
+            screenSetUp("savefiles")
+        while running == "savefiles":
+            cont = saveFileScreen()
+            if cont == 1:
+                running = ""
+            elif cont == 2:
+                running = "menu"
+            elif cont == 3:
                 running = "home"
-            elif game.get_screen() == "grassland":
+
+        if running == "home":
+            screenSetUp("home")
+        while running == "home":
+            cont = homeScreen()
+            if cont == 1:
+                running = ""
+            elif cont == 2:
+                running = "pause"
+            elif cont == 3:
                 running = "maps"
-        elif cont == 3:
-            running = "menu"
 
-    if running == "maps" and game.get_screen() == "home":
-        areaMap.reset()
-        screenSetUp("maps")
-    while running == "maps":
-        cont = mapScreen()
-        if cont == 1:
-            running = ""
-        elif cont == 2:
-            running = "pause"
-        elif cont == 3:
-            running = "home"
+        if running == "pause":
+            screenSetUp("pause")
+        while running == "pause":
+            cont = pauseScreen()
+            if cont == 1:
+                running = ""
+            elif cont == 2:
+                if game.get_screen() == "home":
+                    running = "home"
+                elif game.get_screen() == "grassland":
+                    running = "maps"
+            elif cont == 3:
+                running = "menu"
 
-    pygame.display.update()
-    clock.tick(FPS)
-pygame.quit()
+        if running == "maps" and game.get_screen() == "home":
+            areaMap.reset()
+            screenSetUp("maps")
+        while running == "maps":
+            cont = mapScreen()
+            if cont == 1:
+                running = ""
+            elif cont == 2:
+                running = "pause"
+            elif cont == 3:
+                running = "home"
+
+        pygame.display.update()
+        clock.tick(FPS)
+    pygame.quit()
 #---------------MAIN---------------#
+
+
+if __name__ == "__main__":
+    main()

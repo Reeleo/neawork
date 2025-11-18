@@ -6,7 +6,6 @@ import random
 class GameSettings():
     def __init__(self):
         self._saveFile = 0
-        self.eSpawnRate = 2
         self._diff = "Easy"
         self._screen = "menu"
         self._showAll = False
@@ -14,18 +13,18 @@ class GameSettings():
         self._playMusic = False
         self._showTutorial = True
         self.collectTypes = [["pebble",0,0],["bug",1,0],["flower",0,1],["leaf",1,1],["fruit",2,1],["wplant",3,1],["bush",0,2],["rock",1,2],["gem",2,2],["volrock",3,2],["freshwater",2,0],["saltwater",3,0],["door",1,3]]
-        self.itemChances = {"pebble":[["carbon",3],["CO2",2],["aminoacid",1]],
-                        "bug":[["carbon",3],["aminoacid",1],["cyanidesalt",1]],
-                        "flower":[["carbon",2],["oxygen",2],["aminoacid",1]],
-                        "leaf":[["carbon",2],["oxygen",4],["startch",5]],
-                        "fruit":[["carbon",2],["oxygen",2],["startch",2]],
-                        "wplant":[["carbon",5],["oxygen",4],["startch",5],["aminoacid",1]],
-                        "bush":[["silicon",5],["iron",1],["magnesium",1],["aluminium",1]],
-                        "rock":[["silicon",10],["iron",3],["magnesium",3],["aluminium",3]],
-                        "gem":[["carbon",5],["sulfur",2],["ammonia",2]],
-                        "volrock":[["carbon",10],["silicon",10],["magnesium",5],["aluminium",5]],
-                        "freshwater":[["water",5],["CO2",3],["oxygen",4]],
-                        "saltwater":[["water",5],["CO2",3],["oxygen",4],["halogensalt",5]]}
+        self.itemChances = {"pebble":[["carbon",3]],
+                        "bug":[["carbon",1],["cyanidesalt",1],["carboxylicacid",1]], # ant formic acid and burnet moths hydrogen cyanide
+                        "flower":[["carbon",1],["amine",1],["alkane",1]], # many chemicals control the colour, sent and growth of the flower
+                        "leaf":[["carbon",1],["oxygen",1],["ester",1],["aminoacid",1]],
+                        "fruit":[["carbon",1],["water",1],["glucose",1],["aminoacid",1]],
+                        "wplant":[["carbon",1],["oxygen",1],["ester",1],["water",1],["silicon",1]],
+                        "bush":[["carbon",1],["oxygen",1],["ester",1],["aminoacid",1]],
+                        "rock":[["carbon",1],["silicon",1],["magnesium",1]],
+                        "gem":[["carbon",1],["magnesium",1],["nickle",1]],
+                        "volrock":[["carbon",1],["sulfur",1],["ammonia",1]],
+                        "freshwater":[["water",1],["CO2",1],["oxygen",1]],
+                        "saltwater":[["water",1],["CO2",1],["oxygen",1],["halogensalt",1]]}
     
     def get_screen(self):
         return self._screen
@@ -216,7 +215,7 @@ class AreaMap():
         return skeleton
     
 
-    def placeItems(self,row,col):
+    def placeItems(self,row,col,maxEnemy):
         count = 0
         collectNum = random.randint(1,5)
         while count < collectNum:
@@ -234,7 +233,7 @@ class AreaMap():
 
 
         count = 0
-        enemyNum = random.randint(0,2)
+        enemyNum = random.randint(0,maxEnemy)
         while count < enemyNum:
             x = random.randint(1,self._colLim-2)
             y = random.randint(1,self._rowLim-2)
@@ -370,7 +369,7 @@ class AreaMap():
       
 
 
-    def createAreaMap(self):
+    def createAreaMap(self,diff):
         for row in range(len(self._store)):
             for col in range(len(self._store[row])):
                 if self._store[row][col] != -1:
@@ -382,10 +381,15 @@ class AreaMap():
         self.placeFeatures("flowers")
         self.placeFeatures("bush")
         self.placeFeatures("water")
+        maxEnemy = 3
+        if diff == "Easy":
+            maxEnemy = 2
+        elif diff == "Hard":
+            maxEnemy = 4
         for r in range(len(self._store)):
             for c in range(len(self._store[r])):
                 if self._store[r][c] != -1 and self._infoStore[r][c] != "BOSS" and self._infoStore[r][c] != "GATE":
-                    self.placeItems(r,c)
+                    self.placeItems(r,c,maxEnemy)
         self.placePath()
 
 

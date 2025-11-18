@@ -81,6 +81,8 @@ class Player(Sprite):
         return self._chemicals
     def get_hasKey(self):
         return self._hasKey
+    def get_carbonCount(self):
+        return self._chemicals["carbon"]
     
     def set_pos(self,drct,w,h):
         if drct == 0:
@@ -112,12 +114,14 @@ class Player(Sprite):
     def inc_chemicals(self,chem):
         self._chemicals[chem] += 1
 
-    def extract(self,item,chem):
+    def set_extracted(self,item,chem,amount):
         self._collect[item] -= 1
-        self._chemicals[chem] += 1
+        self._chemicals[chem] += amount
     
     def decrease_health(self):
         self._health -= 1
+    def heal_self(self):
+        self._health += 1
 
     def set_int(self):
         self._pos[0] = int(self._pos[0])
