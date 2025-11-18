@@ -60,8 +60,8 @@ class Player(Sprite):
         self._health = 3
         self._hasKey = False
         self._validDrct = [True,True,True,True]
-        self._collect = {"bacteria":0,"bug":0,"flower":0,"leaf":0,"fruit":0,
-                        "wplant":0,"srock":0,"lrock":0,"volrock":0,"gem":0,
+        self._collect = {"pebble":0,"bug":0,"flower":0,"leaf":0,"fruit":0,
+                        "wplant":0,"bush":0,"rock":0,"gem":0,"volrock":0,
                         "freshwater":0,"saltwater":0}
         self._chemicals = {"carbon":0,"CO2":0,"oxygen":0,"aminoacid":0,"cyanidesalt":0,
                         "startch":0,"glucose":0,"silicon":0,"iron":0,"magnesium":0,"aluminium":0,

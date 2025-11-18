@@ -399,7 +399,7 @@ def screenSetUp(screenType):
     if screenType == "gate":
         buttons.clear()
         buttons.append(ShapeClasses.Button([1150,750],[180,80],"RETURN",GREEN))
-        buttons.append(ShapeClasses.Button([500,400],[100,80],"Give KEY",GREEN))
+        buttons.append(ShapeClasses.Button([WIDTH/2-50,HEIGHT/2-40],[100,80],"Give KEY",GREEN))
         mini.set_size([WIDTH-200, HEIGHT-200])
         mini.set_pos([100, 100])
 
@@ -495,16 +495,16 @@ def screenDisplay(screenType):
         x = 210
         y = 310
         collection = player.get_collect()
-        displayText(f"BACTERIA: {collection["bacteria"]}", font20, WHITE, [x, y])
+        displayText(f"PEBBLE: {collection["bacteria"]}", font20, WHITE, [x, y])
         displayText(f"BUG: {collection["bug"]}", font20, WHITE, [x+200, y])
         displayText(f"FLOWER: {collection["flower"]}", font20, WHITE, [x+400, y])
         displayText(f"LEAF: {collection["leaf"]}", font20, WHITE, [x+600, y])
         displayText(f"FRUIT: {collection["fruit"]}", font20, WHITE, [x+800, y])
-        displayText(f"OCEAN PLANT: {collection["wplant"]}", font20, WHITE, [x+1000, y])
-        displayText(f"SMALL ROCK: {collection["srock"]}", font20, WHITE, [x, y+30])
-        displayText(f"BIG ROCK: {collection["lrock"]}", font20, WHITE, [x+200, y+30])
-        displayText(f"VOLCANIC ROCK: {collection["volrock"]}", font20, WHITE, [x+400, y+30])
-        displayText(f"GEMSTONE: {collection["gem"]}", font20, WHITE, [x+600, y+30])
+        displayText(f"WATER PLANT: {collection["wplant"]}", font20, WHITE, [x+1000, y])
+        displayText(f"BUSH: {collection["bush"]}", font20, WHITE, [x, y+30])
+        displayText(f"BIG ROCK: {collection["rock"]}", font20, WHITE, [x+200, y+30])
+        displayText(f"GEMSTONE: {collection["gem"]}", font20, WHITE, [x+400, y+30])
+        displayText(f"VOLCANIC ROCK: {collection["volrock"]}", font20, WHITE, [x+600, y+30])
 
         displayText(f"FRESHWATER: {collection["freshwater"]}", font20, WHITE, [x, y+60])
         displayText(f"SEAWATER: {collection["saltwater"]}", font20, WHITE, [x+200, y+60])
@@ -631,8 +631,8 @@ def screenDisplay(screenType):
     if screenType == "gate":
         pygame.draw.rect(screen,WHITE,(100,HEIGHT/2-75,WIDTH-200,10))
         displayObject("mini",mini)
-        displayText("GATE:", font100, WHITE, [240, 150])
-        displayText("Do you have the KEY:", font20, WHITE, [212, 250])
+        displayText("GATE:", font100, WHITE, [255, 150])
+        displayText("Do you have the KEY:", font20, WHITE, [215, 250])
         for i in range(len(buttons)):
             displayObject("button",buttons[i])
 
@@ -1018,9 +1018,9 @@ def extractMini():
                 if event.key == pygame.K_ESCAPE:
                     extractTime = False
                 elif event.key == pygame.K_c:
-                    player.set_collect("bacteria",10000)
-                    player.set_collect("leaf",10000)
-                    player.set_collect("srock",10000)
+                    player.set_collect("pebble",10000)
+                    player.set_collect("bug",10000)
+                    player.set_collect("rock",10000)
                     player.set_collect("freshwater",10000)
             if event.type == pygame.MOUSEBUTTONDOWN:
                 for i in range(len(buttons)):
@@ -1029,7 +1029,7 @@ def extractMini():
                         if i == 0:
                             extractTime = False
                         elif i == 1:
-                            extractItem = "bacteria"
+                            extractItem = "pebble"
                         elif i == 2:
                             extractItem = "bug"
                         elif i == 3:
@@ -1041,13 +1041,13 @@ def extractMini():
                         elif i == 6:
                             extractItem = "wplant"
                         elif i == 7:
-                            extractItem = "srock"
+                            extractItem = "bush"
                         elif i == 8:
-                            extractItem = "lrock"
+                            extractItem = "rock"
                         elif i == 9:
-                            extractItem = "volrock"
-                        elif i == 10:
                             extractItem = "gem"
+                        elif i == 10:
+                            extractItem = "volrock"
                         elif i == 11:
                             extractItem = "freshwater"
                         elif i == 12:
