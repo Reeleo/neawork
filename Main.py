@@ -59,7 +59,7 @@ def displayObject(type,obj):
         size = obj.get_size()
         text = obj.get_text()
         colours = obj.get_colours()
-        if not obj.collision():
+        if not obj.collision(pygame.mouse.get_pos()):
             pygame.draw.rect(screen,colours[0],[pos[0]-5, pos[1]-5, size[0]+10, size[1]+10])
         pygame.draw.rect(screen,colours[1],[pos[0], pos[1], size[0], size[1]])
         displayText(text, font20, BLACK, [pos[0]+size[0]/2, pos[1]+size[1]/2])
@@ -208,7 +208,7 @@ def qtHandelling():
     for i in range(len(quickTexts)):
         if quickTexts[i].get_visible():
             displayText(quickTexts[i].get_text(),font20,quickTexts[i].get_colours(),[quickTexts[i].get_pos()[0],quickTexts[i].get_pos()[1]+i*30])
-            remove = quickTexts[i].update()
+            remove = quickTexts[i].update(time.time())
             if remove:
                 deleteing.append(i)
     for _ in range(len(deleteing)):
@@ -1461,8 +1461,8 @@ def mapScreen():
 player = SpriteClasses.Player()
 game = GameClasses.GameSettings()
 areaMap = GameClasses.AreaMap()
+mini = ShapeClasses.MiniWindow()
 areaMap.reset()
-mini = ShapeClasses.MiniWindow([100,100],[WIDTH-200, HEIGHT-200])
 buttons = []
 inputBoxes = []
 quickTexts = []

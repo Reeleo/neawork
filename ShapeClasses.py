@@ -1,5 +1,3 @@
-import pygame
-import time
 WHITE = (255,255,255)
 RED = (255,0,0)
 GRASS = (0,50,0)
@@ -60,8 +58,7 @@ class Button(ScreenShape):
     def decrease_text(self):
         self._text = self._text[:-1]
 
-    def collision(self):
-        mouse = pygame.mouse.get_pos()
+    def collision(self,mouse):
         if self._pos[0] <= mouse[0] <= self._pos[0] + self._size[0] and self._pos[1] <= mouse[1] <= self._pos[1] + self._size[1]:
             self._touch = True
             return self._touch
@@ -75,8 +72,8 @@ class Button(ScreenShape):
 
 #---------------MINI WINDOW---------------#  
 class MiniWindow(ScreenShape):
-    def __init__(self,pos,size):
-        super().__init__(pos,size)
+    def __init__(self):
+        super().__init__([100,100],[1272,760])
         self._colours = [WHITE, GRASS]
 
 
@@ -93,8 +90,8 @@ class QuickText(ScreenShape):
     
     def get_visible(self):
         return self._visible 
-    def update(self):
-        if time.time() - self._startTime > self._duration:
+    def update(self,time):
+        if time - self._startTime > self._duration:
             self._visible = False
             return True
         return False
