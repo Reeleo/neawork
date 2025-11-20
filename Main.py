@@ -7,8 +7,10 @@ import GameClasses
 pygame.init()
 
 #---------------GLOBAL CONSTANTS---------------#
-font20 = pygame.font.Font('freesansbold.ttf', 20)
-font100 = pygame.font.Font('freesansbold.ttf',100)
+font20 = pygame.font.Font("freesansbold.ttf", 20)
+font100 = pygame.font.Font("freesansbold.ttf",100)
+font20 = pygame.font.Font("papyrus.ttf",20)
+#print(pygame.font.get_fonts())
 WIDTH, HEIGHT = 1472, 960
 FPS = 40
 BLACK = (0,0,0)
