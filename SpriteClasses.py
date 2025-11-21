@@ -60,6 +60,7 @@ class Player(Sprite):
         self._health = 3
         self._hasKey = False
         self._validDrct = [True,True,True,True]
+        self._achievements = [False,False]
         self._collect = {"pebble":0,"bug":0,"flower":0,"leaf":0,"fruit":0,
                         "wplant":0,"bush":0,"rock":0,"gem":0,"volrock":0,
                         "freshwater":0,"saltwater":0}
@@ -83,6 +84,8 @@ class Player(Sprite):
         return self._hasKey
     def get_carbonCount(self):
         return self._chemicals["carbon"]
+    def get_achievements(self):
+        return self._achievements
     
     def set_pos(self,drct,w,h):
         if drct == 0:
@@ -109,12 +112,18 @@ class Player(Sprite):
             self._validDrct[drct] = valid
     def set_hasKey(self):
         self._hasKey = True
+        self._achievements[0] = True
     def inc_collect(self,item):
         self._collect[item] += 1
     def dec_chemicals(self,chem):
         self._chemicals[chem] -= 1
     def inc_chemicals(self,chem):
         self._chemicals[chem] += 1
+    def set_achievements(self,achieve,i):
+        self._achievements[i] = achieve
+
+
+
 
     def set_extracted(self,item,chem,amount):
         self._collect[item] -= 1
@@ -131,6 +140,7 @@ class Player(Sprite):
         self._pos[0] = int(self._pos[0])
         self._pos[1] = int(self._pos[1])
         self._speed = int(self._speed)
+    
 
     
     def updateSprite(self):

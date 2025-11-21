@@ -302,14 +302,18 @@ def screenSetUp(screenType):
     #8
     if screenType == "pTable":
         buttons.clear()
-
         buttons.append(ShapeClasses.Button([1240,610],[90,180],"RETURN",RED))
         mini.set_size([WIDTH-200, HEIGHT-255])
         mini.set_pos([100, 130])
 
     #9 
-    if screenType == "achievements":
-        pass
+    if screenType == "achieve":
+        buttons.clear()
+        buttons.append(ShapeClasses.Button([1150,750],[180,80],"RETURN",GREEN))
+        buttons.append(ShapeClasses.Button([140, 200],[280,80],"Beat the BOSS",GREEN))
+        buttons.append(ShapeClasses.Button([460, 200],[280,80],"ESCAPE through the GATE",GREEN))
+        mini.set_size([WIDTH-200, HEIGHT-200])
+        mini.set_pos([100, 100])
 
     #10
     if screenType == "pause":
@@ -548,8 +552,15 @@ def screenDisplay(screenType):
         displayImage(pygame.image.load("pTable.png"),[110,140],0.9,[WIDTH-250,HEIGHT-200])
     
     #9 
-    if screenType == "achievements":
-        pass
+    if screenType == "achieve":
+        pygame.draw.rect(screen,WHITE,(100,HEIGHT/2-75,WIDTH-200,10))
+        displayObject("mini",mini)
+        displayText("Your Achievements:", font20, WHITE, [231, 150])
+        for i in range(len(buttons)):
+            displayObject("button",buttons[i])
+        playerAchieve = player.get_achievements()
+        for j in range(len(playerAchieve)):
+            displayText(f"Achieved = {playerAchieve[j]}", font20, WHITE, [280+j*320, 310])
 
     #10
     if screenType == "pause":
@@ -677,6 +688,14 @@ def loadGame():
                 player.set_hasKey()
             if saveData[3] == "False":
                 game.set_tutorial(False)
+            if saveData[4] == "True":
+                player.set_achievements(True,0)
+            else:
+                player.set_achievements(False,0)
+            if saveData[5] == "True":
+                player.set_achievements(True,1)
+            else:
+                player.set_achievements(False,1)
     player.set_int()
     file.close()
 
@@ -696,7 +715,7 @@ def saveGame():
         collectLine += str(collection[item])+","
     for chem in player.get_chemicals():
         chemicalLine += str(chemicals[chem])+","
-    gameLine += f"{game.get_diff()},{str(player.get_speed())},{str(player.get_hasKey())},{str(game.get_tutorial())},"
+    gameLine += f"{game.get_diff()},{str(player.get_speed())},{str(player.get_hasKey())},{str(game.get_tutorial())},{player.get_achievements()[0]},{player.get_achievements()[1]},"
     file.writelines(collectLine)
     file.writelines("\n") 
     file.writelines(chemicalLine)
@@ -865,7 +884,6 @@ def checkEquation(txt,check):
     return False, message
 
 
-
 def fetchQuestions():
     c = []
     chosen = []
@@ -873,10 +891,10 @@ def fetchQuestions():
     diff = game.get_diff()
     diff = "Testing"
     file = open("questions.txt","r")
-    for _ in range(20):
+    for _ in range(25):
         line = file.readline()
         qSet.append(line.split(","))
-    for i in range(20):
+    for i in range(25):
         qSet[i][5] = int(qSet[i][5])
     file.close()
 
@@ -1038,7 +1056,7 @@ def achieveMini():
     cont = 0
     achieveTime = True
     while achieveTime:
-        screenDisplay("achivements")
+        screenDisplay("achieve")
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 achieveTime = False
@@ -1048,7 +1066,7 @@ def achieveMini():
                     achieveTime = False
             if event.type == pygame.MOUSEBUTTONDOWN:
                 for i in range(len(buttons)):
-                    if buttons[0].collision():
+                    if buttons[i].collision():
                         pygame.mixer.Sound.play(sounds[0])
                         achieveTime = False
         pygame.display.update()
@@ -1244,7 +1262,7 @@ def inventoryMini():
                             elif player.get_carbonCount() > cost:
                                 quickTexts.append(ShapeClasses.QuickText([830,700],f"You are on max health ({maxHealth})",time.time()))
                             else:
-                                quickTexts.append(ShapeClasses.QuickText([830,700],f"You dont have enough carbon (1 heart = {cost}C)",time.time()))
+                                quickTexts.append(ShapeClasses.QuickText([800,700],f"You dont have enough carbon (1 heart = {cost}C)",time.time()))
 
 
         if extractTime:
@@ -1254,7 +1272,7 @@ def inventoryMini():
             screenSetUp("craft")
             cont = craftMini()  
         if achieveTime:
-            screenSetUp("achivements")
+            screenSetUp("achieve")
             cont = achieveMini()  
             
         qtHandelling()
@@ -1384,6 +1402,7 @@ def gateMini():
                         pygame.draw.rect(screen,WHITE,[180,180,WIDTH-360, HEIGHT-360])
                         pygame.draw.rect(screen,BLACK,[200,200,WIDTH-400, HEIGHT-400])
                         displayText("YOU WIN!!!", font100, WHITE, [WIDTH/2, 400])
+                        player.win()
                         pygame.display.update()
                         time.sleep(10)
                     else:
