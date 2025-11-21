@@ -1,18 +1,20 @@
-What is the formular for the sulfate ion?,SO4 (2-),SO3 (2-),SO4 (-1),SO3 (-1),1
-How do you make tollen's reagent?,AgNO3+NaNO3+NH3,AgNO2+NaH+NH3,AgNO3+NaOH+NH3,AgNO3+NaOH+Ag,3
-How many orbitals in the p sub-shell?,2,3,4,5,2
-Whats the formular of potassium hydroxide?,POH,P2OH,P(OH)2,P2(OH)3,1
-What is avagradros number?,6.20x10^23,62.2x10^24,6.02x10^23,2.06x10^24,3
-What is false about ionic bonds?,an electrostatic force,an intramolecular force,due to difference in electronegativity,form a giant lattice,2
-What is the shape of s orbitals?,dumbell,clover,ovoid,sphere,4
-What do you use to test for carbonyls?,2-4DNP,2-8DAP,2-4DPN,2-3DDN,1
-questionfiller1,i,ii,iii,iv,1
-questionfiller2,i,ii,iii,iv,1
-questionfiller3,i,ii,iii,iv,1
-questionfiller4,i,ii,iii,iv,1
-questionfiller5,i,ii,iii,iv,1
-questionfiller6,i,ii,iii,iv,1
-questionfiller7,i,ii,iii,iv,1
-questionfiller8,i,ii,iii,iv,1
-questionfiller9,i,ii,iii,iv,1
-questionfiller10,i,ii,iii,iv,1
+questionfiller1,i,ii,iii,iv,1,Testing,
+questionfiller2,i,ii,iii,iv,1,Testing,
+questionfiller3,i,ii,iii,iv,1,Testing,
+questionfiller4,i,ii,iii,iv,1,Testing,
+What is the bond shape of CO2?,linear,pyramedal,octahedral,trigonal planar,1,Easy,
+What is the formular of the sulfate ion?,S2O2(2-),SO3(2-),SO2(2-),SO4(2-),4,Easy,
+How many orbitals are in a p sub-shell?,2,3,4,6,2,Easy,
+What is an example of a weak acid?,HCl,H3PO4,CH3COOH,H2SO4,3,Easy,
+What is the correct formular for finding the moles of a substance?,n=m/Mr,n=m*Mr,n=Mr/v,n=v/24,1,Easy,
+What is the formula of calcium oxide,Ca2O,CaO,Ca2O3,CaO2,2,Easy,
+What is the bond shape of H2O?,linear,pyramedal,bent,trigonal planar,3,Medium,
+What is the bond shape of NH3?,bent,trigonal planar,see-saw,pryramidal,4,Medium,
+What element cannot form hydrogen bonds?,chlorine,nitrogen,oxygen,flourine,1,Medium,
+Adding Ba(2+) ions is a test for what?,alcohols,sulfate ions,ammonium ions,halogens,2,Medium,
+What colour is silver chloride?,orange,cream,white,orange,3,Medium,
+What is not a reason for why Kelule's benzene model is incorrect?,it does not have the expected hydrogenation enthalpy,it does not have the expected bond lengths,it does not undergo addition reactions,it has higher energy,4,Medium,
+AgNO3 + NAOH+ dilute NH3 is a test reagent for what?,Ketone,Carboxylic Acid,Phenol,Aldehyde,4,Hard,
+What is the formular of the dichromate ion?,Cr2O7(-1),Cr2O7(-2),CrO7(-1),CrO4(-2),2,Hard,
+What is the formular of the permanganate ion?,MnO7(-1),MgO4(-1),MnO7(-2),MnO4(-1),4,Hard,
+Reacting with a carbonate to produce carbon dioxide is a test for what?,Phenol,Benzene,Carboxylic Acid,Ammonia,3,Hard,

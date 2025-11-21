@@ -111,6 +111,8 @@ class Player(Sprite):
         self._hasKey = True
     def inc_collect(self,item):
         self._collect[item] += 1
+    def dec_chemicals(self,chem):
+        self._chemicals[chem] -= 1
     def inc_chemicals(self,chem):
         self._chemicals[chem] += 1
 
@@ -122,6 +124,8 @@ class Player(Sprite):
         self._health -= 1
     def heal_self(self):
         self._health += 1
+    def revive_self(self):
+        self._health = 3
 
     def set_int(self):
         self._pos[0] = int(self._pos[0])
@@ -218,8 +222,6 @@ class Collectable(Sprite):
                 self._scale = 1.5
             elif 5 < self._num < 9:
                 self._scale = 3.2
-
-
         image = self.get_image(x,y,32,32)
         return image
 
@@ -227,15 +229,20 @@ class Collectable(Sprite):
 
 #---------------ENEMYS---------------#
 class Enemy(Sprite):
-    def __init__(self,pos):
+    def __init__(self,pos,diff):
         super().__init__(pos,[80,80],3.5,BLACK,pygame.image.load("EnemySpriteSheet.png"))
         self._drct = "down"
         self._cycle = 1
-        self._speed = 4
         self._battleTime = False
         self._qSet = []
         self._qNum = 0
         self._validDrct = [True,True,True,True]
+        if diff == "Easy":
+            self._speed = 3
+        elif diff == "Hard":
+            self._speed = 5
+        else:
+            self._speed = 4
 
     def get_battle(self):
         return self._battleTime
@@ -338,15 +345,19 @@ class Character(Sprite):
         self._specialTime = False
         if type == "enemyImage" or type == "boss":
             sheet = pygame.image.load("EnemySpriteSheet.png")
+            scale = 20
         elif type == "gate":
-            sheet = pygame.image.load("homeBackground.png")
+            sheet = pygame.image.load("collectablesSprites.bmp")
+            scale = 5
         else:
             sheet = pygame.image.load("SpriteSheet.png")
-        super().__init__(pos,[80,80],3.5,BLACK,sheet)
+            scale = 3.5
+        super().__init__(pos,[80,80],scale,BLACK,sheet)
         self._cycle = 0 
         self._type = type
         self._startTime = 0
         self._pointer = 0
+        self._dialogue = "error"
         file = open("characterDialogue.txt","r")
         for i in range(1,10):
             line = file.readline()
@@ -374,23 +385,31 @@ class Character(Sprite):
         
     
     def collision(self,playerpos):
-        if self._pos[0]-80 < playerpos[0] < self._pos[0]+self._size[0]+40:
-            if self._pos[1]-80 < playerpos[1] < self._pos[1]+self._size[1]+40:
-                return True
+        if self._type == "boss":
+            if self._pos[0]-40 < playerpos[0] < self._pos[0]+self._size[0]+400:
+                if self._pos[1]-40 < playerpos[1] < self._pos[1]+self._size[1]+500:
+                    return True
+        else:
+            if self._pos[0]-80 < playerpos[0] < self._pos[0]+self._size[0]+40:
+                if self._pos[1]-80 < playerpos[1] < self._pos[1]+self._size[1]+40:
+                    return True
         return False
 
     def updateSprite(self):
         x = self._cycle // 8
-        if self._type != "enemyImage" and self._type != "boss":
+        print(self._type)
+        if self._type == "enemyImage" or self._type == "boss":
             frame = self.get_image(x,0,self._size[0]/2.5,self._size[1]/2.5)
+        elif self._type == "gate":
+            frame = self.get_image(1,3,32,32)
         else:
-            self._scale = 20
             frame = self.get_image(x,0,self._size[0]/2.5,self._size[1]/2.5)
         return frame
 
     def update(self):
-        self._cycle += 1
-        if self._cycle == 32:
-            self._cycle = 0
+        if self._type != "gate" or self._type == "gate":
+            self._cycle += 1
+            if self._cycle == 32:
+                self._cycle = 0
         return self.updateSprite()
 

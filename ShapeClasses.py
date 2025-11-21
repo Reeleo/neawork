@@ -1,3 +1,4 @@
+import pygame
 WHITE = (255,255,255)
 RED = (255,0,0)
 GRASS = (0,50,0)
@@ -58,7 +59,8 @@ class Button(ScreenShape):
     def decrease_text(self):
         self._text = self._text[:-1]
 
-    def collision(self,mouse):
+    def collision(self):
+        mouse  = pygame.mouse.get_pos()
         if self._pos[0] <= mouse[0] <= self._pos[0] + self._size[0] and self._pos[1] <= mouse[1] <= self._pos[1] + self._size[1]:
             self._touch = True
             return self._touch

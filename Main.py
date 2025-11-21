@@ -9,8 +9,6 @@ pygame.init()
 #---------------GLOBAL CONSTANTS---------------#
 font20 = pygame.font.Font("freesansbold.ttf", 20)
 font100 = pygame.font.Font("freesansbold.ttf",100)
-font20 = pygame.font.Font("papyrus.ttf",20)
-#print(pygame.font.get_fonts())
 WIDTH, HEIGHT = 1472, 960
 FPS = 40
 BLACK = (0,0,0)
@@ -61,7 +59,7 @@ def displayObject(type,obj):
         size = obj.get_size()
         text = obj.get_text()
         colours = obj.get_colours()
-        if not obj.collision(pygame.mouse.get_pos()):
+        if not obj.collision():
             pygame.draw.rect(screen,colours[0],[pos[0]-5, pos[1]-5, size[0]+10, size[1]+10])
         pygame.draw.rect(screen,colours[1],[pos[0], pos[1], size[0], size[1]])
         displayText(text, font20, BLACK, [pos[0]+size[0]/2, pos[1]+size[1]/2])
@@ -162,7 +160,7 @@ def displayObject(type,obj):
             if tilePos[i][1]*64 < rfoot[0] < tilePos[i][1]*64+64 or tilePos[i][1]*64 < rfoot[0] < tilePos[i][1]*64+64:
                 if tilePos[i][0]*64 < rfoot[1]-speed < tilePos[i][0]*64+64 or tilePos[i][0]*64 < rfoot[1]+10-speed < tilePos[i][0]*64+64:
                     obj.set_validWalk(0,False)
-            print(obj._validDrct)
+            #print(obj._validDrct)
 
     elif type == "char":
         screen.blit(obj.update(),(obj.get_pos()))
@@ -176,7 +174,7 @@ def displayObject(type,obj):
 
     elif type == "special":
         screen.blit(obj.update(),(obj.get_pos()))
-        if  obj.collision(player.get_pos()):
+        if obj.collision(player.get_pos()):
             playerpos = player.get_pos()
             playersize = player.get_size()
             displayText("SPACE", font20, WHITE, [playerpos[0]+playersize[0]/2, playerpos[1]-20])
@@ -254,8 +252,8 @@ def screenSetUp(screenType):
         player.set_posy(HEIGHT-200-player.get_size()[1])
         doors.append(SpriteClasses.Collectable([1273,608],12))
         doors.append(SpriteClasses.Collectable([22,608],12))
-        doors[0].assign_type(game.collectTypes)
-        doors[1].assign_type(game.collectTypes)
+        doors[0].assign_type(game.get_collectTypes())
+        doors[1].assign_type(game.get_collectTypes())
         player.set_validWalk("all",[True,True,True,True])
 
     #5
@@ -266,11 +264,12 @@ def screenSetUp(screenType):
         for j in range(12):
             cSprites.append(SpriteClasses.Collectable([120, 100+j*60],j))
         for k in range(12):
-            cSprites[k].assign_type(game.collectTypes)
+            cSprites[k].assign_type(game.get_collectTypes())
         if game.get_screen() == "home":
-            buttons.append(ShapeClasses.Button([850,460],[400,80],"EXTRACT",GREEN))
-            buttons.append(ShapeClasses.Button([390,460],[400,80],"CRAFT",GREEN))
-            buttons.append(ShapeClasses.Button([620,580],[400,80],"HEAL",GREEN))
+            buttons.append(ShapeClasses.Button([390,460],[400,80],"EXTRACT",GREEN))
+            buttons.append(ShapeClasses.Button([850,460],[400,80],"CRAFT",GREEN))
+            buttons.append(ShapeClasses.Button([390,580],[400,80],"ACHIEVEMENTS",GREEN))
+            buttons.append(ShapeClasses.Button([850,580],[400,80],"HEAL",GREEN))
         mini.set_size([WIDTH-200, HEIGHT-200])
         mini.set_pos([100, 100])
         
@@ -284,7 +283,7 @@ def screenSetUp(screenType):
         for j in range(12):
             cSprites.append(SpriteClasses.Collectable([140+j*100, 200],j))
         for k in range(12):
-            cSprites[k].assign_type(game.collectTypes)
+            cSprites[k].assign_type(game.get_collectTypes())
         mini.set_size([WIDTH-200, HEIGHT-200])
         mini.set_pos([100, 100])
 
@@ -308,28 +307,32 @@ def screenSetUp(screenType):
         mini.set_size([WIDTH-200, HEIGHT-255])
         mini.set_pos([100, 130])
 
-    #9
+    #9 
+    if screenType == "achievements":
+        pass
+
+    #10
     if screenType == "pause":
         buttons.clear()
         for i in range(8):
             if i == 0:
-                buttons.append(ShapeClasses.Button([900,250],[80,80],"+",RED))
+                buttons.append(ShapeClasses.Button([1000,350],[80,80],"+",RED))
             elif i == 1:
-                buttons.append(ShapeClasses.Button([600,250],[80,80],"+",RED))
+                buttons.append(ShapeClasses.Button([680,350],[80,80],"+",RED))
             elif i == 2:
-                buttons.append(ShapeClasses.Button([350,250],[80,80],str(game.get_showAll()),RED))
+                buttons.append(ShapeClasses.Button([400,350],[80,80],str(game.get_showAll()),RED))
             elif i == 3:
-                buttons.append(ShapeClasses.Button([WIDTH/2, 3*HEIGHT/4],[180,80],"RETURN",RED))
+                buttons.append(ShapeClasses.Button([WIDTH/2+120, 3*HEIGHT/4],[180,80],"RETURN",RED))
             elif i == 4:
-                buttons.append(ShapeClasses.Button([WIDTH/4-90, 3*HEIGHT/4],[180,80],"MENU",RED))
+                buttons.append(ShapeClasses.Button([WIDTH/2-300, 3*HEIGHT/4],[180,80],"MENU",RED))
             elif i == 5:
-                buttons.append(ShapeClasses.Button([WIDTH/3+20, 3*HEIGHT/4],[180,80],"SAVE",RED))
+                buttons.append(ShapeClasses.Button([WIDTH/2-90, 3*HEIGHT/4],[180,80],"SAVE",RED))
             elif i == 6:
-                buttons.append(ShapeClasses.Button([350,350],[80,80],str(game.get_playMusic()),RED))
+                buttons.append(ShapeClasses.Button([400,450],[80,80],str(game.get_playMusic()),RED))
             elif i == 7:
-                buttons.append(ShapeClasses.Button([900,350],[80,80],str(game.get_tutorial()),RED))
+                buttons.append(ShapeClasses.Button([1000,450],[80,80],str(game.get_tutorial()),RED))
 
-    #10
+    #11
     if screenType == "maps":
         buttons.clear()
         cSprites.clear()
@@ -349,22 +352,22 @@ def screenSetUp(screenType):
             if blitList[item][2]:
                 if blitList[item][3] == "collect":
                     cSprites.append(SpriteClasses.Collectable([blitList[item][0],blitList[item][1]],blitList[item][4]))
-                    cSprites[-1].assign_type(game.collectTypes)
+                    cSprites[-1].assign_type(game.get_collectTypes())
                 elif blitList[item][3] == "enemy":
-                    eSprites.append(SpriteClasses.Enemy([blitList[item][0],blitList[item][1]]))
+                    eSprites.append(SpriteClasses.Enemy([blitList[item][0],blitList[item][1]],game.get_diff()))
                 elif blitList[item][3] == "char":
                     nSprites.append(SpriteClasses.Character([blitList[item][0],blitList[item][1]],random.randint(1,10)))
         for i in range(player.get_health()):
             hearts.append(SpriteClasses.Sprite([2+i*60, 2],[50,50],2.5,BLACK,pygame.image.load("collectablesSprites.bmp")))
             
-    #11
+    #12
     if screenType == "minimap":
         buttons.clear()
         mini.set_pos([100,100])
         mini.set_size([WIDTH-200, HEIGHT-192])
         buttons.append(ShapeClasses.Button([1187,783],[180,80],"RETURN",RED))
 
-    #12
+    #13
     if screenType == "battle":
         buttons.clear()
         sSprites.clear()
@@ -386,19 +389,19 @@ def screenSetUp(screenType):
         for i in range(player.get_health()):
             hearts.append(SpriteClasses.Sprite([10+i*60, 20],[50,50],2.5,BLACK,pygame.image.load("collectablesSprites.bmp")))  
 
-    #13
+    #14
     if screenType == "boss":
         buttons.clear()
         buttons.append(ShapeClasses.Button([1150,750],[180,80],"RETURN",GREEN))
-        buttons.append(ShapeClasses.Button([300,500],[200,80],"r1",GREEN))
-        buttons.append(ShapeClasses.Button([600,450],[200,80],"r2",GREEN))
-        buttons.append(ShapeClasses.Button([900,500],[200,80],"r3",GREEN))
-        buttons.append(ShapeClasses.Button([450,750],[200,80],"r4",GREEN))
-        buttons.append(ShapeClasses.Button([750,750],[200,80],"r5",GREEN))
+        buttons.append(ShapeClasses.Button([350,350],[200,80],"ester",GREEN))
+        buttons.append(ShapeClasses.Button([650,250],[200,80],"nitrile",GREEN))
+        buttons.append(ShapeClasses.Button([950,350],[200,80],"carbon",GREEN))
+        buttons.append(ShapeClasses.Button([500,600],[200,80],"alcohol",GREEN))
+        buttons.append(ShapeClasses.Button([800,600],[200,80],"amide",GREEN))
         mini.set_size([WIDTH-200, HEIGHT-200])
         mini.set_pos([100, 100])
     
-    #14
+    #15
     if screenType == "gate":
         buttons.clear()
         buttons.append(ShapeClasses.Button([1150,750],[180,80],"RETURN",GREEN))
@@ -485,7 +488,7 @@ def screenDisplay(screenType):
                 xcount = 0 
                 ycount += 40
   
-    #5
+    #6
     if screenType == "extract":
         pygame.draw.rect(screen,WHITE,(100,HEIGHT/2-75,WIDTH-200,10))
         displayObject("mini",mini)
@@ -512,7 +515,7 @@ def screenDisplay(screenType):
         displayText(f"FRESHWATER: {collection["freshwater"]}", font20, WHITE, [x, y+60])
         displayText(f"SEAWATER: {collection["saltwater"]}", font20, WHITE, [x+200, y+60])
 
-    #6
+    #7
     if screenType == "craft":
         pygame.draw.rect(screen,WHITE,(100,HEIGHT/2-75,WIDTH-200,10))
         displayObject("mini",mini)
@@ -537,27 +540,34 @@ def screenDisplay(screenType):
                 xcount = 0 
                 ycount += 40
 
-    #7
+    #8
     if screenType == "pTable":
         pygame.draw.rect(screen,WHITE,(100,HEIGHT/2-75,WIDTH-200,10))
         displayObject("mini",mini)
         displayObject("button",buttons[0])
         displayImage(pygame.image.load("pTable.png"),[110,140],0.9,[WIDTH-250,HEIGHT-200])
+    
+    #9 
+    if screenType == "achievements":
+        pass
 
-    #8
+    #10
     if screenType == "pause":
         screen.fill(BURG)  
         pygame.draw.rect(screen,RED,[20,20,WIDTH-40, HEIGHT-40])
         pygame.draw.rect(screen,BLACK,[40,40,WIDTH-80, HEIGHT-80])
-        displayText(f"Difficulty: {game.get_diff()}", font20, WHITE, [800, 300])
-        displayText(f"Speed: {player.get_speed()}", font20, WHITE, [530, 300])
-        displayText(f"AllMiniMap: ", font20, WHITE, [280, 300])
-        displayText(f"PlayMusic: ", font20, WHITE, [280, 400])
-        displayText(f"Show Tutorial: ", font20, WHITE, [820, 400])
+        displayText(f"Difficulty: {game.get_diff()}", font20, WHITE, [900, 390])
+        displayText(f"Speed: {player.get_speed()}", font20, WHITE, [620, 390])
+        displayText(f"Display whole MiniMap: ", font20, WHITE, [270, 390])
+        displayText(f"Play Music: ", font20, WHITE, [330, 490])
+        displayText(f"Show Tutorial: ", font20, WHITE, [920, 490])
+        if game.get_tutorial():
+            displayText("(Displays tips)", font20, WHITE, [1170, 490])
+            displayText("(Effects Health and Questions)", font20, WHITE, [1250, 390])
         for i in range(len(buttons)):
             displayObject("button",buttons[i])
 
-    #9
+    #11
     if screenType == "maps":
         tiles, blitList, setPlayer = areaMap.loadMap(player.get_pos(),player.get_size(),WIDTH,HEIGHT)
         player.set_pos(setPlayer,WIDTH,HEIGHT)
@@ -567,17 +577,17 @@ def screenDisplay(screenType):
             nSprites.clear()
             sSprites.clear()
             if blitList == "BOSS":
-                sSprites.append(SpriteClasses.Character([WIDTH/2-300,HEIGHT/2-200],"boss"))
+                sSprites.append(SpriteClasses.Character([WIDTH/2-250,HEIGHT/2-350],"boss"))
             elif blitList == "GATE":
-                sSprites.append(SpriteClasses.Character([WIDTH/2-300,HEIGHT/2-200],"gate"))
+                sSprites.append(SpriteClasses.Character([WIDTH-200,HEIGHT/2],"gate"))
             else:
                 for item in range(len(blitList)):
                     if blitList[item][2]:
                         if blitList[item][3] == "collect":
                             cSprites.append(SpriteClasses.Collectable([blitList[item][0],blitList[item][1]],blitList[item][4]))
-                            cSprites[-1].assign_type(game.collectTypes)
+                            cSprites[-1].assign_type(game.get_collectTypes())
                         elif blitList[item][3] == "enemy":
-                            eSprites.append(SpriteClasses.Enemy([blitList[item][0],blitList[item][1]]))
+                            eSprites.append(SpriteClasses.Enemy([blitList[item][0],blitList[item][1]],game.get_diff()))
                         elif blitList[item][3] == "char":
                             nSprites.append(SpriteClasses.Character([blitList[item][0],blitList[item][1]],""))
 
@@ -598,7 +608,7 @@ def screenDisplay(screenType):
             displayObject("heart",hearts[h])
         displayObject("player", player)
      
-    #10
+    #12
     if screenType == "minimap":
         displayObject("mini",mini)
         displayObject("button",buttons[0])
@@ -610,7 +620,7 @@ def screenDisplay(screenType):
         displayText(f"PlayerCol = {areaMap.get_pos()[1]}",font20,WHITE,[1270,130])
         displayText(f"PlayerRow = {areaMap.get_pos()[0]}",font20,WHITE,[1270,160])
 
-    #11
+    #13
     if screenType == "battle":
         screen.fill(BLACK)
         displayObject("mini",mini)
@@ -622,15 +632,15 @@ def screenDisplay(screenType):
         for j in range(len(hearts)):
             displayObject("heart",hearts[j])
 
-    #13
+    #14
     if screenType == "boss":
         pygame.draw.rect(screen,WHITE,(100,HEIGHT/2-75,WIDTH-200,10))
         displayObject("mini",mini)
-        displayText("BOSS:", font20, WHITE, [240, 150])
+        displayText("BOSS:", font100, WHITE, [255, 150])
         for i in range(len(buttons)):
             displayObject("button",buttons[i])
     
-    #14
+    #15
     if screenType == "gate":
         pygame.draw.rect(screen,WHITE,(100,HEIGHT/2-75,WIDTH-200,10))
         displayObject("mini",mini)
@@ -648,7 +658,7 @@ def loadGame():
         file = open("saveData2.txt","r")
     elif game.get_saveFile() == 3:
         file = open("saveData3.txt","r")
-    for i in range(3):
+    for i in range(4):
         line = file.readline()
         saveData = line.split(",")
         count = 0
@@ -665,6 +675,8 @@ def loadGame():
             player.set_speed(saveData[1],"set")
             if saveData[2] == "True":
                 player.set_hasKey()
+            if saveData[3] == "False":
+                game.set_tutorial(False)
     player.set_int()
     file.close()
 
@@ -684,7 +696,7 @@ def saveGame():
         collectLine += str(collection[item])+","
     for chem in player.get_chemicals():
         chemicalLine += str(chemicals[chem])+","
-    gameLine += game.get_diff()+","+str(player.get_speed())+","+str(player.get_hasKey())
+    gameLine += f"{game.get_diff()},{str(player.get_speed())},{str(player.get_hasKey())},{str(game.get_tutorial())},"
     file.writelines(collectLine)
     file.writelines("\n") 
     file.writelines(chemicalLine)
@@ -696,7 +708,7 @@ def saveGame():
 
 #---------------SCREEN SUBFUNCTIONS---------------#
 def extraction(item):
-    chances = game.itemChances[item]
+    chances = game.get_itemChances()[item]
     randomNum = random.randint(0,len(chances)-1)
     chem = chances[randomNum][0]
     amount = chances[randomNum][1]
@@ -858,27 +870,39 @@ def fetchQuestions():
     c = []
     chosen = []
     qSet = []
+    diff = game.get_diff()
+    diff = "Testing"
     file = open("questions.txt","r")
-    for _ in range(18):
+    for _ in range(20):
         line = file.readline()
         qSet.append(line.split(","))
-    for i in range(18):
+    for i in range(20):
         qSet[i][5] = int(qSet[i][5])
     file.close()
+
     for _ in range(3):
+        count = 0
         valid = False
         while not valid:
-            c1 = random.randint(0,17)
             repeat = False
+            c1 = random.randint(0,19)
             for j in range(len(c)):
                 if c[j] == c1:
                     repeat = True
-            if not repeat:
-                valid = True
+            if not repeat and qSet[c1][6] == diff:
+                valid  = True
+            count += 1
+            if count > 40:
+                diff = "Testing"
         c.append(c1)
     chosen = [qSet[c[0]],qSet[c[1]],qSet[c[2]]]
     return chosen
 
+def battleReward():
+    rewards = game.get_rewards()
+    choice = random.randint(0,len(rewards)-1)
+    num = random.randint(1,4)
+    return rewards[choice],num
 
 
 #---------------SCREEN FUNCTIONS---------------#
@@ -966,7 +990,7 @@ def pauseScreen():
                         cont = 3
                     elif i == 5:
                         saveGame()
-                        displayText("Saved", font20, WHITE, [WIDTH/3+20+90, 3*HEIGHT/4-40])
+                        displayText("Saved", font20, WHITE, [WIDTH/2, 3*HEIGHT/4-40])
                     elif i == 6:
                         game.set_playMusic()
                         buttons[i].set_text(game.get_playMusic())
@@ -1006,6 +1030,27 @@ def pTableMini():
                 if buttons[0].collision():
                     pygame.mixer.Sound.play(sounds[0])
                     pTableTime = False
+        pygame.display.update()
+        clock.tick(FPS)
+    return cont 
+
+def achieveMini():
+    cont = 0
+    achieveTime = True
+    while achieveTime:
+        screenDisplay("achivements")
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                achieveTime = False
+                cont = 1
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_ESCAPE:
+                    achieveTime = False
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                for i in range(len(buttons)):
+                    if buttons[0].collision():
+                        pygame.mixer.Sound.play(sounds[0])
+                        achieveTime = False
         pygame.display.update()
         clock.tick(FPS)
     return cont 
@@ -1157,7 +1202,7 @@ def craftMini():
 
 def inventoryMini():
     cont = 0
-    inventoryTime, extractTime, craftTime = True, False, False
+    inventoryTime,extractTime,craftTime,achieveTime = True,False,False,False
     while inventoryTime:
         screenDisplay("inventory")
         for event in pygame.event.get():
@@ -1182,6 +1227,9 @@ def inventoryMini():
                             inventoryTime = False
                             craftTime = True
                         elif i == 3:
+                            inventoryTime = False
+                            achieveTime = True
+                        elif i == 4:
                             cost = 20
                             maxHealth = 5
                             if game.get_diff() == "Easy":
@@ -1197,7 +1245,7 @@ def inventoryMini():
                                 quickTexts.append(ShapeClasses.QuickText([830,700],f"You are on max health ({maxHealth})",time.time()))
                             else:
                                 quickTexts.append(ShapeClasses.QuickText([830,700],f"You dont have enough carbon (1 heart = {cost}C)",time.time()))
-                            
+
 
         if extractTime:
             screenSetUp("extract")
@@ -1205,6 +1253,9 @@ def inventoryMini():
         if craftTime:
             screenSetUp("craft")
             cont = craftMini()  
+        if achieveTime:
+            screenSetUp("achivements")
+            cont = achieveMini()  
             
         qtHandelling()
         pygame.display.update()
@@ -1228,7 +1279,7 @@ def homeScreen():
                         if game.get_tutorial():
                             displayResult("Adventure!","Collect resources, battle enemies, talk with guides")
                             pygame.display.update()
-                            time.sleep(2)
+                            time.sleep(1)
                         cont = 3
             elif event.key == pygame.K_e:
                 inventoryTime  = True
@@ -1290,13 +1341,14 @@ def bossMini():
                     if i != 0:
                         if buttons[i].collision():
                             pygame.mixer.Sound.play(sounds[0])
-                            has = False
-                            #### requirements go here
-                            if has:
+                            item = buttons[i].get_text()
+                            count = player.get_chemicals()[item]
+                            if count > 0:
                                 buttons.pop(i)
-                                quickTexts.append(ShapeClasses.QuickText([840,240],f"Yippee",time.time()))
+                                player.dec_chemicals(item)
+                                quickTexts.append(ShapeClasses.QuickText([840,240],f"Completed",time.time()))
                             else:
-                                quickTexts.append(ShapeClasses.QuickText([840,240],f"Do dont have",time.time()))
+                                quickTexts.append(ShapeClasses.QuickText([740,400],f"Do dont have enough {item}",time.time()))
         if len(buttons) == 1:
             displayResult("YOU BEAT THE BOSS",f"you recieve the KEY")
             player.set_hasKey()
@@ -1335,7 +1387,9 @@ def gateMini():
                         pygame.display.update()
                         time.sleep(10)
                     else:
-                        quickTexts.append(ShapeClasses.QuickText([840,240],f"Do don't have the KEY",time.time()))
+                        quickTexts.append(ShapeClasses.QuickText([WIDTH/2+10,HEIGHT/2+60],f"Do do not have the KEY",time.time()))
+                        if game.get_tutorial():
+                            quickTexts.append(ShapeClasses.QuickText([WIDTH/2+10,HEIGHT/2+60],f"HINT: You must defeat the BOSS",time.time()))
         qtHandelling()
         pygame.display.update()
         clock.tick(FPS)
@@ -1392,7 +1446,7 @@ def mapScreen():
                 questions = eSprites[e].get_qSet()[eSprites[e].get_qNum()]
                 answer = eSprites[e].get_qSet()[eSprites[e].get_qNum()][5]
 
-                displayText(questions[0],font20,WHITE,[900,200])
+                displayText(questions[0],font20,WHITE,[960,250])
                 buttons[0].set_text(questions[1])
                 buttons[1].set_text(questions[2])
                 buttons[2].set_text(questions[3])
@@ -1412,7 +1466,6 @@ def mapScreen():
                             if buttons[b].collision():
                                 pygame.mixer.Sound.play(sounds[0])
                                 if b+1 == answer:
-                                    print("CORRECT")
                                     if eSprites[e].get_qNum() == len(eSprites[e].get_qSet())-1:
                                         eSprites.remove(eSprites[e])
                                         sSprites.clear()
@@ -1425,7 +1478,6 @@ def mapScreen():
                                     else:
                                         eSprites[e].set_qNum("inc")
                                 else:
-                                    print("INCORRECT")
                                     screen.fill(BURG)
                                     pygame.display.update()
                                     time.sleep(0.4) 
@@ -1435,14 +1487,18 @@ def mapScreen():
                 if player.get_health() <= 0:
                     screen.fill(BURG)
                     displayResult("DEATH",f"you recieve nothing")
+                    player.revive_self()
                     pygame.display.update()
                     time.sleep(1.5)
                     battle = False
-                    cont = 1
+                    if game.get_diff() == "Easy":
+                        cont = 3
+                    else:
+                        cont = 4
                 elif complete:
                     screen.fill(GREEN)
-                    displayResult("WELL DONE",f"you recieve something")
-                    ### randomise recieve something
+                    reward = battleReward()
+                    displayResult("WELL DONE",f"you recieve {reward[1]} {reward[0]}")
                     pygame.display.update()
                     time.sleep(1)
                     battle = False
@@ -1550,6 +1606,8 @@ def main():
                 running = "pause"
             elif cont == 3:
                 running = "home"
+            elif cont == 4:
+                running = "menu"
 
         pygame.display.update()
         clock.tick(FPS)
