@@ -239,13 +239,14 @@ class Collectable(Sprite):
 
 #---------------ENEMYS---------------#
 class Enemy(Sprite):
-    def __init__(self,pos,diff):
+    def __init__(self,pos,typeNum,diff):
         super().__init__(pos,[80,80],3.5,BLACK,pygame.image.load("EnemySpriteSheet.png"))
         self._drct = "down"
         self._cycle = 1
         self._battleTime = False
         self._qSet = []
         self._qNum = 0
+        self._num = typeNum
         self._validDrct = [True,True,True,True]
         if diff == "Easy":
             self._speed = 3
@@ -262,6 +263,8 @@ class Enemy(Sprite):
         return self._qNum
     def get_speed(self):
         return self._speed
+    def get_num(self):
+        return self._num
     
     def set_battle(self,battle):
         self._battleTime = battle
@@ -367,12 +370,16 @@ class Character(Sprite):
         self._type = type
         self._startTime = 0
         self._pointer = 0
-        self._dialogue = "error"
+        self._dialogue = ["error","error","error","error"]
         file = open("characterDialogue.txt","r")
-        for i in range(1,10):
-            line = file.readline()
-            if i == self._type:
-                self._dialogue = line.split(",")
+        if self._type != "enemyImage" and self._type != "boss" and self._type != "gate":
+            for i in range(1,10):
+                line = file.readline()
+                print(self._type)
+                if i == self._type:
+                    self._dialogue = line.split(",")
+                    break
+            self._dialogue.pop(-1)   
         file.close()
 
 
@@ -407,7 +414,6 @@ class Character(Sprite):
 
     def updateSprite(self):
         x = self._cycle // 8
-        print(self._type)
         if self._type == "enemyImage" or self._type == "boss":
             frame = self.get_image(x,0,self._size[0]/2.5,self._size[1]/2.5)
         elif self._type == "gate":

@@ -358,7 +358,7 @@ def screenSetUp(screenType):
                     cSprites.append(SpriteClasses.Collectable([blitList[item][0],blitList[item][1]],blitList[item][4]))
                     cSprites[-1].assign_type(game.get_collectTypes())
                 elif blitList[item][3] == "enemy":
-                    eSprites.append(SpriteClasses.Enemy([blitList[item][0],blitList[item][1]],game.get_diff()))
+                    eSprites.append(SpriteClasses.Enemy([blitList[item][0],blitList[item][1]],blitList[item][4],game.get_diff()))
                 elif blitList[item][3] == "char":
                     nSprites.append(SpriteClasses.Character([blitList[item][0],blitList[item][1]],random.randint(1,10)))
         for i in range(player.get_health()):
@@ -598,9 +598,9 @@ def screenDisplay(screenType):
                             cSprites.append(SpriteClasses.Collectable([blitList[item][0],blitList[item][1]],blitList[item][4]))
                             cSprites[-1].assign_type(game.get_collectTypes())
                         elif blitList[item][3] == "enemy":
-                            eSprites.append(SpriteClasses.Enemy([blitList[item][0],blitList[item][1]],game.get_diff()))
+                            eSprites.append(SpriteClasses.Enemy([blitList[item][0],blitList[item][1]],blitList[item][4],game.get_diff()))
                         elif blitList[item][3] == "char":
-                            nSprites.append(SpriteClasses.Character([blitList[item][0],blitList[item][1]],""))
+                            nSprites.append(SpriteClasses.Character([blitList[item][0],blitList[item][1]],random.randint(1,10)))
 
         for tile in range(len(tiles)):
             displayObject("tile",tiles[tile])
@@ -1486,6 +1486,7 @@ def mapScreen():
                                 pygame.mixer.Sound.play(sounds[0])
                                 if b+1 == answer:
                                     if eSprites[e].get_qNum() == len(eSprites[e].get_qSet())-1:
+                                        areaMap.set_collected(eSprites[e].get_num())
                                         eSprites.remove(eSprites[e])
                                         sSprites.clear()
                                         pygame.mixer.music.stop()
