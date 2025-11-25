@@ -16,7 +16,6 @@ What is always a product of a neutralisation reaction?,base,carbon dioxide,water
 What is the bond shape of methane?,linear,tetrahedral,octahedral,trigonal planar,2,Easy,
 What is produced from an acid reacting with a carbonate other than the salt?,CO2 and CO,CO and H2O,CO2 and H2,CO2 and H2O,4,Easy 
 What molecule can undergo additional polymerisation?,alkene,alcohol,alkane,carboxylic acid,1,Easy
-15
 What is the bond shape of H2O?,linear,pyramedal,bent,trigonal planar,3,Medium,
 What is the bond shape of NH3?,bent,trigonal planar,see-saw,pryramidal,4,Medium,
 What element cannot form hydrogen bonds?,chlorine,nitrogen,oxygen,flourine,1,Medium,
@@ -29,7 +28,6 @@ What has the highest boiling point?,iron,silicon,potassium,sulfur,2,Medium,
 What is required to reduce a ketone into an alcohol?,H2SO4,K2Cr3O7,NaBH4,H2,3,Medium,
 What are the steps to make aminophenol from phenol,conc HCl and HNO3/Sn,HCl/Sn and HNO2,conc HNO3 and HCl/Sn,dilute HNO3 and HCl/Sn,4,Medium
 What type of bond breaking happens in free radical substitution?,homolytic fission,ternary fission,heterolytic fission,binary fission,1,Medium
-12
 Which is correct standard conditions?,298K and 100KPa,298K and 1KPa,273K and 1000KPa,293K and 10KPa,1,Hard
 What is the formular of the thiosulfate ion?,SO3(-),S2O3(2-),S2O3(1-),SO4(2-),3,Hard,
 AgNO3 + NAOH+ dilute NH3 is a test reagent for what?,ketone,carboxylic acid,phenol,aldehyde,4,Hard,
@@ -40,4 +38,6 @@ What chemical is used as a standard in 13C NMR spectroscopy?,tetramethylsilane,c
 Which reaction does not require reflux?,haloalakne to nitrile,ketone to hydroxynitrile,aldehyde to carboxylic acid,haloalkane to alcohol,2,Hard,
 What has the highest boiling point?,water,ammonia,etahnol,heavy water,1,Hard,
 Which has the highest first ionisation energy?,silicon,sulfur,phosphorus,magneisum,3,Hard,
-10
+hello,1,2,3,4,1,Easy,
+asd,sadaadsa,a,afa,afsa,1,Easy,
+!

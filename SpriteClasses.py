@@ -375,7 +375,6 @@ class Character(Sprite):
         if self._type != "enemyImage" and self._type != "boss" and self._type != "gate":
             for i in range(1,10):
                 line = file.readline()
-                print(self._type)
                 if i == self._type:
                     self._dialogue = line.split(",")
                     break

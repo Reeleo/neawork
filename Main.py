@@ -266,10 +266,11 @@ def screenSetUp(screenType):
         for k in range(12):
             cSprites[k].assign_type(game.get_collectTypes())
         if game.get_screen() == "home":
-            buttons.append(ShapeClasses.Button([390,460],[400,80],"EXTRACT",GREEN))
-            buttons.append(ShapeClasses.Button([850,460],[400,80],"CRAFT",GREEN))
-            buttons.append(ShapeClasses.Button([390,580],[400,80],"ACHIEVEMENTS",GREEN))
-            buttons.append(ShapeClasses.Button([850,580],[400,80],"HEAL",GREEN))
+            buttons.append(ShapeClasses.Button([390,360],[400,80],"EXTRACT",GREEN))
+            buttons.append(ShapeClasses.Button([850,360],[400,80],"CRAFT",GREEN))
+            buttons.append(ShapeClasses.Button([390,480],[400,80],"ACHIEVEMENTS",GREEN))
+            buttons.append(ShapeClasses.Button([850,480],[400,80],"HEAL",GREEN))
+            buttons.append(ShapeClasses.Button([610,600],[400,80],"ADD QUESTIONS",GREEN))
         mini.set_size([WIDTH-200, HEIGHT-200])
         mini.set_pos([100, 100])
         
@@ -315,7 +316,22 @@ def screenSetUp(screenType):
         mini.set_size([WIDTH-200, HEIGHT-200])
         mini.set_pos([100, 100])
 
-    #10
+    #10 
+    if screenType == "addQuestions":
+        buttons.clear()
+        buttons.append(ShapeClasses.Button([1150,750],[180,80],"RETURN",GREEN))
+        buttons.append(ShapeClasses.Button([1260, 500],[80,80],"ADD",GREEN))
+        buttons.append(ShapeClasses.Button([1260,300],[80,80],"1",GREEN))
+        buttons.append(ShapeClasses.Button([1260, 400],[80,80],game.get_diff(),GREEN))
+        inputBoxes.append(ShapeClasses.Button([150,350],[1060,80],"",GREEN))
+        inputBoxes.append(ShapeClasses.Button([150,500],[250,80],"",GREEN))
+        inputBoxes.append(ShapeClasses.Button([420,500],[250,80],"",GREEN))
+        inputBoxes.append(ShapeClasses.Button([690,500],[250,80],"",GREEN))
+        inputBoxes.append(ShapeClasses.Button([960,500],[250,80],"",GREEN))
+        mini.set_size([WIDTH-200, HEIGHT-200])
+        mini.set_pos([100, 100])
+
+    #11
     if screenType == "pause":
         buttons.clear()
         for i in range(8):
@@ -336,7 +352,7 @@ def screenSetUp(screenType):
             elif i == 7:
                 buttons.append(ShapeClasses.Button([1000,450],[80,80],str(game.get_tutorial()),RED))
 
-    #11
+    #12
     if screenType == "maps":
         buttons.clear()
         cSprites.clear()
@@ -364,14 +380,14 @@ def screenSetUp(screenType):
         for i in range(player.get_health()):
             hearts.append(SpriteClasses.Sprite([2+i*60, 2],[50,50],2.5,BLACK,pygame.image.load("collectablesSprites.bmp")))
             
-    #12
+    #13
     if screenType == "minimap":
         buttons.clear()
         mini.set_pos([100,100])
         mini.set_size([WIDTH-200, HEIGHT-192])
         buttons.append(ShapeClasses.Button([1187,783],[180,80],"RETURN",RED))
 
-    #13
+    #14
     if screenType == "battle":
         buttons.clear()
         sSprites.clear()
@@ -393,7 +409,7 @@ def screenSetUp(screenType):
         for i in range(player.get_health()):
             hearts.append(SpriteClasses.Sprite([10+i*60, 20],[50,50],2.5,BLACK,pygame.image.load("collectablesSprites.bmp")))  
 
-    #14
+    #15
     if screenType == "boss":
         buttons.clear()
         buttons.append(ShapeClasses.Button([1150,750],[180,80],"RETURN",GREEN))
@@ -405,7 +421,7 @@ def screenSetUp(screenType):
         mini.set_size([WIDTH-200, HEIGHT-200])
         mini.set_pos([100, 100])
     
-    #15
+    #16
     if screenType == "gate":
         buttons.clear()
         buttons.append(ShapeClasses.Button([1150,750],[180,80],"RETURN",GREEN))
@@ -473,7 +489,7 @@ def screenDisplay(screenType):
             displayObject("collect",cSprites[j])
 
         x = 530
-        y = 340
+        y = 240
         xcount, ycount = 0, 0
         collection = player.get_collect()
         for item in collection:
@@ -562,7 +578,19 @@ def screenDisplay(screenType):
         for j in range(len(playerAchieve)):
             displayText(f"Achieved = {playerAchieve[j]}", font20, WHITE, [280+j*320, 310])
 
-    #10
+    #10 
+    if screenType == "addQuestions":
+        pygame.draw.rect(screen,WHITE,(100,HEIGHT/2-75,WIDTH-200,10))
+        displayObject("mini",mini)
+        displayText("Adding Questions:", font20, WHITE, [210, 140])
+        displayText("The Question:", font20, WHITE, [213,330])
+        displayText("The Answers:", font20, WHITE, [213,480])
+        for i in range(len(buttons)):
+            displayObject("button",buttons[i])
+        for j in range(len(inputBoxes)):
+            displayObject("button",inputBoxes[j])
+        
+    #11
     if screenType == "pause":
         screen.fill(BURG)  
         pygame.draw.rect(screen,RED,[20,20,WIDTH-40, HEIGHT-40])
@@ -578,7 +606,7 @@ def screenDisplay(screenType):
         for i in range(len(buttons)):
             displayObject("button",buttons[i])
 
-    #11
+    #12
     if screenType == "maps":
         tiles, blitList, setPlayer = areaMap.loadMap(player.get_pos(),player.get_size(),WIDTH,HEIGHT)
         player.set_pos(setPlayer,WIDTH,HEIGHT)
@@ -619,7 +647,7 @@ def screenDisplay(screenType):
             displayObject("heart",hearts[h])
         displayObject("player", player)
      
-    #12
+    #13
     if screenType == "minimap":
         displayObject("mini",mini)
         displayObject("button",buttons[0])
@@ -631,7 +659,7 @@ def screenDisplay(screenType):
         displayText(f"PlayerCol = {areaMap.get_pos()[1]}",font20,WHITE,[1270,130])
         displayText(f"PlayerRow = {areaMap.get_pos()[0]}",font20,WHITE,[1270,160])
 
-    #13
+    #14
     if screenType == "battle":
         screen.fill(BLACK)
         displayObject("mini",mini)
@@ -643,7 +671,7 @@ def screenDisplay(screenType):
         for j in range(len(hearts)):
             displayObject("heart",hearts[j])
 
-    #14
+    #15
     if screenType == "boss":
         pygame.draw.rect(screen,WHITE,(100,HEIGHT/2-75,WIDTH-200,10))
         displayObject("mini",mini)
@@ -651,7 +679,7 @@ def screenDisplay(screenType):
         for i in range(len(buttons)):
             displayObject("button",buttons[i])
     
-    #15
+    #16
     if screenType == "gate":
         pygame.draw.rect(screen,WHITE,(100,HEIGHT/2-75,WIDTH-200,10))
         displayObject("mini",mini)
@@ -889,12 +917,18 @@ def fetchQuestions():
     chosen = []
     qSet = []
     diff = game.get_diff()
-    diff = "Testing"
+    #diff = "Testing"
+    cont = True
+    lines = []
     file = open("questions.txt","r")
-    for _ in range(25):
+    while cont:
         line = file.readline()
         qSet.append(line.split(","))
-    for i in range(25):
+        lines.append(line)
+        for i in range(len(lines)):
+            if lines[i] == "!":
+                cont = False
+    for i in range(len(lines)-1):
         qSet[i][5] = int(qSet[i][5])
     file.close()
 
@@ -915,6 +949,24 @@ def fetchQuestions():
         c.append(c1)
     chosen = [qSet[c[0]],qSet[c[1]],qSet[c[2]]]
     return chosen
+
+def addingQuestion(data):
+    cont = True
+    filedata = []
+    file = open("questions.txt","r")
+    while cont:
+        line = file.readline()
+        filedata.append(line)
+        for i in range(len(filedata)):
+            if filedata[i] == "!":
+                cont = False
+    file.close()
+    filedata[-1] = data
+    filedata.append("!")
+    file = open("questions.txt","w")
+    for i in range(len(filedata)):
+        file.writelines(filedata[i])
+    file.close()
 
 def battleReward():
     rewards = game.get_rewards()
@@ -1073,6 +1125,74 @@ def achieveMini():
         clock.tick(FPS)
     return cont 
 
+def addQMini():
+    cont = 0
+    addQTime = True
+    while addQTime:
+        screenDisplay("addQuestions")
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                addQTime = False
+                cont = 1
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_ESCAPE:
+                    addQTime = False
+                else:
+                    for box in range(len(inputBoxes)):
+                        if inputBoxes[box].get_isInput():
+                            if event.key == pygame.K_BACKSPACE:
+                                inputBoxes[box].decrease_text()
+                            else:
+                                inputBoxes[box].increase_text(event.unicode)
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                for i in range(len(buttons)):
+                    if buttons[i].collision():
+                        pygame.mixer.Sound.play(sounds[0])
+                        if i == 0:
+                            addQTime = False
+                        elif i == 1:
+                            questionData = ""
+                            valid = True
+                            for j in range(len(inputBoxes)):
+                                text = inputBoxes[j].get_text()
+                                if text == "":
+                                    valid = False
+                                    break
+                                else:
+                                    questionData += text + ","
+                            questionData += buttons[2].get_text() + "," + buttons[3].get_text() + ",\n"
+                            if valid:
+                                addingQuestion(questionData)
+                                displayResult("Success","your question has been added")
+                                pygame.display.update()
+                                time.sleep(1)
+                            else:
+                                quickTexts.append(ShapeClasses.QuickText([WIDTH/2,650],f"Invalid input",time.time()))  
+                        elif i == 2:
+                            num = buttons[i].get_text()
+                            num = int(num) + 1
+                            if num > 4:
+                                num = 1
+                            buttons[i].set_text(str(num))
+                        elif i == 3:
+                            diff = buttons[i].get_text()
+                            if diff == "Easy":
+                                diff = "Medium"
+                            elif diff == "Medium":
+                                diff = "Hard"
+                            else:
+                                diff = "Easy"
+                            buttons[i].set_text(str(diff))
+                    for k in range(len(inputBoxes)):
+                        if inputBoxes[k].collision():
+                            for box in range(len(inputBoxes)):
+                                inputBoxes[box].set_isInput(False)
+                            inputBoxes[k].set_isInput(True)
+        qtHandelling()
+        pygame.display.update()
+        clock.tick(FPS)
+    return cont
+
 def extractMini():
     cont = 0
     extractTime = True
@@ -1220,7 +1340,7 @@ def craftMini():
 
 def inventoryMini():
     cont = 0
-    inventoryTime,extractTime,craftTime,achieveTime = True,False,False,False
+    inventoryTime,extractTime,craftTime,achieveTime,addQTime = True,False,False,False,False
     while inventoryTime:
         screenDisplay("inventory")
         for event in pygame.event.get():
@@ -1263,6 +1383,9 @@ def inventoryMini():
                                 quickTexts.append(ShapeClasses.QuickText([830,700],f"You are on max health ({maxHealth})",time.time()))
                             else:
                                 quickTexts.append(ShapeClasses.QuickText([800,700],f"You dont have enough carbon (1 heart = {cost}C)",time.time()))
+                        elif i == 5:
+                            inventoryTime = False
+                            addQTime = True
 
 
         if extractTime:
@@ -1274,6 +1397,9 @@ def inventoryMini():
         if achieveTime:
             screenSetUp("achieve")
             cont = achieveMini()  
+        if addQTime:
+            screenSetUp("addQuestions")
+            cont = addQMini()  
             
         qtHandelling()
         pygame.display.update()
