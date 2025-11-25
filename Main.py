@@ -231,6 +231,8 @@ def screenSetUp(screenType):
     #2
     if screenType == "htp":
         buttons.clear()
+        inputBoxes.clear()
+        inputBoxes.append(ShapeClasses.Button([180,680],[450,80],"",RED))
         buttons.append(ShapeClasses.Button([WIDTH-300, 200],[180,80],"MENU",RED))
 
     #3
@@ -322,6 +324,7 @@ def screenSetUp(screenType):
         buttons.append(ShapeClasses.Button([1150,750],[180,80],"RETURN",GREEN))
         buttons.append(ShapeClasses.Button([1260, 500],[80,80],"ADD",GREEN))
         buttons.append(ShapeClasses.Button([1260,300],[80,80],"1",GREEN))
+        buttons.append(ShapeClasses.Button([140,750],[180,80],"RESET",GREEN))
         buttons.append(ShapeClasses.Button([1260, 400],[80,80],game.get_diff(),GREEN))
         inputBoxes.append(ShapeClasses.Button([150,350],[1060,80],"",GREEN))
         inputBoxes.append(ShapeClasses.Button([150,500],[250,80],"",GREEN))
@@ -449,8 +452,15 @@ def screenDisplay(screenType):
         surface.blit(pygame.image.load("htpImage.bmp"),(0,0),((0),(0),213,146))
         surface = pygame.transform.scale(surface,(213*6,146*5))
         screen.blit(surface,(100,100))
+        displayText("Use the WASD buttons to move", font20, WHITE, [330, 550])
+        displayText("Press SPACE to interact and pick up items", font20, WHITE, [830, 550])
+        displayText("To use input boxes, click to activate and then type", font20, WHITE, [423,780])
+        displayText("Use the mouse to interact", font20, WHITE, [1260, 310])
+        displayText("with buttons and input boxes", font20, WHITE, [1260, 335])
         for i in range(len(buttons)):
             displayObject("button",buttons[i])
+        for j in range(len(inputBoxes)):
+            displayObject("button",inputBoxes[i])
 
     #3
     if screenType == "savefiles":
@@ -691,13 +701,16 @@ def screenDisplay(screenType):
 
 #---------------PLAYER DATA---------------#
 def loadGame():
+    i = 0
+    cont = True
     if game.get_saveFile() == 1:
         file = open("saveData1.txt","r")
     elif game.get_saveFile() == 2:
         file = open("saveData2.txt","r")
     elif game.get_saveFile() == 3:
         file = open("saveData3.txt","r")
-    for i in range(4):
+    questions = []
+    while cont:
         line = file.readline()
         saveData = line.split(",")
         count = 0
@@ -724,6 +737,15 @@ def loadGame():
                 player.set_achievements(True,1)
             else:
                 player.set_achievements(False,1)
+        elif i > 2:
+            if line == "":
+                cont = False 
+            else:
+                questions.append(line)
+        i += 1
+    resetQuestions()
+    for j in range(len(questions)):
+        addingQuestion(questions[j])
     player.set_int()
     file.close()
 
@@ -744,14 +766,34 @@ def saveGame():
     for chem in player.get_chemicals():
         chemicalLine += str(chemicals[chem])+","
     gameLine += f"{game.get_diff()},{str(player.get_speed())},{str(player.get_hasKey())},{str(game.get_tutorial())},{player.get_achievements()[0]},{player.get_achievements()[1]},"
+    
+    cont = True
+    qData = []
+    ogQuestions = []
+    questionLine = ""
+    qFile = open("questions.txt","r")
+    for i in range(40):
+        ogQuestions.append(qFile.readline())
+    while cont:
+        qData.append(qFile.readline())
+        for j in range(len(qData)):
+            if qData[j] == "!":
+                cont = False
+    print(qData)
+    for k in range(len(qData)):
+        if qData[k] != "!":
+            questionLine += qData[k] 
+    print(questionLine)
+    qFile.close()
+
     file.writelines(collectLine)
     file.writelines("\n") 
     file.writelines(chemicalLine)
     file.writelines("\n") 
     file.writelines(gameLine)
+    file.writelines("\n")
+    file.writelines(questionLine)
     file.close()
-
-
 
 #---------------SCREEN SUBFUNCTIONS---------------#
 def extraction(item):
@@ -950,6 +992,18 @@ def fetchQuestions():
     chosen = [qSet[c[0]],qSet[c[1]],qSet[c[2]]]
     return chosen
 
+def resetQuestions():
+    data = []
+    file = open("questions.txt","r")
+    for i in range(40):
+        data.append(file.readline())
+    file.close()
+    file = open("questions.txt","w")
+    for j in range(len(data)):
+        file.writelines(data[j])
+    file.writelines("!")
+    file.close()
+    
 def addingQuestion(data):
     cont = True
     filedata = []
@@ -1003,10 +1057,25 @@ def htpScreen():
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_ESCAPE:
                 cont = 1
+            else:
+                for box in range(len(inputBoxes)):
+                    if inputBoxes[box].get_isInput():
+                        if event.key == pygame.K_BACKSPACE:
+                            inputBoxes[box].decrease_text()
+                        elif event.key == pygame.K_RETURN:
+                            inputBoxes[box].set_text("")
+                        else:
+                            inputBoxes[box].increase_text(event.unicode)
         if event.type == pygame.MOUSEBUTTONDOWN:
             if buttons[0].collision():
                 pygame.mixer.Sound.play(sounds[0])
                 cont = 2
+            elif inputBoxes[0].collision():
+                if inputBoxes[0].get_isInput():
+                    inputBoxes[0].set_isInput(False)
+                else:
+                    inputBoxes[0].set_isInput(True)
+
     pygame.display.update()
     clock.tick(FPS)
     return cont
@@ -1183,6 +1252,8 @@ def addQMini():
                             else:
                                 diff = "Easy"
                             buttons[i].set_text(str(diff))
+                        elif i == 4:
+                            resetQuestions()
                     for k in range(len(inputBoxes)):
                         if inputBoxes[k].collision():
                             for box in range(len(inputBoxes)):
