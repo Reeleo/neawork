@@ -29,7 +29,6 @@ TIME = time.time()
 music = ["Menu.mp3","DoctorWeird.mp3","ForestBattle.mp3"]
 sounds = [pygame.mixer.Sound("click.mp3")]
 
-
 #---------------DISPLAYING ITEMS---------------#
 def checkCollision(enemy):
         pPos = player.get_pos()
