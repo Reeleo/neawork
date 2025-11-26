@@ -1171,10 +1171,12 @@ def pTableMini():
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
                     pTableTime = False
+                    cont = 2
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if buttons[0].collision():
                     pygame.mixer.Sound.play(sounds[0])
                     pTableTime = False
+                    cont = 2
         pygame.display.update()
         clock.tick(FPS)
     return cont 
@@ -1191,11 +1193,13 @@ def achieveMini():
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
                     achieveTime = False
+                    cont = 2
             if event.type == pygame.MOUSEBUTTONDOWN:
                 for i in range(len(buttons)):
                     if buttons[i].collision():
                         pygame.mixer.Sound.play(sounds[0])
                         achieveTime = False
+                        cont = 2
         pygame.display.update()
         clock.tick(FPS)
     return cont 
@@ -1212,6 +1216,7 @@ def addQMini():
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
                     addQTime = False
+                    cont = 2
                 else:
                     for box in range(len(inputBoxes)):
                         if inputBoxes[box].get_isInput():
@@ -1225,6 +1230,7 @@ def addQMini():
                         pygame.mixer.Sound.play(sounds[0])
                         if i == 0:
                             addQTime = False
+                            cont = 2
                         elif i == 1:
                             questionData = ""
                             valid = True
@@ -1286,6 +1292,7 @@ def extractMini():
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
                     extractTime = False
+                    cont = 2
                 elif event.key == pygame.K_c:
                     player.set_collect("pebble",10000)
                     player.set_collect("bug",10000)
@@ -1297,6 +1304,7 @@ def extractMini():
                         pygame.mixer.Sound.play(sounds[0])
                         if i == 0:
                             extractTime = False
+                            cont = 2
                         elif i == 1:
                             extractItem = "pebble"
                         elif i == 2:
@@ -1342,6 +1350,7 @@ def craftMini():
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
                     craftTime = False
+                    cont = 2
                 else:
                     for box in range(len(inputBoxes)):
                         if inputBoxes[box].get_isInput():
@@ -1355,6 +1364,7 @@ def craftMini():
                 if buttons[0].collision():
                     pygame.mixer.Sound.play(sounds[0])
                     craftTime = False
+                    cont = 2
                 elif buttons[1].collision():
                     pygame.mixer.Sound.play(sounds[0])
                     synthesisTime = checkProduct(inputBoxes[0].get_text())
@@ -1374,6 +1384,7 @@ def craftMini():
                     if event.key == pygame.K_ESCAPE:
                         synthesisTime = (False,"")
                         craftTime = False
+                        cont = 2
                     else:
                         for box in range(len(inputBoxes)):
                             if inputBoxes[box].get_isInput():
@@ -1386,6 +1397,7 @@ def craftMini():
                         pygame.mixer.Sound.play(sounds[0])
                         synthesisTime = (False,"")
                         craftTime = False
+                        cont = 2
                     elif buttons[1].collision():
                         pygame.mixer.Sound.play(sounds[0])
                         playerInput = []
@@ -1482,15 +1494,14 @@ def inventoryMini():
             screenSetUp("addQuestions")
             cont = addQMini()
         
-        if cont == 0:
+        if cont == 2:
             inventoryTime = True
+            screenSetUp("inventory")
     
             
         qtHandelling()
         pygame.display.update()
         clock.tick(FPS)
-        if cont == 2:
-            cont = 0
     return cont 
 
 
