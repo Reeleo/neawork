@@ -1026,13 +1026,37 @@ def addingQuestion(data):
         file.writelines(filedata[i])
     file.close()
 
+def displayTip(item):
+    file = open("tipsfile.txt","r")
+    lines = []
+    cont = True
+    while cont:
+        lines.append(file.readline())
+        for i in range(len(lines)):
+            if lines[i] == "!":
+                cont = False
+    file.close()
+    index = -1
+    for k in range(len(lines)):
+        lines[k] = lines[k].split(",")
+        if lines[k][0] == item[0]:
+            index = k
+            print("found")
+            break
+    if index == -1:
+        tip = "no tip"
+    else:
+        tip = lines[index][1]
+    print(item)
+    quickTexts.append(ShapeClasses.QuickText([1050,200],tip,time.time()))
+
 def battleReward():
     rewards = game.get_rewards()
     choice = random.randint(0,len(rewards)-1)
     num = random.randint(1,4)
     return rewards[choice],num
 
-# tips  
+ 
 # water
 
 #---------------SCREEN FUNCTIONS---------------#
@@ -1415,6 +1439,10 @@ def craftMini():
                         else:
                             for i in range(len(message)):
                                 quickTexts.append(ShapeClasses.QuickText([840+100*i,240],f"{message[i]}",time.time()))
+                    elif buttons[2].collision():
+                        pygame.mixer.Sound.play(sounds[0])
+                        displayTip(synthesisTime[1][0])
+
                     else:
                         for j in range(len(inputBoxes)):
                             if inputBoxes[j].collision():
@@ -1424,7 +1452,6 @@ def craftMini():
             qtHandelling()
             pygame.display.update()
             clock.tick(FPS)
-
         qtHandelling()
         pygame.display.update()
         clock.tick(FPS)
@@ -1525,7 +1552,6 @@ def homeScreen():
     if inventoryTime:
         screenSetUp("inventory")
         cont = inventoryMini()
-        print(cont)
         while cont == 2:
             screenSetUp("inventory")
             cont = inventoryMini()
