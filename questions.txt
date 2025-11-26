@@ -38,5 +38,6 @@ What chemical is used as a standard in 13C NMR spectroscopy?,tetramethylsilane,c
 Which reaction does not require reflux?,haloalakne to nitrile,ketone to hydroxynitrile,aldehyde to carboxylic acid,haloalkane to alcohol,2,Hard,
 What has the highest boiling point?,water,ammonia,etahnol,heavy water,1,Hard,
 Which has the highest first ionisation energy?,silicon,sulfur,phosphorus,magneisum,3,Hard,
-h,rgs,sdsg,sgd,sgd,3,Hard,
+this is a question,answer1,answer2,answer3,answer4,1,Easy,
+asaas,sg,fda,sf,sfd,1,RESET,
 !

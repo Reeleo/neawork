@@ -23,9 +23,9 @@ class GameSettings():
                         "rock":[["carbon",1],["silicon",1],["magnesium",1]],
                         "gem":[["carbon",1],["magnesium",1],["nickle",1]],
                         "volrock":[["carbon",1],["sulfur",1],["ammonia",1]],
-                        "freshwater":[["water",1],["CO2",1],["oxygen",1]],
+                        "freshwater":[["water",1],["carbondioxide",1],["oxygen",1]],
                         "saltwater":[["water",1],["CO2",1],["oxygen",1],["halogensalt",1]]}
-        self._battleRewards = ["ammonia","SOCl3","K2Cr2O7","NaBH4","nickle","hydrogen","alcohol","alkane","alkene","ester",
+        self._battleRewards = ["ammonia","thionylchloride","potassiumdichromate","NaBH4","nickle","hydrogen","alcohol","alkane","alkene","ester",
                                "carbon","oxygen","water","magnesium","halogensalt","carboxylicacid"]
 
     
@@ -45,7 +45,7 @@ class GameSettings():
         return self._showTutorial
     def get_collectTypes(self):
         return self._collectTypes
-    def get__itemChances(self):
+    def get_itemChances(self):
         return self._itemChances
     def get_rewards(self):
         return self._battleRewards

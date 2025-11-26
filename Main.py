@@ -324,8 +324,8 @@ def screenSetUp(screenType):
         buttons.append(ShapeClasses.Button([1150,750],[180,80],"RETURN",GREEN))
         buttons.append(ShapeClasses.Button([1260, 500],[80,80],"ADD",GREEN))
         buttons.append(ShapeClasses.Button([1260,300],[80,80],"1",GREEN))
-        buttons.append(ShapeClasses.Button([140,750],[180,80],"RESET",GREEN))
         buttons.append(ShapeClasses.Button([1260, 400],[80,80],game.get_diff(),GREEN))
+        buttons.append(ShapeClasses.Button([140,750],[180,80],"RESET",GREEN))
         inputBoxes.append(ShapeClasses.Button([150,350],[1060,80],"",GREEN))
         inputBoxes.append(ShapeClasses.Button([150,500],[250,80],"",GREEN))
         inputBoxes.append(ShapeClasses.Button([420,500],[250,80],"",GREEN))
@@ -772,7 +772,7 @@ def saveGame():
     ogQuestions = []
     questionLine = ""
     qFile = open("questions.txt","r")
-    for i in range(40):
+    for _ in range(40):
         ogQuestions.append(qFile.readline())
     while cont:
         qData.append(qFile.readline())
@@ -909,7 +909,6 @@ def checkEquation(txt,check):
     for k in range(len(others)):
         inputO.append(txt[k+len(reactants)+len(products)])
     txt = [inputR,inputP,inputO]
-
         
     for r in range(len(reactants)):
         for t in range(len(txt[0])):
@@ -935,19 +934,24 @@ def checkEquation(txt,check):
             length += 1
 
     message = []
-    chems = player.get_chemicals()
-    for i in range(len(check[0])):
-        if chems[check[0][i]] > 0:
-            player.set_chemicals(check[0][i],chems[check[0][i]]-1)
-        else:
-            message.append(f"you dont have {check[0][i]}")
-            
-    for j in range(len(check[2])):
-        if check[2][j] == "sufuricacid" or check[2][j] == "nickle":
-            if chems[check[i]] > 0:
-                player.set_chemicals(check[i],chems[check[i]]-1)
+    if length == validlen:
+        removeList = []
+        chems = player.get_chemicals()
+        for i in range(len(check[0])):
+            if chems[check[0][i]] > 0:
+                removeList.append([check[0][i],chems[check[0][i]]-1])
             else:
-                message.append(f"you dont have {check[2][j]}")
+                message.append(f"you dont have {check[0][i]}")
+                
+        for j in range(len(check[2])):
+            if check[2][j] == "sufuricacid" or check[2][j] == "nickle":
+                if chems[check[2][j]] > 0:
+                    removeList.append([check[0][i],chems[check[0][i]]-1])
+                else:
+                    message.append(f"you dont have {check[2][j]}")
+        
+        for k in range(len(removeList)):
+            player.set_chemicals(removeList[k][0],removeList[k][1])
 
     if validlen == length and message == []:
         return True, message
@@ -959,7 +963,7 @@ def fetchQuestions():
     chosen = []
     qSet = []
     diff = game.get_diff()
-    #diff = "Testing"
+    diff = "Testing"
     cont = True
     lines = []
     file = open("questions.txt","r")
@@ -1028,6 +1032,8 @@ def battleReward():
     num = random.randint(1,4)
     return rewards[choice],num
 
+# tips  
+# water
 
 #---------------SCREEN FUNCTIONS---------------#
 def menuScreen():
@@ -1254,6 +1260,9 @@ def addQMini():
                             buttons[i].set_text(str(diff))
                         elif i == 4:
                             resetQuestions()
+                            displayResult("Done","the questions have been reset")
+                            pygame.display.update()
+                            time.sleep(1)
                     for k in range(len(inputBoxes)):
                         if inputBoxes[k].collision():
                             for box in range(len(inputBoxes)):
@@ -1462,15 +1471,18 @@ def inventoryMini():
         if extractTime:
             screenSetUp("extract")
             cont = extractMini()
-        if craftTime:
+        elif craftTime:
             screenSetUp("craft")
             cont = craftMini()  
-        if achieveTime:
+        elif achieveTime:
             screenSetUp("achieve")
             cont = achieveMini()  
-        if addQTime:
+        elif addQTime:
             screenSetUp("addQuestions")
-            cont = addQMini()  
+            cont = addQMini()
+        # else:
+        #     screenSetUp("inventory")
+        #     cont = inventoryMini() 
             
         qtHandelling()
         pygame.display.update()
