@@ -1430,6 +1430,7 @@ def inventoryMini():
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
                     inventoryTime = False
+                    cont = 2
             if event.type == pygame.MOUSEBUTTONDOWN:
                 for i in range(len(buttons)):
                     if buttons[i].collision():
@@ -1480,13 +1481,16 @@ def inventoryMini():
         elif addQTime:
             screenSetUp("addQuestions")
             cont = addQMini()
-        else:
-            screenSetUp("inventory")
-            cont = inventoryMini() 
+        
+        if cont == 0:
+            inventoryTime = True
+    
             
         qtHandelling()
         pygame.display.update()
         clock.tick(FPS)
+        if cont == 2:
+            cont = 0
     return cont 
 
 
