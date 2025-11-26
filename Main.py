@@ -160,7 +160,6 @@ def displayObject(type,obj):
             if tilePos[i][1]*64 < rfoot[0] < tilePos[i][1]*64+64 or tilePos[i][1]*64 < rfoot[0] < tilePos[i][1]*64+64:
                 if tilePos[i][0]*64 < rfoot[1]-speed < tilePos[i][0]*64+64 or tilePos[i][0]*64 < rfoot[1]+10-speed < tilePos[i][0]*64+64:
                     obj.set_validWalk(0,False)
-            #print(obj._validDrct)
 
     elif type == "char":
         screen.blit(obj.update(),(obj.get_pos()))
@@ -1056,8 +1055,6 @@ def battleReward():
     num = random.randint(1,4)
     return rewards[choice],num
 
- 
-# water
 
 #---------------SCREEN FUNCTIONS---------------#
 def menuScreen():
