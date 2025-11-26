@@ -1480,9 +1480,9 @@ def inventoryMini():
         elif addQTime:
             screenSetUp("addQuestions")
             cont = addQMini()
-        # else:
-        #     screenSetUp("inventory")
-        #     cont = inventoryMini() 
+        else:
+            screenSetUp("inventory")
+            cont = inventoryMini() 
             
         qtHandelling()
         pygame.display.update()
