@@ -1,3 +1,5 @@
-0,0,0,0,0,0,0,0,0,0,0,0,
-20,2,4,4,2,3,3,4,12,3,2,2,2,2,2,13,13,1,13,130,1,23,23,3,4,5,6,7,8,9,54,65,1,2,3,5,4,
-Easy,25,False,False,False,False,
+9996,9994,0,0,0,0,0,10000,0,0,10000,0,
+20,1,4,4,3,3,3,4,12,3,2,18,2,2,4,13,13,1,13,130,1,23,23,3,4,5,6,7,8,9,54,65,1,2,3,5,5,
+Medium,25,False,False,False,False,
+what is a dog used for ?,walking,thinking,fetching,catching,3,Medium,
+hello the answer is 4??,ads,svvs,ds,sdv,4,Medium,

@@ -22,12 +22,12 @@ What element cannot form hydrogen bonds?,chlorine,nitrogen,oxygen,flourine,1,Med
 Adding Ba(2+) ions is a test for what?,alcohols,sulfate ions,ammonium ions,halogens,2,Medium,
 What colour is silver chloride?,orange,cream,white,orange,3,Medium,
 What is the forumular of the calcium carbonate?,CaCO2,Ca2CO3,CaCO3,CaCO,3,Medium,
-What functional group has the general formular CnH2nO?,ester,alcohol,carboxylic acid,ketone,4,Medium
+What functional group has the general formular CnH2nO?,ester,alcohol,carboxylic acid,ketone,4,Medium,
 What is the requirement for free radical substitution?,UV light,low pressure,IR light,high pressure,1,Medium,
 What has the highest boiling point?,iron,silicon,potassium,sulfur,2,Medium,
 What is required to reduce a ketone into an alcohol?,H2SO4,K2Cr3O7,NaBH4,H2,3,Medium,
-What are the steps to make aminophenol from phenol,conc HCl and HNO3/Sn,HCl/Sn and HNO2,conc HNO3 and HCl/Sn,dilute HNO3 and HCl/Sn,4,Medium
-What type of bond breaking happens in free radical substitution?,homolytic fission,ternary fission,heterolytic fission,binary fission,1,Medium
+What are the steps to make aminophenol from phenol,conc HCl and HNO3/Sn,HCl/Sn and HNO2,conc HNO3 and HCl/Sn,dilute HNO3 and HCl/Sn,4,Medium,
+What type of bond breaking happens in free radical substitution?,homolytic fission,ternary fission,heterolytic fission,binary fission,1,Medium,
 Which is correct standard conditions?,298K and 100KPa,298K and 1KPa,273K and 1000KPa,293K and 10KPa,1,Hard
 What is the formular of the thiosulfate ion?,SO3(-),S2O3(2-),S2O3(1-),SO4(2-),3,Hard,
 AgNO3 + NAOH+ dilute NH3 is a test reagent for what?,ketone,carboxylic acid,phenol,aldehyde,4,Hard,
@@ -38,4 +38,6 @@ What chemical is used as a standard in 13C NMR spectroscopy?,tetramethylsilane,c
 Which reaction does not require reflux?,haloalakne to nitrile,ketone to hydroxynitrile,aldehyde to carboxylic acid,haloalkane to alcohol,2,Hard,
 What has the highest boiling point?,water,ammonia,etahnol,heavy water,1,Hard,
 Which has the highest first ionisation energy?,silicon,sulfur,phosphorus,magneisum,3,Hard,
+what is a dog used for ?,walking,thinking,fetching,catching,3,Medium,
+hello the answer is 4??,ads,svvs,ds,sdv,4,Medium,
 !

@@ -178,7 +178,7 @@ def displayObject(type,obj):
             displayText("SPACE", font20, WHITE, [playerpos[0]+playersize[0]/2, playerpos[1]-20])
             keys = pygame.key.get_pressed()
             if keys[pygame.K_SPACE]:
-                obj.set_specialTime(True)
+                obj.set_activated(True)
 
     elif type == "mini":
         pos = obj.get_pos()
@@ -192,7 +192,7 @@ def displayObject(type,obj):
         screen.blit(obj[0],(obj[1]))
         
     elif type == "heart":
-        screen.blit(obj.get_image(0,3,32,32),(obj.get_pos()))
+        screen.blit(obj.generateImage(0,3,32,32),(obj.get_pos()))
 
 def displayResult(t1,t2):
     pygame.draw.rect(screen,BLACK,[175,175,WIDTH-350, HEIGHT-350])
@@ -550,7 +550,7 @@ def screenDisplay(screenType):
         displayObject("mini",mini)
         displayText("CRAFTING:", font20, WHITE, [212, 150])
         displayText("Synthesis of:", font20, WHITE, [222, 235])
-        displayText("please use lowercase", font20, WHITE, [642, 300])
+        displayText("please use lowercase and no spaces", font20, WHITE, [642, 300])
         pygame.draw.rect(screen,WHITE,(100,HEIGHT/2-110,WIDTH-200,10))
         for i in range(len(buttons)):
             displayObject("button",buttons[i])
@@ -594,6 +594,10 @@ def screenDisplay(screenType):
         displayText("Adding Questions:", font20, WHITE, [210, 140])
         displayText("The Question:", font20, WHITE, [213,330])
         displayText("The Answers:", font20, WHITE, [213,480])
+        displayText("1", font20, WHITE, [270,610])
+        displayText("2", font20, WHITE, [540,610])
+        displayText("3", font20, WHITE, [810,610])
+        displayText("4", font20, WHITE, [1090,610])
         for i in range(len(buttons)):
             displayObject("button",buttons[i])
         for j in range(len(inputBoxes)):
@@ -960,7 +964,7 @@ def fetchQuestions():
     chosen = []
     qSet = []
     diff = game.get_diff()
-    diff = "Testing"
+    #diff = "Testing"
     cont = True
     lines = []
     file = open("questions.txt","r")
@@ -980,14 +984,14 @@ def fetchQuestions():
         valid = False
         while not valid:
             repeat = False
-            c1 = random.randint(0,19)
+            c1 = random.randint(0,len(qSet)-2)
             for j in range(len(c)):
                 if c[j] == c1:
                     repeat = True
             if not repeat and qSet[c1][6] == diff:
                 valid  = True
             count += 1
-            if count > 40:
+            if count > 50:
                 diff = "Testing"
         c.append(c1)
     chosen = [qSet[c[0]],qSet[c[1]],qSet[c[2]]]
@@ -1614,7 +1618,7 @@ def bossMini():
         clock.tick(FPS)
     for s in range(len(sSprites)):
         if sSprites[s].get_type() == "boss":
-            sSprites[s].set_specialTime(False)
+            sSprites[s].set_activated(False)
     return cont 
 
 def gateMini():
@@ -1652,7 +1656,7 @@ def gateMini():
         clock.tick(FPS)
     for s in range(len(sSprites)):
         if sSprites[s].get_type() == "gate":
-            sSprites[s].set_specialTime(False)
+            sSprites[s].set_activated(False)
     return cont 
 
 def mapScreen():
@@ -1682,7 +1686,7 @@ def mapScreen():
         cont = pTableMini()
     
     for s in range(len(sSprites)):
-        if sSprites[s].get_specialTime():
+        if sSprites[s].get_activated():
             if sSprites[s].get_type() == "boss":
                 screenSetUp("boss")
                 cont = bossMini()

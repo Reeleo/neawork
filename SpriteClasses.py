@@ -354,6 +354,7 @@ class Enemy(Sprite):
 #---------------NON PLAYER CHARACTERS---------------#
 class Character(Sprite):
     def __init__(self,pos,type):
+        self._activated = False
         if type == "enemyImage" or type == "boss":
             sheet = pygame.image.load("EnemySpriteSheet.png")
             scale = 20
@@ -379,7 +380,8 @@ class Character(Sprite):
             self._dialogue.pop(-1)   
         file.close()
 
-
+    def get_activated(self):
+        return self.get_activated
     def get_type(self):
         return self._type
     def get_dialogue(self):
@@ -387,6 +389,8 @@ class Character(Sprite):
     def get_timer(self,currentTime):
         return currentTime - self._startTime
     
+    def set_activated(self,set):
+        self._activated = set
     def set_timer(self,time):
         self._startTime = time
         self._pointer += 1
