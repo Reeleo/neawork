@@ -15,7 +15,7 @@ class GameSettings():
         self._collectTypes = [["pebble",0,0],["bug",1,0],["flower",0,1],["leaf",1,1],["fruit",2,1],["wplant",3,1],["bush",0,2],["rock",1,2],["gem",2,2],["volrock",3,2],["freshwater",2,0],["saltwater",3,0],["door",1,3]]
         self._itemChances = {"pebble":[["carbon",3]],
                         "bug":[["carbon",1],["cyanidesalt",1],["carboxylicacid",1]], 
-                        "flower":[["carbon",1],["amine",1],["alkane",1]], # many chemicals control the colour, sent and growth of the flower
+                        "flower":[["carbon",1],["amine",1],["alkane",1]], 
                         "leaf":[["carbon",1],["oxygen",1],["ester",1],["aminoacid",1]],
                         "fruit":[["carbon",1],["water",1],["glucose",1],["aminoacid",1]],
                         "wplant":[["carbon",1],["oxygen",1],["ester",1],["water",1],["silicon",1]],
@@ -145,7 +145,7 @@ class AreaMap():
 
     
 
-    def get_tile(self,tileNum, scale):
+    def generateTile(self,tileNum, scale):
         size = 32
         tile = "empty"
         tileTypes = {"grass1":[0,0],"grass2":[1,1],"grass3":[0,1],"grass4":[2,1],
@@ -176,7 +176,7 @@ class AreaMap():
         tiles = []
         for i in range (len(self._currentMap)):
             for j in range (len(self._currentMap[i])):
-                tile = self.get_tile(self._currentMap[i][j], scale)
+                tile = self.generateTile(self._currentMap[i][j], scale)
                 if scale == 2:
                     tiles.append([tile,[j*32*scale,i*32*scale]])
                 else:

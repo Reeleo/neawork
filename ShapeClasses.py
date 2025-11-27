@@ -5,7 +5,7 @@ GRASS = (0,50,0)
 
 
 #---------------PARENT(SHAPE)---------------#
-class ScreenShape():
+class ScreenConstruct():
     def __init__(self,pos,size):
         self._pos = pos
         self._size = size
@@ -31,7 +31,7 @@ class ScreenShape():
 
 
 #---------------NON INTERACTABLE BOXES---------------#
-class TextBox(ScreenShape):
+class TextBox(ScreenConstruct):
     def __init__(self,pos,size,text,type):
         super().__init__(pos,size)
         self._colours = [RED,WHITE]
@@ -41,18 +41,18 @@ class TextBox(ScreenShape):
 
 
 #---------------INTERACTABLE BOXES---------------#
-class Button(ScreenShape):
+class Interactable(ScreenConstruct):
     def __init__(self,pos,size,text,colour):
         super().__init__(pos,size)
         self._colours = [colour,WHITE]
         self._text = text
         self._touch = False
-        self._isInput = False
+        self._takesInput = False
     
-    def get_isInput(self):
-        return self._isInput
-    def set_isInput(self, change):
-        self._isInput = change
+    def get_takesInput(self):
+        return self._takesInput
+    def set_takesInput(self, change):
+        self._takesInput = change
 
     def increase_text(self,txt):
         self._text += txt
@@ -73,7 +73,7 @@ class Button(ScreenShape):
 
 
 #---------------MINI WINDOW---------------#  
-class MiniWindow(ScreenShape):
+class MiniWindow(ScreenConstruct):
     def __init__(self):
         super().__init__([100,100],[1272,760])
         self._colours = [WHITE, GRASS]
@@ -81,7 +81,7 @@ class MiniWindow(ScreenShape):
 
 
 #---------------QUICK SCREEN TEXT---------------#
-class QuickText(ScreenShape):
+class QuickText(ScreenConstruct):
     def __init__(self,pos,text,startTime):
         super().__init__(pos,[0,0])
         self._visible = True

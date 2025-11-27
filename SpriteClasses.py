@@ -36,7 +36,7 @@ class Sprite(pygame.sprite.Sprite):
     def set_visible(self,vis):
         self._visible = vis
     
-    def get_image(self,locx,locy,width,height):
+    def generateImage(self,locx,locy,width,height):
         surface = pygame.Surface((width,height))
         surface.blit(self._sheet,(0,0),((locx*width),(locy*height),width,height))
         surface = pygame.transform.scale(surface,(width*self._scale,height*self._scale))
@@ -148,7 +148,7 @@ class Player(Sprite):
         y = 0
         if self._idle:
             x = self._cycle // 8
-            frame = self.get_image(x,0,self._size[0]/2.5,self._size[1]/2.5)
+            frame = self.generateImage(x,0,self._size[0]/2.5,self._size[1]/2.5)
             return frame
 
         if self._drct == "right":
@@ -160,7 +160,7 @@ class Player(Sprite):
         elif self._drct == "down":
             y = 1
         x = self._cycle // 8
-        frame = self.get_image(x,y,self._size[0]/2.5,self._size[1]/2.5)
+        frame = self.generateImage(x,y,self._size[0]/2.5,self._size[1]/2.5)
         return frame
 
     def update(self,gameScreen,w,h):
@@ -199,7 +199,6 @@ class Collectable(Sprite):
     def __init__(self,pos,typeNum):
         super().__init__(pos,[32,32],2,BLACK,pygame.image.load("collectablesSprites.bmp"))
         self._frameSize = 32
-        self.pic = random.randint(0,6)
         self._num = typeNum
         self._type = ""
 
@@ -232,7 +231,7 @@ class Collectable(Sprite):
                 self._scale = 1.5
             elif 5 < self._num < 9:
                 self._scale = 3.2
-        image = self.get_image(x,y,32,32)
+        image = self.generateImage(x,y,32,32)
         return image
 
 
@@ -303,7 +302,7 @@ class Enemy(Sprite):
                 self._pos[1] += self._speed
             y = 1
         x = self._cycle // 8
-        frame = self.get_image(x,y,self._size[0]/2.5,self._size[1]/2.5)
+        frame = self.generateImage(x,y,self._size[0]/2.5,self._size[1]/2.5)
         return frame
 
     def update(self,playerpos):
@@ -355,7 +354,6 @@ class Enemy(Sprite):
 #---------------NON PLAYER CHARACTERS---------------#
 class Character(Sprite):
     def __init__(self,pos,type):
-        self._specialTime = False
         if type == "enemyImage" or type == "boss":
             sheet = pygame.image.load("EnemySpriteSheet.png")
             scale = 20
@@ -388,17 +386,12 @@ class Character(Sprite):
         return self._dialogue[self._pointer]
     def get_timer(self,currentTime):
         return currentTime - self._startTime
-    def get_specialTime(self):
-        return self._specialTime
     
     def set_timer(self,time):
         self._startTime = time
         self._pointer += 1
         if self._pointer == 3:
             self._pointer = 0
-    def set_specialTime(self,sets):
-        self._specialTime = sets
-        
     
     def collision(self,playerpos):
         if self._type == "boss":
@@ -414,11 +407,11 @@ class Character(Sprite):
     def updateSprite(self):
         x = self._cycle // 8
         if self._type == "enemyImage" or self._type == "boss":
-            frame = self.get_image(x,0,self._size[0]/2.5,self._size[1]/2.5)
+            frame = self.generateImage(x,0,self._size[0]/2.5,self._size[1]/2.5)
         elif self._type == "gate":
-            frame = self.get_image(1,3,32,32)
+            frame = self.generateImage(1,3,32,32)
         else:
-            frame = self.get_image(x,0,self._size[0]/2.5,self._size[1]/2.5)
+            frame = self.generateImage(x,0,self._size[0]/2.5,self._size[1]/2.5)
         return frame
 
     def update(self):
