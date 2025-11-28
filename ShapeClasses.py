@@ -29,24 +29,29 @@ class ScreenConstruct():
         self._text = text
 
 
-
-#---------------NON INTERACTABLE BOXES---------------#
-class TextBox(ScreenConstruct):
-    def __init__(self,pos,size,text,type):
-        super().__init__(pos,size)
-        self._colours = [RED,WHITE]
-        self._text = text
-        self._type = type
-
-
-
 #---------------INTERACTABLE BOXES---------------#
-class Interactable(ScreenConstruct):
+class Button(ScreenConstruct):
     def __init__(self,pos,size,text,colour):
         super().__init__(pos,size)
         self._colours = [colour,WHITE]
         self._text = text
+    
+    def get_touch(self):
+        return self._touch
+    
+    def collision(self):
+        mouse  = pygame.mouse.get_pos()
+        if self._pos[0] <= mouse[0] <= self._pos[0] + self._size[0] and self._pos[1] <= mouse[1] <= self._pos[1] + self._size[1]:
+            self._touch = True
+            return self._touch
         self._touch = False
+        return self._touch
+
+
+
+class InputBox(Button):
+    def __init__(self,pos,size,text,colour):
+        super().__init__(pos,size,text,colour)
         self._takesInput = False
     
     def get_takesInput(self):
@@ -59,17 +64,6 @@ class Interactable(ScreenConstruct):
     def decrease_text(self):
         self._text = self._text[:-1]
 
-    def collision(self):
-        mouse  = pygame.mouse.get_pos()
-        if self._pos[0] <= mouse[0] <= self._pos[0] + self._size[0] and self._pos[1] <= mouse[1] <= self._pos[1] + self._size[1]:
-            self._touch = True
-            return self._touch
-        self._touch = False
-        return self._touch
-
-    def get_touch(self):
-        return self._touch
-    
 
 
 #---------------MINI WINDOW---------------#  
