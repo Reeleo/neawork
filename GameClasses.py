@@ -13,19 +13,19 @@ class GameSettings():
         self._playMusic = False
         self._showTutorial = True
         self._collectTypes = [["pebble",0,0],["bug",1,0],["flower",0,1],["leaf",1,1],["fruit",2,1],["wplant",3,1],["bush",0,2],["rock",1,2],["gem",2,2],["volrock",3,2],["freshwater",2,0],["saltwater",3,0],["door",1,3]]
-        self._itemChances = {"pebble":[["carbon",3]],
+        self._itemChances = {"pebble":[["carbon",1]],
                         "bug":[["carbon",1],["cyanidesalt",1],["carboxylicacid",1]], 
                         "flower":[["carbon",1],["amine",1],["alkane",1]], 
                         "leaf":[["carbon",1],["oxygen",1],["ester",1],["aminoacid",1]],
                         "fruit":[["carbon",1],["water",1],["glucose",1],["aminoacid",1]],
                         "wplant":[["carbon",1],["oxygen",1],["ester",1],["water",1],["silicon",1]],
-                        "bush":[["carbon",1],["oxygen",1],["ester",1],["aminoacid",1]],
-                        "rock":[["carbon",1],["silicon",1],["magnesium",1]],
-                        "gem":[["carbon",1],["magnesium",1],["nickle",1]],
-                        "volrock":[["carbon",1],["sulfur",1],["ammonia",1]],
-                        "freshwater":[["water",1],["carbondioxide",1],["oxygen",1]],
-                        "saltwater":[["water",1],["CO2",1],["oxygen",1],["halogensalt",1]]}
-        self._battleRewards = ["ammonia","thionylchloride","potassiumdichromate","NaBH4","nickle","hydrogen","alcohol","alkane","alkene","ester",
+                        "bush":[["carbon",3],["oxygen",1],["ester",1],["aminoacid",1]],
+                        "rock":[["carbon",3],["silicon",1],["magnesium",1]],
+                        "gem":[["carbon",3],["magnesium",1],["nickel",1]],
+                        "volrock":[["carbon",3],["sulfur",1],["ammonia",1]],
+                        "freshwater":[["water",3],["carbondioxide",1],["oxygen",1]],
+                        "saltwater":[["water",3],["CO2",1],["oxygen",1],["halogensalt",1]]}
+        self._battleRewards = ["ammonia","thionylchloride","potassiumdichromate","NaBH4","nickel","hydrogen","alcohol","alkane","alkene","ester",
                                "carbon","oxygen","water","magnesium","halogensalt","carboxylicacid"]
 
     

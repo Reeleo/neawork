@@ -44,9 +44,8 @@ class Sprite(pygame.sprite.Sprite):
         return surface
 
     def generate(self):
-        self.posx = random.randint(1,21) * 64
-        self.posy = random.randint(1,13) * 64
-
+        self.set_posx(random.randint(1,21) * 64) 
+        self.set_posy(random.randint(1,13) * 64)
 
 
 #---------------PLAYER---------------#
@@ -59,6 +58,7 @@ class Player(Sprite):
         self._idle = True
         self._health = 3
         self._hasKey = False
+        self._canGetWater = False
         self._validDrct = [True,True,True,True]
         self._achievements = [False,False]
         self._collect = {"pebble":0,"bug":0,"flower":0,"leaf":0,"fruit":0,
@@ -68,10 +68,10 @@ class Player(Sprite):
                             "amide":0,"amine":0,"aminoacid":0,"ammonia":0,"ammoniumsalt":0,"carbon":0, 
                             "carbondioxide":0,"carboxylicacid":0,"cyanidesalt":0,"ester":0,"glucose":0, 
                             "haloalkane":0,"halogensalt":0,"hydrogen":0,"hydrogenhalide":0,"hydroxynitrile":0, 
-                            "hydroxidesalt":0,"iron":0,"ketone":0,"magnesium":0,"nickle":0,"nitrile":0,"oxygen":0, 
+                            "hydroxidesalt":0,"iron":0,"ketone":0,"magnesium":0,"nickel":0,"nitrile":0,"oxygen":0, 
                             "potassiumdichromate":0,"silicon":0,"startch":0,"sulfur":0,"sulfurdioxide":0,
                             "sulfuricacid":0,"thionylchloride":0,"water":0}
-
+#getters
     def get_speed(self):
         return self._speed
     def get_health(self):
@@ -86,7 +86,12 @@ class Player(Sprite):
         return self._chemicals["carbon"]
     def get_achievements(self):
         return self._achievements
-    
+    def get_validWalk(self):
+        return self._validDrct
+    def get_canGetWater(self):
+        return self._canGetWater
+
+#setters
     def set_pos(self,drct,w,h):
         if drct == 0:
             self._pos[1] = h-self._size[1]-20
@@ -121,6 +126,8 @@ class Player(Sprite):
         self._chemicals[chem] += 1
     def set_achievements(self,achieve,i):
         self._achievements[i] = achieve
+    def set_canGetWater(self,set):
+        self._canGetWater = set
 
 
 
@@ -248,7 +255,7 @@ class Enemy(Sprite):
         self._num = typeNum
         self._validDrct = [True,True,True,True]
         if diff == "Easy":
-            self._speed = 3
+            self._speed = 2
         elif diff == "Hard":
             self._speed = 5
         else:
@@ -369,6 +376,7 @@ class Character(Sprite):
         self._type = type
         self._startTime = 0
         self._pointer = 0
+        self._activated = False
         self._dialogue = ["error","error","error","error"]
         file = open("characterDialogue.txt","r")
         if self._type != "enemyImage" and self._type != "boss" and self._type != "gate":
@@ -381,7 +389,7 @@ class Character(Sprite):
         file.close()
 
     def get_activated(self):
-        return self.get_activated
+        return self._activated
     def get_type(self):
         return self._type
     def get_dialogue(self):

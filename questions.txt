@@ -10,7 +10,7 @@ What is the formula of calcium oxide,Ca2O,CaO,Ca2O3,CaO2,2,Easy,
 What is the most electronegative element?,chlorine,lithium,hydrogen,flourine,4,Easy
 Which element is diatomic?,silicon,magnesium,nitrogen,neon,3,Easy,
 What has the highest boiling point?,helium,carbon,nitrogen,flourine,2,Easy,
-What has the highest boiling point?,ocatane,butane,methane,hexane,1,Easy,
+What has the highest boiling point?,octane,butane,methane,hexane,1,Easy,
 What is always a product of a condensation reaction?,ester,salt,hydrogen,water,4,Easy
 What is always a product of a neutralisation reaction?,base,carbon dioxide,water,hydrogen,3,Easy
 What is the bond shape of methane?,linear,tetrahedral,octahedral,trigonal planar,2,Easy,
@@ -20,7 +20,7 @@ What is the bond shape of H2O?,linear,pyramedal,bent,trigonal planar,3,Medium,
 What is the bond shape of NH3?,bent,trigonal planar,see-saw,pryramidal,4,Medium,
 What element cannot form hydrogen bonds?,chlorine,nitrogen,oxygen,flourine,1,Medium,
 Adding Ba(2+) ions is a test for what?,alcohols,sulfate ions,ammonium ions,halogens,2,Medium,
-What colour is silver chloride?,orange,cream,white,orange,3,Medium,
+What colour is silver chloride?,orange,cream,white,beige,3,Medium,
 What is the forumular of the calcium carbonate?,CaCO2,Ca2CO3,CaCO3,CaCO,3,Medium,
 What functional group has the general formular CnH2nO?,ester,alcohol,carboxylic acid,ketone,4,Medium,
 What is the requirement for free radical substitution?,UV light,low pressure,IR light,high pressure,1,Medium,
@@ -38,6 +38,4 @@ What chemical is used as a standard in 13C NMR spectroscopy?,tetramethylsilane,c
 Which reaction does not require reflux?,haloalakne to nitrile,ketone to hydroxynitrile,aldehyde to carboxylic acid,haloalkane to alcohol,2,Hard,
 What has the highest boiling point?,water,ammonia,etahnol,heavy water,1,Hard,
 Which has the highest first ionisation energy?,silicon,sulfur,phosphorus,magneisum,3,Hard,
-what is a dog used for ?,walking,thinking,fetching,catching,3,Medium,
-hello the answer is 4??,ads,svvs,ds,sdv,4,Medium,
 !

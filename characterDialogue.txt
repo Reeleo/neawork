@@ -1,6 +1,6 @@
 Hey friend,Do you know the reactants to synthesis acyl chloride?,you need carboxylic acid and SOCl2,
 Ever low on cyanide?,you should go bug hunting,did you know burnet moths can release hydrogen cyanide when attacked,
-In need of carboxylic acid,you could oxidise a primary alcohol under reflux,or you could go hunting for bugs such as ants,
+In need of carboxylic acid?,you could oxidise a primary alcohol under reflux,or you could go hunting for bugs such as ants,
 Hello there,do you know what the most electronegative element is?,Yep its fluorine,
 Do you know what copper and chromium have in common?,They're both transition metals, they also are both exceptions in electron configuration,
 You know the Brønsted-Lowry definitions?,An acid is a proton donator,and a base is a proton acceptor,
@@ -8,3 +8,4 @@ What is the first ionisation energy?,Thats right its the energy needed to remove
 Are you aware of the standard conditions?,289 Kelvin which is 25 degrees celcius,100kPa and 1moldm(-3),
 Hello Adventurer,do you know what is needed to oxidise alcohols,an oxidising agent such as acidified K2Cr2O7,
 What can you use to reduce nitriles?,LiAlH4 and acid for lab experiments,or 2H2 with high temperature and pressure for industry,
+Do you want want water?,You can interact with ponds,It will give you buckets of water,
