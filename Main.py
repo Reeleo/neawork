@@ -107,7 +107,6 @@ def displayObject(type,obj):
                 else:
                     player.set_canGetWater(False)
 
-
     # interactable sprites
     elif type == "collect" or type == "door" or type == "char" or type == "special":
         if type == "char" or type == "special":
@@ -448,8 +447,8 @@ def screenDisplay(screenType):
             displayText("press 'm' for minimap",font20,WHITE,[1300,65])
             displayText("press 'space' to interact",font20,WHITE,[132,590])
             displayText("press 'esc' to go back",font20,WHITE,[165,65])
-        for i in range(len(doors)):
-            displayObject("door", doors[i])
+        displayObject("door", doors[0])
+        displayObject("door", doors[1])
         displayObject("player", player)
     
     #5 inventory screen
@@ -771,6 +770,7 @@ def saveGame():
 # extraction
 def extraction(item):
     chances = game.get_itemChances()[item]
+    print(chances)
     randomNum = random.randint(0,len(chances)-1)
     chem = chances[randomNum][0]
     amount = chances[randomNum][1]
@@ -1317,7 +1317,7 @@ def extractMini():
                     if buttons[i].collision():
                         extractItems = ["","pebble","bug","flower",
                                         "leaf","fruit","wplant",
-                                        "bush","rock","gem","volrock"
+                                        "bush","rock","gem","volrock",
                                         "freshwater","saltwater"]
                         pygame.mixer.Sound.play(sounds[0])
                         if i == 0:
@@ -1325,6 +1325,7 @@ def extractMini():
                             cont = 2
                         else:
                             extractItem = extractItems[i]
+                            print(extractItem)
         if extractItem != 0:
             if player.get_collect()[extractItem] > 0:
                 extraction(extractItem)
