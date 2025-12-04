@@ -1615,12 +1615,14 @@ def bossMini():
                     if i >= len(buttons):
                         break
                     if i == 0:
+                        # return button
                         if buttons[i].collision():
                             print(i)
                             pygame.mixer.Sound.play(sounds[0])
                             bossTime = False
                     else:
                         if buttons[i].collision():
+                            # quest completion buttons
                             print(i)
                             pygame.mixer.Sound.play(sounds[0])
                             item = buttons[i].get_text()
@@ -1632,8 +1634,11 @@ def bossMini():
                             else:
                                 quickTexts.append(ShapeClasses.QuickText([740,400],f"You dont have enough {item}",time.time()))
         if len(buttons) == 1:
+            # the player can use the key to open the gate for the achievement 
             displayResult("YOU BEAT THE BOSS",f"you recieve the KEY")
             player.set_hasKey()
+            pygame.display.update()
+            time.sleep(2)
         qtHandelling()
         pygame.display.update()
         clock.tick(FPS)
@@ -1653,18 +1658,16 @@ def gateMini():
                     gateTime = False
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 if buttons[0].collision():
+                    # return button
                     pygame.mixer.Sound.play(sounds[0])
                     gateTime = False
                 elif buttons[1].collision():
+                    # player wins if they click this and have the key
                     pygame.mixer.Sound.play(sounds[0])
                     if player.get_hasKey():
-                        pygame.draw.rect(screen,BLACK,[175,175,WIDTH-350, HEIGHT-350])
-                        pygame.draw.rect(screen,WHITE,[180,180,WIDTH-360, HEIGHT-360])
-                        pygame.draw.rect(screen,BLACK,[200,200,WIDTH-400, HEIGHT-400])
-                        displayText("YOU WIN!!!", font100, WHITE, [WIDTH/2, 400])
-                        player.win()
+                        displayResult("YOU WIN!","")
                         pygame.display.update()
-                        time.sleep(10)
+                        time.sleep(2)
                     else:
                         quickTexts.append(ShapeClasses.QuickText([WIDTH/2+10,HEIGHT/2+60],f"Do do not have the KEY",time.time()))
                         if game.get_tutorial():
@@ -1694,6 +1697,7 @@ def mapScreen():
                 player._pos = [500,500]
             elif event.key == pygame.K_SPACE:
                 if player.get_canGetWater():
+                    # if player is positioned next to water they can collect it 
                     pos = player.get_pos()
                     quickTexts.append(ShapeClasses.QuickText([pos[0]+54,pos[1]-25],f"collect water",time.time()))
                     waterType = random.randint(0,2)
@@ -1702,6 +1706,7 @@ def mapScreen():
                     elif waterType == 1:
                         player.inc_collect("saltwater")
 
+    # screen transitions
     if miniMap:
         screenSetUp("minimap")
         cont = miniMapMini()
@@ -1720,9 +1725,11 @@ def mapScreen():
                 cont = gateMini()
                 sSprites[s].set_activated(False)
 
+    # battles
     for e in range(len(eSprites)):
         battle = eSprites[e].get_battle()
         if battle:
+            # prepares the battle buttons and quetsions
             screenSetUp("battle")
             eSprites[e].set_qSet(fetchQuestions())
             eSprites[e].set_qNum(0)
@@ -1731,14 +1738,15 @@ def mapScreen():
                 screenDisplay("battle")
                 pTableTime = False
                 complete = False
-                questions = eSprites[e].get_qSet()[eSprites[e].get_qNum()]
-                answer = eSprites[e].get_qSet()[eSprites[e].get_qNum()][5]
+                # qNum points to which question is currently being asked in the enemies question set
+                question = eSprites[e].get_qSet()[eSprites[e].get_qNum()]
+                answerNum = eSprites[e].get_qSet()[eSprites[e].get_qNum()][5]
 
-                displayText(questions[0],font20,WHITE,[960,250])
-                buttons[0].set_text(questions[1])
-                buttons[1].set_text(questions[2])
-                buttons[2].set_text(questions[3])
-                buttons[3].set_text(questions[4])
+                displayText(question[0],font20,WHITE,[960,250])
+                buttons[0].set_text(question[1])
+                buttons[1].set_text(question[2])
+                buttons[2].set_text(question[3])
+                buttons[3].set_text(question[4])
             
                 for event in pygame.event.get():
                     if event.type == pygame.QUIT:
@@ -1748,8 +1756,9 @@ def mapScreen():
                         for b in range(len(buttons)):
                             if buttons[b].collision():
                                 pygame.mixer.Sound.play(sounds[0])
-                                if b+1 == answer:
+                                if b+1 == answerNum:
                                     if eSprites[e].get_qNum() == len(eSprites[e].get_qSet())-1:
+                                        # if the 3 questions have been answered, end battle
                                         areaMap.set_collected(eSprites[e].get_num())
                                         eSprites.remove(eSprites[e])
                                         sSprites.clear()
@@ -1760,14 +1769,17 @@ def mapScreen():
                                             game.set_music(1)
                                         complete = True
                                     else:
+                                        # else continue to the next question
                                         eSprites[e].set_qNum("inc")
                                 else:
+                                    # if the player gets a question wrong
                                     screen.fill(BURG)
                                     pygame.display.update()
                                     time.sleep(0.4) 
                                     player.decrease_health()
                                     hearts.pop()
 
+                # handling players death and win
                 if player.get_health() <= 0:
                     screen.fill(BURG)
                     displayResult("DEATH",f"you recieve nothing")
@@ -1777,7 +1789,11 @@ def mapScreen():
                     battle = False
                     if game.get_diff() == "Easy":
                         cont = 3
+                        # easy mode returns the player to the home screen 
+                        # player does not loose any progress
                     else:
+                        # medium and hard mode return the player to the main menu
+                        # the player looses any progress they didn't save
                         cont = 4
                 elif complete:
                     screen.fill(GREEN)
