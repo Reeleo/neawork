@@ -24,9 +24,9 @@ class GameSettings():
                         "gem":[["carbon",3],["magnesium",1],["nickel",1]],
                         "volrock":[["carbon",3],["sulfur",1],["ammonia",1]],
                         "freshwater":[["water",3],["carbondioxide",1],["oxygen",1]],
-                        "saltwater":[["water",3],["CO2",1],["oxygen",1],["halogensalt",1]]}
-        self._battleRewards = ["ammonia","thionylchloride","potassiumdichromate","NaBH4","nickel","hydrogen","alcohol","alkane","alkene","ester",
-                               "carbon","oxygen","water","magnesium","halogensalt","carboxylicacid"]
+                        "saltwater":[["water",3],["carbondioxide",1],["oxygen",1],["halogensalt",1]]}
+        self._battleRewards = ["thionylchloride","potassiumdichromate","sodiumborohydride","alcohol","alkane","alkene","ester",
+                               "carbon","water","halogensalt","carboxylicacid"]
 
     
     def get_screen(self):

@@ -36,6 +36,7 @@ What is the formular of the permanganate ion?,MnO7(-1),MgO4(-1),MnO7(-2),MnO4(-1
 Reacting with a carbonate to produce carbon dioxide is a test for what?,phenol,benzene,carboxylic acid,ammonia,3,Hard,
 What chemical is used as a standard in 13C NMR spectroscopy?,tetramethylsilane,carbon monoxide,carbon tetrachloride,heavy water(D2O),1,Hard,
 Which reaction does not require reflux?,haloalakne to nitrile,ketone to hydroxynitrile,aldehyde to carboxylic acid,haloalkane to alcohol,2,Hard,
-What has the highest boiling point?,water,ammonia,etahnol,heavy water,1,Hard,
+What has the highest boiling point?,water,ammonia,ethanol,heavy water,4,Hard,
 Which has the highest first ionisation energy?,silicon,sulfur,phosphorus,magneisum,3,Hard,
+whos joy,cool,not cool,cool and smart,not smart,3,Hard,
 !

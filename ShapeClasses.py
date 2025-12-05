@@ -1,7 +1,8 @@
 import pygame
 WHITE = (255,255,255)
 RED = (255,0,0)
-GRASS = (0,50,0)
+MINI = (10,50,40)
+
 
 
 #---------------PARENT(SHAPE)---------------#
@@ -70,7 +71,7 @@ class InputBox(Button):
 class MiniWindow(ScreenConstruct):
     def __init__(self):
         super().__init__([100,100],[1272,760])
-        self._colours = [WHITE, GRASS]
+        self._colours = [WHITE, MINI]
 
 
 

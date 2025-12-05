@@ -69,8 +69,8 @@ class Player(Sprite):
                             "carbondioxide":0,"carboxylicacid":0,"cyanidesalt":0,"ester":0,"glucose":0, 
                             "haloalkane":0,"halogensalt":0,"hydrogen":0,"hydrogenhalide":0,"hydroxynitrile":0, 
                             "hydroxidesalt":0,"iron":0,"ketone":0,"magnesium":0,"nickel":0,"nitrile":0,"oxygen":0, 
-                            "potassiumdichromate":0,"silicon":0,"startch":0,"sulfur":0,"sulfurdioxide":0,
-                            "sulfuricacid":0,"thionylchloride":0,"water":0}
+                            "potassiumdichromate":0,"silicon":0,"sodiumborohydride":0,"startch":0,"sulfur":0,"sulfurdioxide":0,
+                            "sulfuricacid":0,"thionylchloride":0,"water":0,}
 #getters
     def get_speed(self):
         return self._speed
@@ -377,7 +377,7 @@ class Character(Sprite):
         self._startTime = 0
         self._pointer = 0
         self._activated = False
-        self._dialogue = ["error","error","error","error"]
+        self._dialogue = ["hello","hello","byebye","hello"]
         file = open("characterDialogue.txt","r")
         if self._type != "enemyImage" and self._type != "boss" and self._type != "gate":
             for i in range(1,10):
