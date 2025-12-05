@@ -12,7 +12,6 @@ class GameSettings():
         self._music = -1
         self._playMusic = False
         self._showTutorial = True
-        self._collectTypes = [["pebble",0,0],["bug",1,0],["flower",0,1],["leaf",1,1],["fruit",2,1],["wplant",3,1],["bush",0,2],["rock",1,2],["gem",2,2],["volrock",3,2],["freshwater",2,0],["saltwater",3,0],["door",1,3]]
         self._itemChances = {"pebble":[["carbon",1]],
                         "bug":[["carbon",1],["cyanidesalt",1],["carboxylicacid",1]], 
                         "flower":[["carbon",1],["amine",1],["alkane",1]], 
@@ -133,7 +132,6 @@ class AreaMap():
                     positions.append([i,j])
         return positions
 
-    
     def set_collected(self,itemNum):
         info = self._infoStore[self._pos[0]][self._pos[1]]
         for i in range(len(info)):
@@ -143,120 +141,6 @@ class AreaMap():
             except:
                 pass
 
-    
-
-    def generateTile(self,tileNum, scale):
-        size = 32
-        tile = "empty"
-        tileTypes = {"grass1":[0,0],"grass2":[1,1],"grass3":[0,1],"grass4":[2,1],
-                    "water1":[1,0],"water2":[2,0],
-                    "path1":[0,2],"empty":[1,2]}
-        if tileNum == 0:
-            tile = "grass1"
-        elif tileNum == 1:
-            tile = "grass2"
-        elif tileNum == 2:
-            tile = "grass3"
-        elif tileNum == 3:
-            tile = "grass4"
-        elif tileNum == 5:
-            tile = "water1"
-        elif tileNum == 6:
-            tile = "water2"
-        elif tileNum == 7:
-            tile = "path1"
-        start = tileTypes[tile]
-        image = pygame.Surface((size,size))
-        image.blit(self._sheet,(0,0),((start[0]*size),(start[1]*size),size,size))
-        image = pygame.transform.scale(image,(size*scale,size*scale))
-        return image
-
-
-    def drawMap(self,scale,width,height):
-        tiles = []
-        for i in range (len(self._currentMap)):
-            for j in range (len(self._currentMap[i])):
-                tile = self.generateTile(self._currentMap[i][j], scale)
-                if scale == 2:
-                    tiles.append([tile,[j*32*scale,i*32*scale]])
-                else:
-                    tiles.append([tile,[100+width*scale*0.5*(self._pos[1]-1)+j*32*scale,100+height*scale*0.5*(self._pos[0]-1)+i*32*scale]])
-        return tiles
-
-
-    def loadMap(self,playerpos,playersize,w,h):
-        resetPlayer = -1
-        if playerpos[0] <= 10 and self._store[self._pos[0]][self._pos[1]-1] != -1:
-                resetPlayer = 3
-                self._pos[1] -= 1
-        elif playerpos[0] >= w-playersize[0] and self._store[self._pos[0]][self._pos[1]+1] != -1:
-                resetPlayer = 1
-                self._pos[1] += 1
-        elif playerpos[1] <= 10 and self._store[self._pos[0]-1][self._pos[1]] != -1:
-                resetPlayer = 0
-                self._pos[0] -= 1
-        elif playerpos[1] >= h-playersize[1] and self._store[self._pos[0]+1][self._pos[1]] != -1:
-                resetPlayer = 2
-                self._pos[0] += 1
-        self._currentMap = self._store[self._pos[0]][self._pos[1]]
-        self._discovered[self._pos[0]][self._pos[1]] = 1
-        if self._pos[0] == 1 and self._pos[1] == 7:
-            info = "GATE"
-        elif self._pos[0] == 8 and self._pos[1] == 7:
-            info = "BOSS"
-        else:
-            info = self._infoStore[self._pos[0]][self._pos[1]]
-        return self.drawMap(2,w,h), info, resetPlayer
-
-
-
-
-    def generateMap(self):
-        count = 0
-        skeleton = []
-        for _ in range(self._rowLim):
-            row = []
-            for _ in range(self._colLim):
-                row.append(random.randint(0,1))
-            skeleton.append(row)
-            count += 1
-        return skeleton
-    
-
-    def placeItems(self,row,col,maxEnemy):
-        count = 0
-        collectNum = random.randint(1,5)
-        while count < collectNum:
-            type = random.randint(0,8)
-            if type == 5:
-                type = 6
-            x = random.randint(1,self._colLim-2)
-            y = random.randint(1,self._rowLim-2)
-            if self._store[row][col][y][x] != 5 and self._store[row][col][y][x] != 6:
-                self._infoStore[row][col].append([x*64, y*64, True, "collect",type])
-                count += 1
-            else:
-                self._infoStore[row][col].append([x*64, y*64, True, "collect",5])
-                count += 1
-
-
-        count = 0
-        enemyNum = random.randint(0,maxEnemy)
-        while count < enemyNum:
-            x = random.randint(1,self._colLim-2)
-            y = random.randint(1,self._rowLim-2)
-            if self._store[row][col][y][x] != 5:
-                self._infoStore[row][col].append([x*64, y*64, True, "enemy",count]) 
-                count += 1
-
-        count = 0
-        charNum = random.randint(0,1)
-        while count < charNum:
-            x = random.randint(1,self._colLim-2)
-            y = random.randint(1,self._rowLim-2)
-            if self._store[row][col][y][x] != 5:
-                self._infoStore[row][col].append([x*64, y*64, True, "char"])
-                count += 1
 
     def placePath(self):
         currentTmPos = [1,1]
@@ -309,11 +193,7 @@ class AreaMap():
                 if pathDrct == 0:
                     acrossMap = True
                 else:
-                    downMap = True
-            
-
-
-        
+                    downMap = True   
 
     def placeFeatures(self,feature):
         areas = 0
@@ -374,8 +254,51 @@ class AreaMap():
                 self._store[row][col][y][x] = tileNum
                 starty, startx = y, x
 
-      
+    def placeItems(self,row,col,maxEnemy):
+        count = 0
+        collectNum = random.randint(1,5)
+        while count < collectNum:
+            type = random.randint(0,8)
+            if type == 5:
+                type = 6
+            x = random.randint(1,self._colLim-2)
+            y = random.randint(1,self._rowLim-2)
+            if self._store[row][col][y][x] != 5 and self._store[row][col][y][x] != 6:
+                self._infoStore[row][col].append([x*64, y*64, True, "collect",type])
+                count += 1
+            else:
+                self._infoStore[row][col].append([x*64, y*64, True, "collect",5])
+                count += 1
 
+
+        count = 0
+        enemyNum = random.randint(0,maxEnemy)
+        while count < enemyNum:
+            x = random.randint(1,self._colLim-2)
+            y = random.randint(1,self._rowLim-2)
+            if self._store[row][col][y][x] != 5:
+                self._infoStore[row][col].append([x*64, y*64, True, "enemy",count]) 
+                count += 1
+
+        count = 0
+        charNum = random.randint(0,1)
+        while count < charNum:
+            x = random.randint(1,self._colLim-2)
+            y = random.randint(1,self._rowLim-2)
+            if self._store[row][col][y][x] != 5:
+                self._infoStore[row][col].append([x*64, y*64, True, "char"])
+                count += 1
+
+    def generateMap(self):
+        count = 0
+        skeleton = []
+        for _ in range(self._rowLim):
+            row = []
+            for _ in range(self._colLim):
+                row.append(random.randint(0,1))
+            skeleton.append(row)
+            count += 1
+        return skeleton
 
     def createAreaMap(self,diff):
         for row in range(len(self._store)):
@@ -400,6 +323,32 @@ class AreaMap():
                     self.placeItems(r,c,maxEnemy)
         self.placePath()
 
+    
+    def generateTile(self,tileNum, scale):
+        size = 32
+        tile = "empty"
+        tileTypes = {"grass1":[0,0],"grass2":[1,1],"grass3":[0,1],"grass4":[2,1],
+                    "water1":[1,0],"water2":[2,0],
+                    "path1":[0,2],"empty":[1,2]}
+        if tileNum == 0:
+            tile = "grass1"
+        elif tileNum == 1:
+            tile = "grass2"
+        elif tileNum == 2:
+            tile = "grass3"
+        elif tileNum == 3:
+            tile = "grass4"
+        elif tileNum == 5:
+            tile = "water1"
+        elif tileNum == 6:
+            tile = "water2"
+        elif tileNum == 7:
+            tile = "path1"
+        start = tileTypes[tile]
+        image = pygame.Surface((size,size))
+        image.blit(self._sheet,(0,0),((start[0]*size),(start[1]*size),size,size))
+        image = pygame.transform.scale(image,(size*scale,size*scale))
+        return image
 
     def drawMiniMap(self,width,height,showAll):
         tiles = []
@@ -414,6 +363,41 @@ class AreaMap():
         self._pos[0], self._pos[1] = currentCol, currentRow
         self._currentMap = self._store[self._pos[0]][self._pos[1]]
         return tiles
+
+    def drawMap(self,scale,width,height):
+        tiles = []
+        for i in range (len(self._currentMap)):
+            for j in range (len(self._currentMap[i])):
+                tile = self.generateTile(self._currentMap[i][j], scale)
+                if scale == 2:
+                    tiles.append([tile,[j*32*scale,i*32*scale]])
+                else:
+                    tiles.append([tile,[100+width*scale*0.5*(self._pos[1]-1)+j*32*scale,100+height*scale*0.5*(self._pos[0]-1)+i*32*scale]])
+        return tiles
+
+    def loadMap(self,playerpos,playersize,w,h):
+        resetPlayer = -1
+        if playerpos[0] <= 10 and self._store[self._pos[0]][self._pos[1]-1] != -1:
+                resetPlayer = 3
+                self._pos[1] -= 1
+        elif playerpos[0] >= w-playersize[0] and self._store[self._pos[0]][self._pos[1]+1] != -1:
+                resetPlayer = 1
+                self._pos[1] += 1
+        elif playerpos[1] <= 10 and self._store[self._pos[0]-1][self._pos[1]] != -1:
+                resetPlayer = 0
+                self._pos[0] -= 1
+        elif playerpos[1] >= h-playersize[1] and self._store[self._pos[0]+1][self._pos[1]] != -1:
+                resetPlayer = 2
+                self._pos[0] += 1
+        self._currentMap = self._store[self._pos[0]][self._pos[1]]
+        self._discovered[self._pos[0]][self._pos[1]] = 1
+        if self._pos[0] == 1 and self._pos[1] == 7:
+            info = "GATE"
+        elif self._pos[0] == 8 and self._pos[1] == 7:
+            info = "BOSS"
+        else:
+            info = self._infoStore[self._pos[0]][self._pos[1]]
+        return self.drawMap(2,w,h), info, resetPlayer
 
     
 

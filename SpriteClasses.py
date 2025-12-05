@@ -343,8 +343,6 @@ class Enemy(Sprite):
                     if favouredDrct[k][1] == drct:
                         favouredDrct.pop(k)
                         break
-        #print(favouredDrct)
-        #print(self._validDrct)
         if len(favouredDrct) > 0 :
             change = random.randint(0,10)
             if 0 < change < 5:
@@ -361,25 +359,14 @@ class Enemy(Sprite):
 #---------------NON PLAYER CHARACTERS---------------#
 class Character(Sprite):
     def __init__(self,pos,type):
-        self._activated = False
-        if type == "enemyImage" or type == "boss":
-            sheet = pygame.image.load("EnemySpriteSheet.png")
-            scale = 20
-        elif type == "gate":
-            sheet = pygame.image.load("collectablesSprites.bmp")
-            scale = 5
-        else:
-            sheet = pygame.image.load("SpriteSheet.png")
-            scale = 3.5
-        super().__init__(pos,[80,80],scale,BLACK,sheet)
+        super().__init__(pos,[80,80],3.5,BLACK,pygame.image.load("SpriteSheet.png"))
         self._cycle = 0 
         self._type = type
         self._startTime = 0
         self._pointer = 0
-        self._activated = False
         self._dialogue = ["hello","hello","byebye","hello"]
         file = open("characterDialogue.txt","r")
-        if self._type != "enemyImage" and self._type != "boss" and self._type != "gate":
+        if self._type != "enemyImage" and self._type != "gate":
             for i in range(1,10):
                 line = file.readline()
                 if i == self._type:
@@ -388,8 +375,6 @@ class Character(Sprite):
             self._dialogue.pop(-1)   
         file.close()
 
-    def get_activated(self):
-        return self._activated
     def get_type(self):
         return self._type
     def get_dialogue(self):
@@ -397,8 +382,6 @@ class Character(Sprite):
     def get_timer(self,currentTime):
         return currentTime - self._startTime
     
-    def set_activated(self,set):
-        self._activated = set
     def set_timer(self,time):
         self._startTime = time
         self._pointer += 1
@@ -406,30 +389,61 @@ class Character(Sprite):
             self._pointer = 0
     
     def collision(self,playerpos):
-        if self._type == "boss":
-            if self._pos[0]-40 < playerpos[0] < self._pos[0]+self._size[0]+400:
-                if self._pos[1]-40 < playerpos[1] < self._pos[1]+self._size[1]+500:
-                    return True
-        else:
-            if self._pos[0]-80 < playerpos[0] < self._pos[0]+self._size[0]+40:
-                if self._pos[1]-80 < playerpos[1] < self._pos[1]+self._size[1]+40:
-                    return True
+        if self._pos[0]-80 < playerpos[0] < self._pos[0]+self._size[0]+40:
+            if self._pos[1]-80 < playerpos[1] < self._pos[1]+self._size[1]+40:
+                return True
         return False
 
     def updateSprite(self):
         x = self._cycle // 8
-        if self._type == "enemyImage" or self._type == "boss":
-            frame = self.generateImage(x,0,self._size[0]/2.5,self._size[1]/2.5)
-        elif self._type == "gate":
-            frame = self.generateImage(1,3,32,32)
-        else:
-            frame = self.generateImage(x,0,self._size[0]/2.5,self._size[1]/2.5)
+        frame = self.generateImage(x,0,self._size[0]/2.5,self._size[1]/2.5)
         return frame
 
     def update(self):
-        if self._type != "gate" or self._type == "gate":
+        if self._type != "gate":
             self._cycle += 1
             if self._cycle == 32:
                 self._cycle = 0
         return self.updateSprite()
+    
 
+class EnemyImage(Character):
+    def __init__(self,pos):
+        super().__init__(pos,"enemyImage")
+        self._scale = 20
+        self._activated = False
+        self._sheet = pygame.image.load("EnemySpriteSheet.png")
+    
+    def get_activated(self):
+        return self._activated
+    def set_activated(self,set):
+        self._activated = set
+    
+    def collision(self,playerpos):
+        if self._pos[0]-40 < playerpos[0] < self._pos[0]+self._size[0]+400:
+            if self._pos[1]-40 < playerpos[1] < self._pos[1]+self._size[1]+500:
+                return True
+    
+    def updateSprite(self):
+        x = self._cycle // 8
+        frame = self.generateImage(x,0,self._size[0]/2.5,self._size[1]/2.5)
+        return frame
+
+
+class Gate(Character):
+    def __init__(self,pos):
+        super().__init__(pos,"gate")
+        self._scale = 5
+        self._activated = False
+        self._sheet = pygame.image.load("collectablesSprites.bmp")
+    
+    def get_activated(self):
+        return self._activated
+    def set_activated(self,set):
+        self._activated = set
+
+    def updateSprite(self):
+        frame = self.generateImage(1,3,32,32)
+        return frame
+
+    

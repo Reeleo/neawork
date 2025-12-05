@@ -365,7 +365,7 @@ def screenSetUp(screenType):
                 buttons.append(ShapeClasses.Button([615+i*380, 400],[360,80],i+1,RED))
             else:
                 buttons.append(ShapeClasses.Button([615+(i-2)*380, 500],[360,80],i+1,RED))
-        sSprites.append(SpriteClasses.Character([30,180],"enemyImage"))
+        sSprites.append(SpriteClasses.EnemyImage([30,180],))
         mini.set_size([WIDTH-200, HEIGHT-200])
         mini.set_pos([100, 100])
         for i in range(player.get_health()):
@@ -588,9 +588,9 @@ def screenDisplay(screenType):
             sSprites.clear()
             # if the area is a boss or gate area then it will be the only object displayed
             if blitList == "BOSS":
-                sSprites.append(SpriteClasses.Character([WIDTH/2-250,HEIGHT/2-350],"boss"))
+                sSprites.append(SpriteClasses.EnemyImage([WIDTH/2-250,HEIGHT/2-350],))
             elif blitList == "GATE":
-                sSprites.append(SpriteClasses.Character([WIDTH-200,HEIGHT/2],"gate"))
+                sSprites.append(SpriteClasses.Gate([WIDTH-200,HEIGHT/2],))
             else:
                 for item in range(len(blitList)):
                     if blitList[item][2]:
@@ -1677,6 +1677,7 @@ def mapScreen():
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             cont = 1
+        if event.type == pygame.MOUSEBUTTONDOWN:
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_ESCAPE:
                 cont = 3
@@ -1708,15 +1709,18 @@ def mapScreen():
         cont = pTableMini()
     
     for s in range(len(sSprites)):
-        if sSprites[s].get_activated():
-            if sSprites[s].get_type() == "boss":
-                screenSetUp("boss")
-                cont = bossMini()
-                sSprites[s].set_activated(False)
-            elif sSprites[s].get_type() == "gate":
-                screenSetUp("gate")
-                cont = gateMini()
-                sSprites[s].set_activated(False)
+        try:
+            if sSprites[s].get_activated():
+                if sSprites[s].get_type() == "enemyImage":
+                    screenSetUp("enemyImage")
+                    cont = bossMini()
+                    sSprites[s].set_activated(False)
+                elif sSprites[s].get_type() == "gate":
+                    screenSetUp("gate")
+                    cont = gateMini()
+                    sSprites[s].set_activated(False)
+        except:
+            break
 
     # battles
     for e in range(len(eSprites)):
