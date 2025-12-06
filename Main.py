@@ -106,11 +106,6 @@ def displayObject(type,obj):
 
     # interactable sprites
     elif type == "collect" or type == "door" or type == "char" or type == "special":
-        if type == "char" or type == "special":
-            screen.blit(obj.update(),(obj.get_pos()))
-        else:
-            screen.blit(obj.update(game.get_screen()),(obj.get_pos()))
-
         if obj.collision(player.get_pos()):
             playerpos, playersize = player.get_pos(), player.get_size()
             if game.get_tutorial():
@@ -136,6 +131,11 @@ def displayObject(type,obj):
                 if keys[pygame.K_SPACE]:
                     obj.set_activated(True)
                 # special sprites e.g. the boss will display a special screen when interacted with
+        
+        if type == "char" or type == "special":
+            screen.blit(obj.update(),(obj.get_pos()))
+        else:
+            screen.blit(obj.update(game.get_screen()),(obj.get_pos()))
 
     elif type == "button":
         pos = obj.get_pos()
@@ -220,8 +220,8 @@ def screenSetUp(screenType):
         player.set_posy(HEIGHT-200-player.get_size()[1])
         doors.append(SpriteClasses.Collectable([1273,608],12))
         doors.append(SpriteClasses.Collectable([22,608],12))
-        doors[0].assign_type(game.get_collectTypes())
-        doors[1].assign_type(game.get_collectTypes())
+        doors[0].assign_type()
+        doors[1].assign_type()
         player.set_validWalk("all",[True,True,True,True])
 
     #5 iventory screen
@@ -231,7 +231,7 @@ def screenSetUp(screenType):
         for j in range(12):
             cSprites.append(SpriteClasses.Collectable([120, 100+j*60],j))
         for k in range(12):
-            cSprites[k].assign_type(game.get_collectTypes())
+            cSprites[k].assign_type()
         if game.get_screen() == "home":
             buttons.append(ShapeClasses.Button([390,360],[400,80],"EXTRACT",BUTTON2))
             buttons.append(ShapeClasses.Button([850,360],[400,80],"CRAFT",BUTTON2))
@@ -250,7 +250,7 @@ def screenSetUp(screenType):
         for j in range(12):
             cSprites.append(SpriteClasses.Collectable([140+j*100, 200],j))
         for k in range(12):
-            cSprites[k].assign_type(game.get_collectTypes())
+            cSprites[k].assign_type()
         mini.set_size([WIDTH-200, HEIGHT-200])
         mini.set_pos([100, 100])
 
@@ -336,7 +336,7 @@ def screenSetUp(screenType):
             if blitList[item][2]:
                 if blitList[item][3] == "collect":
                     cSprites.append(SpriteClasses.Collectable([blitList[item][0],blitList[item][1]],blitList[item][4]))
-                    cSprites[-1].assign_type(game.get_collectTypes())
+                    cSprites[-1].assign_type()
                 elif blitList[item][3] == "enemy":
                     eSprites.append(SpriteClasses.Enemy([blitList[item][0],blitList[item][1]],blitList[item][4],game.get_diff()))
                 elif blitList[item][3] == "char":
@@ -504,7 +504,7 @@ def screenDisplay(screenType):
         displayObject("mini",mini)
         displayText("CRAFTING:", font20, WHITE, [212, 150])
         displayText("Synthesis of:", font20, WHITE, [222, 235])
-        displayText("please use lowercase and no spaces", font20, WHITE, [642, 300])
+        displayText("please use lowercase", font20, WHITE, [642, 300])
         pygame.draw.rect(screen,WHITE,(100,HEIGHT/2-110,WIDTH-200,10))
         for i in range(len(buttons)):
             displayObject("button",buttons[i])
@@ -596,7 +596,7 @@ def screenDisplay(screenType):
                     if blitList[item][2]:
                         if blitList[item][3] == "collect":
                             cSprites.append(SpriteClasses.Collectable([blitList[item][0],blitList[item][1]],blitList[item][4]))
-                            cSprites[-1].assign_type(game.get_collectTypes())
+                            cSprites[-1].assign_type()
                         elif blitList[item][3] == "enemy":
                             eSprites.append(SpriteClasses.Enemy([blitList[item][0],blitList[item][1]],blitList[item][4],game.get_diff()))
                         elif blitList[item][3] == "char":
@@ -775,7 +775,7 @@ def extraction(item):
     return chem
 
 # crafting functions  
-def synthesis(setUp,items):
+def synthesis(setUp,validPaths):
     if setUp:
         buttons.clear()
         inputBoxes.clear()
@@ -783,38 +783,27 @@ def synthesis(setUp,items):
         buttons.append(ShapeClasses.Button([1230,650],[100,80],"CHECK",BUTTON2))
         buttons.append(ShapeClasses.Button([1230,250],[100,80],"HINT",BUTTON2))
         # items contains the reactants, prodcuts and conditions
-        for i in range(len(items)):
-            try:
-                items[i] = items[i].split(".") 
-                # splits up the different reactants/procuts/conditions
-                # items = [[reactants list],[products list],[conditions list]]
-            except:
-                pass
-        
-        # adds input boxes depending on how many substances each item list contains
-        for j in range(len(items)):
-            if j != 0:
-                for k in range(len(items[j])):
-                    if j == 1 and k == 0:
-                        inputBoxes.append(ShapeClasses.InputBox([290,400],[260,80],"",BUTTON2))
-                    elif j == 1 and k == 1:
-                        inputBoxes.pop(-1)
-                        inputBoxes.append(ShapeClasses.InputBox([130,400],[260,80],"",BUTTON2))
-                        inputBoxes.append(ShapeClasses.InputBox([430,400],[260,80],"",BUTTON2))
-
-                    elif j == 2 and k == 0:
-                        inputBoxes.append(ShapeClasses.InputBox([950,400],[260,80],"",BUTTON2))
-                    elif j == 2 and k == 1:
-                        inputBoxes.pop(-1)
-                        inputBoxes.append(ShapeClasses.InputBox([790,400],[260,80],"",BUTTON2))
-                        inputBoxes.append(ShapeClasses.InputBox([1090,400],[260,80],"",BUTTON2))
-
-                    elif j == 3 and k == 0:
-                        inputBoxes.append(ShapeClasses.InputBox([610,520],[260,80],"",BUTTON2))
-                    elif j == 3 and k == 1:
-                        inputBoxes.pop(-1)
-                        inputBoxes.append(ShapeClasses.InputBox([450,520],[260,80],"",BUTTON2))
-                        inputBoxes.append(ShapeClasses.InputBox([750,520],[260,80],"",BUTTON2))  
+        for i in range(len(validPaths)):
+            for j in range(len(validPaths[i])):
+                try:
+                    validPaths[i][j] = validPaths[i][j].split("/") 
+                    # splits up the different reactants/procuts/conditions
+                    # items = [[reactants list],[products list],[conditions list]]
+                except:
+                    pass
+            validPaths[i].pop(0)
+            validPaths[i].pop(-1)
+            # removes the first item as it is only used for searching 
+            # removes the last item as it is \n and no longer needed
+        # reactants
+        inputBoxes.append(ShapeClasses.InputBox([130,400],[260,80],"",BUTTON2))
+        inputBoxes.append(ShapeClasses.InputBox([430,400],[260,80],"",BUTTON2))
+        # products
+        inputBoxes.append(ShapeClasses.InputBox([790,400],[260,80],"",BUTTON2))
+        inputBoxes.append(ShapeClasses.InputBox([1090,400],[260,80],"",BUTTON2))
+        # conditions
+        inputBoxes.append(ShapeClasses.InputBox([450,520],[260,80],"",BUTTON2))
+        inputBoxes.append(ShapeClasses.InputBox([750,520],[260,80],"",BUTTON2))  
             
     else:
         # displays all the information text and updates objects
@@ -832,98 +821,101 @@ def synthesis(setUp,items):
 
 def checkProduct(txt):
     # checks if the product chosen is valid (exists in the synthesis file) by linear search
+    # returns each valid route the player could take to get to the desired product
+    cont = True
     valid = False
-    product = ""
+    fileData = []
     file = open("synthesisFile.txt","r")
-    line = file.readline()
-    data = line.split(",")
-    for i in range(len(data)):
-        # splits the data into each synthetic route 
-        data[i] = data[i].split("/")
-    for j in range(len(data)):
-        # the first item in the synthetic route is what is being searched for
-        if data[j][0] == txt:
-            valid = True  
-            product = data[j]
-            break  
+    while cont:
+        fileData.append(file.readline())
+        # each line is a synthetic route
+        if fileData[-1] == "":
+            cont = False
+            fileData.pop(-1)
+        else:
+            fileData[-1] = fileData[-1].split(",")
+            # spliting the line splits up the synthetic route into reactants/products/conditions
+    validRoutes = []
+    for i in range(len(fileData)):
+        if fileData[i][0] == txt:
+            validRoutes.append(fileData[i])
+            valid = True
     if not valid:
-        quickTexts.append(ShapeClasses.QuickText([800,240],f"INVALID",time.time()))
+        quickTexts.append(ShapeClasses.QuickText([850,240],f"INVALID CHEMICAL",time.time()))
     file.close()
-    return valid, product
+    return valid, validRoutes
 
-def checkEquation(txt,check):
+def checkEquation(txt,checks):
     # txt is what the player has inputed into input boxes
-    # check is the correct synthetic route 
-    # e.g. [['alcohol'], ['haloalkane', 'water'], ['alcohol', 'halogensalt'], ['heat']]
-    for i in range(len(check)):
-        # error handling to make sure the synthetic route items are separated
-        try:
-            check[i] = check[i].split(".") 
-        except:
-            pass
-    length = 0
-    for j in range(len(check)):
-        for k in range(len(check[j])):
-            length += 1
-    if length > len(txt):
-        check.pop(0)
-        # removes the first item in check as it is only used for searching
+    # check is the valid synthetic routes
+    # e.g. alcohol = [['haloalkane', 'water'], ['alcohol', 'halogensalt'], ['heat']]
+    valid = False
+    validRoute = -1
+    for route in range(len(checks)):
+        # checks is the player has completed any of the routes
+        # check is the current route being checked
+        check = checks[route]
 
-    validNum = 0
-    reactants = []
-    products = []
-    others = []
-    # separates check into reactants, products and conditions
-    for i in range(len(check)):
-        for j in range(len(check[i])):
-            if i == 0:
-                reactants.append(check[i][j])
-            elif i == 1:
-                products.append(check[i][j])
-            elif i == 2:
-                others.append(check[i][j])
+        numValid = 0
+        reactants = []
+        products = []
+        others = []
+        # separates check into reactants, products and conditions
+        for i in range(len(check)):
+            for j in range(len(check[i])):
+                if i == 0:
+                    reactants.append(check[i][j])
+                elif i == 1:
+                    products.append(check[i][j])
+                elif i == 2:
+                    others.append(check[i][j])
+        
+        inputR = []
+        inputP = []
+        inputO = []
+        # separates the player input into reactant, products and conditions
+        for k in range(len(reactants)):
+            inputR.append(txt[k])
+        for k in range(len(products)):
+            inputP.append(txt[k+len(reactants)])
+        for k in range(len(others)):
+            inputO.append(txt[k+len(reactants)+len(products)])
+        splittxt = [inputR,inputP,inputO]
 
-    inputR = []
-    inputP = []
-    inputO = []
-    # separates the player input into reactant, products and conditions
-    for k in range(len(reactants)):
-        inputR.append(txt[k])
-    for k in range(len(products)):
-        inputP.append(txt[k+len(reactants)])
-    for k in range(len(others)):
-        inputO.append(txt[k+len(reactants)+len(products)])
-    txt = [inputR,inputP,inputO]
-    
-    # each for loop checks if the check and player text match
-    # this can be in any order and is measured by validNum 
-    for r in range(len(reactants)):
-        for t in range(len(txt[0])):
-            if txt[0][t] == reactants[r]:
-                validNum += 1
-                txt[0][t] = ""
-    
-    for p in range(len(products)):
-        for t in range(len(txt[1])):
-            if txt[1][t] == products[p]:
-                validNum += 1
-                txt[1][t] = ""
-    
-    for o in range(len(others)):
-        for t in range(len(txt[2])):
-            if txt[2][t] == others[o]:
-                validNum += 1
-                txt[2][t] = ""
-    
-    length = 0
-    for i in range(len(check)):
-        for j in range(len(check[i])):
-            length += 1
+        # each for loop checks if the check and player text match
+        # this can be in any order and is measured by numValid 
+        for r in range(len(reactants)):
+            for t in range(len(splittxt[0])):
+                if splittxt[0][t] == reactants[r]:
+                    numValid += 1
+                    splittxt[0][t] = ""
 
-    # if the player has inputed the correct components length of check = validNum
+        for p in range(len(products)):
+            for t in range(len(splittxt[1])):
+                if splittxt[1][t] == products[p]:
+                    numValid += 1
+                    splittxt[1][t] = ""
+
+        for o in range(len(others)):
+            for t in range(len(splittxt[2])):
+                if splittxt[2][t] == others[o]:
+                    numValid += 1
+                    splittxt[2][t] = ""
+
+        length = 0
+        for i in range(len(check)):
+            for j in range(len(check[i])):
+                if check[i][j] != "!":
+                    length += 1
+
+        # if the player has inputed the correct components length of check = numValid
+        if length == numValid:
+            validRoute = route
+    
     message = []
-    if length == validNum:
+    if validRoute != -1:
         removeList = []
+        check = checks[validRoute]
         chems = player.get_chemicals()
         # now checks if the player has the right amount of each substance
         for i in range(len(check[0])):
@@ -933,6 +925,9 @@ def checkEquation(txt,check):
                 message.append(f"you dont have {check[0][i]}")
                 
         for j in range(len(check[2])):
+            # if there are no conditions
+            if check[2][j] == "!":
+                break
             # most conditions don't require chemical collection such as heat or reflux
             # sufuricacid and nickel are both catalysts and the player is required to collect them
             if check[2][j] == "sufuricacid" or check[2][j] == "nickel":
@@ -942,35 +937,47 @@ def checkEquation(txt,check):
                     message.append(f"you dont have {check[2][j]}")
 
         if message == []:
+            valid = True
             # if the player has enough chemicals then one of each used is removed
             for k in range(len(removeList)):
                 player.set_chemicals(removeList[k][0],removeList[k][1])
-
-    if validNum == length and message == []:
-        return True, message
-    return False, message
+    return valid,validRoute,message
 
 def displayTip(item):
     # find the tip by searching the tip file for the item
+    itemToFind = item[1][0]
     file = open("tipsfile.txt","r")
     lines = []
     cont = True
     while cont:
         lines.append(file.readline())
         for i in range(len(lines)):
-            if lines[i] == "!":
+            if lines[i] == "":
                 cont = False
+        lines[-1] = lines[-1].split(",")
+        lines[-1].pop(-1)
     file.close()
-    index = -1
-    for k in range(len(lines)):
-        lines[k] = lines[k].split(",")
-        if lines[k][0] == item[0]:
-            index = k
-            break
-    if index == -1:
-        tip = "no tip"
-    else:
-        tip = lines[index][1]
+
+    killcount = 0
+    found = False
+    upper = len(lines)-1
+    lower = 0
+    # uses a binary search to find the right tip
+    # checking if the first index of each tip matches the item
+    # then displaying the second index of that tip 
+    while not found:
+        index = int((upper+lower)/2)
+        if lines[index][0] < itemToFind:
+            lower = index
+        elif lines[index][0] > itemToFind:
+            upper = index
+        else:
+            tip =lines[index][1]
+            found = True
+        killcount += 1
+        if killcount > len(lines):
+            tip = "no tip"
+            found = True
     quickTexts.append(ShapeClasses.QuickText([1050,200],tip,time.time()))
 
 
@@ -1015,7 +1022,7 @@ def fetchQuestions():
     qSet = []
     diff = game.get_diff()
     cont = True
-    diff = "Testing"
+    #diff = "Testing"
     lines = []
     file = open("questions.txt","r")
     while cont:
@@ -1402,13 +1409,13 @@ def craftMini():
                         playerInput = []
                         for i in range(len(inputBoxes)):
                             playerInput.append(inputBoxes[i].get_text())
-                        check, message = checkEquation(playerInput, synthesisTime[1])
+                        check, num, message = checkEquation(playerInput, synthesisTime[1])
                         # check (a boolean) is whether the equation is valid
                         # message will contain any chemicals the player lacks
                         if check and message == []:
-                            displayResult("SUCCESS",f"you recieve {synthesisTime[1][1]}")
-                            for i in range(len(synthesisTime[1][1])):
-                                player.inc_chemicals(synthesisTime[1][1][i])
+                            displayResult("SUCCESS",f"you recieve {synthesisTime[1][num][1]}")
+                            for i in range(len(synthesisTime[1][num][1])):
+                                player.inc_chemicals(synthesisTime[1][num][1][i])
                             pygame.display.update()
                             time.sleep(2)
                         elif message == []:
@@ -1677,7 +1684,6 @@ def mapScreen():
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             cont = 1
-        if event.type == pygame.MOUSEBUTTONDOWN:
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_ESCAPE:
                 cont = 3

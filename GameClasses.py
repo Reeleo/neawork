@@ -13,19 +13,19 @@ class GameSettings():
         self._playMusic = False
         self._showTutorial = True
         self._itemChances = {"pebble":[["carbon",1]],
-                        "bug":[["carbon",1],["cyanidesalt",1],["carboxylicacid",1]], 
+                        "bug":[["carbon",1],["cyanide salt",1],["carboxylic acid",1]], 
                         "flower":[["carbon",1],["amine",1],["alkane",1]], 
-                        "leaf":[["carbon",1],["oxygen",1],["ester",1],["aminoacid",1]],
-                        "fruit":[["carbon",1],["water",1],["glucose",1],["aminoacid",1]],
+                        "leaf":[["carbon",1],["oxygen",1],["ester",1],["amino acid",1]],
+                        "fruit":[["carbon",1],["water",1],["glucose",1],["amino acid",1]],
                         "wplant":[["carbon",1],["oxygen",1],["ester",1],["water",1],["silicon",1]],
-                        "bush":[["carbon",3],["oxygen",1],["ester",1],["aminoacid",1]],
+                        "bush":[["carbon",3],["oxygen",1],["ester",1],["amino acid",1]],
                         "rock":[["carbon",3],["silicon",1],["magnesium",1]],
                         "gem":[["carbon",3],["magnesium",1],["nickel",1]],
                         "volrock":[["carbon",3],["sulfur",1],["ammonia",1]],
-                        "freshwater":[["water",3],["carbondioxide",1],["oxygen",1]],
-                        "saltwater":[["water",3],["carbondioxide",1],["oxygen",1],["halogensalt",1]]}
-        self._battleRewards = ["thionylchloride","potassiumdichromate","sodiumborohydride","alcohol","alkane","alkene","ester",
-                               "carbon","water","halogensalt","carboxylicacid"]
+                        "freshwater":[["water",3],["carbon dioxide",1],["oxygen",1]],
+                        "saltwater":[["water",3],["carbon dioxide",1],["oxygen",1],["halogensalt",1]]}
+        self._battleRewards = ["thionyl chloride","potassium dichromate","sodium borohydride","alcohol","alkane","alkene","ester",
+                               "carbon","water","halogen salt","carboxylic acid","halogen"]
 
     
     def get_screen(self):
@@ -42,8 +42,6 @@ class GameSettings():
         return self._playMusic
     def get_tutorial(self):
         return self._showTutorial
-    def get_collectTypes(self):
-        return self._collectTypes
     def get_itemChances(self):
         return self._itemChances
     def get_rewards(self):

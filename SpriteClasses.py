@@ -16,6 +16,7 @@ class Sprite(pygame.sprite.Sprite):
         self._scale = scale
         self._colour = colour
 
+    # getters
     def get_pos(self):
         return self._pos   
     def get_size(self):
@@ -27,6 +28,7 @@ class Sprite(pygame.sprite.Sprite):
     def get_visible(self):
         return self._visible
     
+    # setters
     def set_pos(self,pos):
         self._pos = pos
     def set_posx(self,x):
@@ -36,6 +38,7 @@ class Sprite(pygame.sprite.Sprite):
     def set_visible(self,vis):
         self._visible = vis
     
+    # returns a pygame surface with the sprite image blitted on top of it 
     def generateImage(self,locx,locy,width,height):
         surface = pygame.Surface((width,height))
         surface.blit(self._sheet,(0,0),((locx*width),(locy*height),width,height))
@@ -43,6 +46,8 @@ class Sprite(pygame.sprite.Sprite):
         surface.set_colorkey(self._colour)
         return surface
 
+    # generate a tile that the sprite will be positioned on
+    # each tile is 64x64 pixels on the pygame display
     def generate(self):
         self.set_posx(random.randint(1,21) * 64) 
         self.set_posy(random.randint(1,13) * 64)
@@ -64,13 +69,13 @@ class Player(Sprite):
         self._collect = {"pebble":0,"bug":0,"flower":0,"leaf":0,"fruit":0,
                         "wplant":0,"bush":0,"rock":0,"gem":0,"volrock":0,
                         "freshwater":0,"saltwater":0}
-        self._chemicals = {"acylchloride":0,"alcohol":0,"aldehyde":0,"alkane":0,"alkene":0,"aluminium":0,  
-                            "amide":0,"amine":0,"aminoacid":0,"ammonia":0,"ammoniumsalt":0,"carbon":0, 
-                            "carbondioxide":0,"carboxylicacid":0,"cyanidesalt":0,"ester":0,"glucose":0, 
-                            "haloalkane":0,"halogensalt":0,"hydrogen":0,"hydrogenhalide":0,"hydroxynitrile":0, 
-                            "hydroxidesalt":0,"iron":0,"ketone":0,"magnesium":0,"nickel":0,"nitrile":0,"oxygen":0, 
-                            "potassiumdichromate":0,"silicon":0,"sodiumborohydride":0,"startch":0,"sulfur":0,"sulfurdioxide":0,
-                            "sulfuricacid":0,"thionylchloride":0,"water":0,}
+        self._chemicals = {"acyl chloride":0,"alcohol":0,"aldehyde":0,"alkane":0,"alkene":0,"aluminium":0,  
+                            "amide":0,"amine":0,"amino acid":0,"ammonia":0,"ammonium salt":0,"carbon":0, 
+                            "carbon dioxide":0,"carboxylic acid":0,"cyanide salt":0,"ester":0,"glucose":0, 
+                            "haloalkane":0,"halogen":0,"halogen salt":0,"hydrogen":0,"hydrogen halide":0,"hydroxynitrile":0, 
+                            "hydroxide salt":0,"iron":0,"ketone":0,"magnesium":0,"nickel":0,"nitrile":0,"oxygen":0, 
+                            "potassium dichromate":0,"silicon":0,"sodium borohydride":0,"startch":0,"sulfur":0,"sulfur dioxide":0,
+                            "sulfuric acid":0,"thionyl chloride":0,"water":0,}
 #getters
     def get_speed(self):
         return self._speed
@@ -203,6 +208,10 @@ class Player(Sprite):
         
 #---------------COLLECTABLES---------------#
 class Collectable(Sprite):
+    _collectTypes = [["pebble",0,0],["bug",1,0],["flower",0,1],["leaf",1,1],
+                    ["fruit",2,1],["wplant",3,1],["bush",0,2],["rock",1,2],
+                    ["gem",2,2],["volrock",3,2],["freshwater",2,0],
+                    ["saltwater",3,0],["door",1,3]]
     def __init__(self,pos,typeNum):
         super().__init__(pos,[32,32],2,BLACK,pygame.image.load("collectablesSprites.bmp"))
         self._frameSize = 32
@@ -212,8 +221,8 @@ class Collectable(Sprite):
 
     def get_num(self):
         return self._num
-    def assign_type(self, gameTypes):
-        self._type = gameTypes[self._num]
+    def assign_type(self):
+        self._type = Collectable._collectTypes[self._num]
 
     def collision(self,playerpos):
         if self._num == 12:
