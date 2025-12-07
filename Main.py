@@ -746,10 +746,10 @@ def saveGame():
     while cont:
         qData.append(qFile.readline())
         for j in range(len(qData)):
-            if qData[j] == "!":
+            if qData[j] == "":
                 cont = False
     for k in range(len(qData)):
-        if qData[k] != "!":
+        if qData[k] != "":
             questionLine += qData[k] 
     qFile.close()
 
@@ -991,8 +991,6 @@ def resetQuestions():
     file = open("questions.txt","w")
     for i in range(len(data)):
         file.writelines(data[i])
-    file.writelines("!")
-    # ! is used to signal other functions to stop reading
     file.close()
     
 def addingQuestion(data):
@@ -1004,12 +1002,10 @@ def addingQuestion(data):
         line = file.readline()
         filedata.append(line)
         for i in range(len(filedata)):
-            if filedata[i] == "!":
+            if filedata[i] == "":
                 cont = False
     file.close()
     filedata[-1] = data
-    filedata.append("!")
-    # ! added after new questions added
     file = open("questions.txt","w")
     for i in range(len(filedata)):
         file.writelines(filedata[i])
@@ -1030,9 +1026,9 @@ def fetchQuestions():
         qSet.append(line.split(","))
         lines.append(line)
         for i in range(len(lines)):
-            if lines[i] == "!":
+            if lines[i] == "":
                 cont = False
-            # ! is at the end of the question file and signals for the function to stop reading
+            # "" is at the end of the question file and signals for the function to stop reading
     for i in range(len(lines)-1):
         qSet[i][5] = int(qSet[i][5])
     file.close()
@@ -1636,6 +1632,7 @@ def bossMini():
         if len(buttons) == 1:
             # the player can use the key to open the gate for the achievement 
             displayResult("YOU BEAT THE BOSS",f"you recieve the KEY")
+            bossTime = False
             player.set_hasKey()
             pygame.display.update()
             time.sleep(1)
@@ -1718,7 +1715,7 @@ def mapScreen():
         try:
             if sSprites[s].get_activated():
                 if sSprites[s].get_type() == "enemyImage":
-                    screenSetUp("enemyImage")
+                    screenSetUp("boss")
                     cont = bossMini()
                     sSprites[s].set_activated(False)
                 elif sSprites[s].get_type() == "gate":
