@@ -12,7 +12,9 @@ class ScreenConstruct():
         self._size = size
         self._text = ""
         self._colours = [RED,WHITE]
-        
+        # default colours
+    
+    # getters
     def get_pos(self):
         return self._pos   
     def get_size(self):
@@ -22,6 +24,7 @@ class ScreenConstruct():
     def get_colours(self):
         return self._colours
     
+    # setters
     def set_pos(self,pos):
         self._pos = pos
     def set_size(self,size):
@@ -41,6 +44,10 @@ class Button(ScreenConstruct):
         return self._touch
     
     def collision(self):
+        # detects whether the mouse is inside the button's area 
+        # if it is then touch is set to True
+        # this method is used when handling the event mousebuttondown in the maincode
+        # if there is a mousebuttondown event and button.collision returns true then the button has been clicked
         mouse  = pygame.mouse.get_pos()
         if self._pos[0] <= mouse[0] <= self._pos[0] + self._size[0] and self._pos[1] <= mouse[1] <= self._pos[1] + self._size[1]:
             self._touch = True
@@ -54,6 +61,9 @@ class InputBox(Button):
     def __init__(self,pos,size,text,colour):
         super().__init__(pos,size,text,colour)
         self._takesInput = False
+        # inherits the collision method of the button
+        # clicking an input box sets takesInput to true
+        # this allows the player to then input text
     
     def get_takesInput(self):
         return self._takesInput
@@ -72,6 +82,8 @@ class MiniWindow(ScreenConstruct):
     def __init__(self):
         super().__init__([100,100],[1272,760])
         self._colours = [WHITE, MINI]
+        # inherits from screen construct
+        # specific size position and colour for mini windows such as inventory and minimap
 
 
 
@@ -84,10 +96,14 @@ class QuickText(ScreenConstruct):
         self._text = text
         self._startTime = startTime
         self._duration = 2
-    
+        # duration means how long the text will be displayed on screen (2 seconds) 
+
     def get_visible(self):
-        return self._visible 
+        return self._visible
+     
     def update(self,time):
+        # checks if duration has passes and if it has sets visible to False
+        # visible controls whether the main code will display it 
         if time - self._startTime > self._duration:
             self._visible = False
             return True

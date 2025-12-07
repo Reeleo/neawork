@@ -134,13 +134,11 @@ class Player(Sprite):
     def set_canGetWater(self,set):
         self._canGetWater = set
 
-
-
-
     def set_extracted(self,item,chem,amount):
         self._collect[item] -= 1
         self._chemicals[chem] += amount
     
+    # health setters
     def decrease_health(self):
         self._health -= 1
     def heal_self(self):
@@ -148,16 +146,19 @@ class Player(Sprite):
     def revive_self(self):
         self._health = 3
 
+    # changing the data types after loading from a save file
     def set_int(self):
         self._pos[0] = int(self._pos[0])
         self._pos[1] = int(self._pos[1])
         self._speed = int(self._speed)
     
 
-    
     def updateSprite(self):
         x = 0
         y = 0
+        # x and y are positions on the sprite sheet
+        # x is the animation cycle position
+        # y is the direction the character is facing (or idle)
         if self._idle:
             x = self._cycle // 8
             frame = self.generateImage(x,0,self._size[0]/2.5,self._size[1]/2.5)
@@ -178,6 +179,8 @@ class Player(Sprite):
     def update(self,gameScreen,w,h):
         self._idle = True
         keys = pygame.key.get_pressed()
+        # player will only be able to go in one direction at a time
+        # if player is not moving (no key pressed) the animation is set to idle
         if keys[pygame.K_a] and not keys[pygame.K_w] and not keys[pygame.K_s]:
             if self._pos[0] > 0 and self._validDrct[3]:
                 self._pos[0] -= self._speed
@@ -199,6 +202,7 @@ class Player(Sprite):
                     self._pos[1] += self._speed
                     self._drct = "down"
                     self._idle = False
+        # controling the animation cycle
         self._cycle += 1
         if self._cycle == 32:
             self._cycle = 0
@@ -208,6 +212,7 @@ class Player(Sprite):
         
 #---------------COLLECTABLES---------------#
 class Collectable(Sprite):
+    # defines the position of the type of item on the sprite sheet
     _collectTypes = [["pebble",0,0],["bug",1,0],["flower",0,1],["leaf",1,1],
                     ["fruit",2,1],["wplant",3,1],["bush",0,2],["rock",1,2],
                     ["gem",2,2],["volrock",3,2],["freshwater",2,0],
@@ -218,7 +223,6 @@ class Collectable(Sprite):
         self._num = typeNum
         self._type = ""
 
-
     def get_num(self):
         return self._num
     def assign_type(self):
@@ -226,6 +230,7 @@ class Collectable(Sprite):
 
     def collision(self,playerpos):
         if self._num == 12:
+            # door type thus needs a wider range of collision detection
             if self._pos[0]-100 < playerpos[0] < self._pos[0]+self._size[0]+100:
                 return True
         else:
@@ -243,6 +248,7 @@ class Collectable(Sprite):
             if self._num == 12:
                 self._scale = 5.5
         else:
+            # items on the adventure map
             if self._num == 0 or self._num == 1 or self._num == 3 or self._num == 4:
                 self._scale = 1.5
             elif 5 < self._num < 9:
@@ -270,6 +276,7 @@ class Enemy(Sprite):
         else:
             self._speed = 4
 
+    # getters
     def get_battle(self):
         return self._battleTime
     def get_qSet(self):
@@ -281,6 +288,7 @@ class Enemy(Sprite):
     def get_num(self):
         return self._num
     
+    # setters
     def set_battle(self,battle):
         self._battleTime = battle
     def set_qSet(self,questions):
@@ -295,7 +303,6 @@ class Enemy(Sprite):
             self._validDrct = valid
         else:
             self._validDrct[drct] = valid
-    
     
     
     def updateSprite(self,check):
@@ -323,6 +330,7 @@ class Enemy(Sprite):
 
     def update(self,playerpos):
         favouredDrct = []
+        # calculate a value for each direction based on the distance between enemy and player
         for i in range(4):
             if i == 0:
                 newpos = [self._pos[0],self._pos[1]-self._speed]
@@ -338,6 +346,8 @@ class Enemy(Sprite):
                 new = [abs(newpos[0]-playerpos[0])+abs(newpos[1]-playerpos[1]),"left"]
             favouredDrct.append(new)
             favouredDrct.sort()
+
+        # checks and removes any invbalid directions
         for j in range(len(self._validDrct)):
             if not self._validDrct[j]:
                 if j == 0:
@@ -352,12 +362,14 @@ class Enemy(Sprite):
                     if favouredDrct[k][1] == drct:
                         favouredDrct.pop(k)
                         break
+        # random change in direction to make enemies less predictable
         if len(favouredDrct) > 0 :
             change = random.randint(0,10)
             if 0 < change < 5:
                 self._drct = favouredDrct[0][1]
 
-
+        # controlling the animation cycle for walking
+        # (enemies will have no idle unless in battle)
         self._cycle += 1
         if self._cycle == 32:
             self._cycle = 0
@@ -376,6 +388,7 @@ class Character(Sprite):
         self._dialogue = ["hello","hello","byebye","hello"]
         file = open("characterDialogue.txt","r")
         if self._type != "enemyImage" and self._type != "gate":
+            # the children will not have dialogue as they cause a screen to be displayed instead
             for i in range(1,10):
                 line = file.readline()
                 if i == self._type:
@@ -392,23 +405,28 @@ class Character(Sprite):
         return currentTime - self._startTime
     
     def set_timer(self,time):
+        # sets up the timer between when the next dialogue can be displayed
+        # increases the pointer to the next dialogue
         self._startTime = time
         self._pointer += 1
         if self._pointer == 3:
             self._pointer = 0
     
     def collision(self,playerpos):
+        # checks if the players position is inside the interaction range
         if self._pos[0]-80 < playerpos[0] < self._pos[0]+self._size[0]+40:
             if self._pos[1]-80 < playerpos[1] < self._pos[1]+self._size[1]+40:
                 return True
         return False
 
     def updateSprite(self):
+        # characters are stationary so will only use the idle animation where y = 0
         x = self._cycle // 8
         frame = self.generateImage(x,0,self._size[0]/2.5,self._size[1]/2.5)
         return frame
 
     def update(self):
+        # gates (a character child) will not have an animation cycle
         if self._type != "gate":
             self._cycle += 1
             if self._cycle == 32:
@@ -417,10 +435,12 @@ class Character(Sprite):
     
 
 class EnemyImage(Character):
+    # enemuy image is used in battles and for the boss
     def __init__(self,pos):
         super().__init__(pos,"enemyImage")
         self._scale = 20
         self._activated = False
+        # activated refers to if the boss screen needs to be displayed
         self._sheet = pygame.image.load("EnemySpriteSheet.png")
     
     def get_activated(self):
@@ -429,6 +449,7 @@ class EnemyImage(Character):
         self._activated = set
     
     def collision(self,playerpos):
+        # larger sprite thus it needs a larger interaction range
         if self._pos[0]-40 < playerpos[0] < self._pos[0]+self._size[0]+400:
             if self._pos[1]-40 < playerpos[1] < self._pos[1]+self._size[1]+500:
                 return True
@@ -440,11 +461,14 @@ class EnemyImage(Character):
 
 
 class Gate(Character):
+    # gate is used in order give the player an achievement to aim to
+    # also used to encorage the player to explore the adventure map
     def __init__(self,pos):
         super().__init__(pos,"gate")
         self._scale = 5
         self._activated = False
         self._sheet = pygame.image.load("collectablesSprites.bmp")
+        # sprite image is of a door like the ones in the home screen
     
     def get_activated(self):
         return self._activated
